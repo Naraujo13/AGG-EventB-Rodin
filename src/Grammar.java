@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author nicol
  */
-public class Extrator {
+public class Grammar {
     
    
     //Uteis
@@ -34,7 +34,7 @@ public class Extrator {
     String tokenAtual;
     Scanner entrada;
     
-    public Extrator(){
+    public Grammar(){
         typeGraph = new TypeGraph();
         rules = new ArrayList <>();
     }
@@ -127,7 +127,7 @@ public class Extrator {
         //Fecha o Sacnner
         entrada.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Extrator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Grammar.class.getName()).log(Level.SEVERE, null, ex);
         }    
        
     }
@@ -457,7 +457,7 @@ public class Extrator {
         // TODO code application logic here
        String arquivo =  "PacmanAtributo.ggx";
         
-       Extrator test = new Extrator();
+       Grammar test = new Grammar();
        test.reader(arquivo);
        System.out.println("Finished!");
     }
