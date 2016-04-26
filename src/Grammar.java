@@ -140,8 +140,16 @@ public class Grammar {
         //Definição de uma Regra...
        Graph RHS = null, LHS = null;
        Rule rule = null;
+       String name;
        
        while (tokenAtual.contains("Rule")){
+           
+           //Pega nome da regra.
+           auxiliar = tokenAtual.split(" ");
+           auxiliar2 = auxiliar[3].split("\"");
+           name = auxiliar2[1];
+           
+           
            while (!tokenAtual.contains("Graph")){
             tokenAtual = entrada.next();
            }
@@ -177,7 +185,7 @@ public class Grammar {
             
             //Cria regra e insere RHS e LHS definidos acima
             if (RHS != null && LHS != null)
-                rule = new Rule(RHS, LHS);
+                rule = new Rule(name, RHS, LHS);
             else
                 System.out.println("Erro ao definir uma regra");
             

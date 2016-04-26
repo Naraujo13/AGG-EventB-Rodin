@@ -1,0 +1,52 @@
+Mon Apr 25 14:34:06 BRT 2016
+Version:  AGG 2.1
+
+Layered graph transformation of : Pacman_Teste
+on graph : Graph
+[  Kill  Eat  MoveForwardPacman  MoveForwardGhost  MovaBackPacman  MoveBackGhost  ]
+
+Layer: 0
+[  Eat  Kill  ]
+Eat 	 applied:  true
+[  Eat  Kill  ]
+Eat 	 applied:  false
+
+[  Kill  ]
+Kill 	 applied:  false
+
+[  ]
+used time: 963ms
+
+Layer: 1
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveForwardPacman 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveForwardGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MovaBackPacman 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MovaBackPacman 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveForwardGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveBackGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveForwardGhost 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MovaBackPacman 	 applied:  true
+[  MoveBackGhost  MoveForwardPacman  MovaBackPacman  MoveForwardGhost  ]
+MoveForwardGhost 	 applied:  true
+used time: 8277ms
+
+No more layers.
+Graph transformation finished

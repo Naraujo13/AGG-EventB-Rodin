@@ -25,6 +25,7 @@ public class Node extends NodeType{
     Map <String, Boolean> booleanAttributes;
     Map <String, Long> longAttributes;
     Map <String, String> stringAttributes;
+    //Pegar nomes dos atributos
 
     /*Construtor que recebe como parâmetro o tipo do nodo e sua identificação única*/
     public Node(String type, String ID){

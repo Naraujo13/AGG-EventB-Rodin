@@ -14,11 +14,13 @@ import java.util.List;
  */
 public class Rule {
     
+    String name;
     Graph RHS;
     Graph LHS;
     List <Graph> NAC;
     
-    public Rule (Graph RHS, Graph LHS){
+    public Rule (String name, Graph RHS, Graph LHS){
+        this.name = name;
         this.RHS = RHS;
         this.LHS = LHS;
         NAC = new ArrayList<>();
