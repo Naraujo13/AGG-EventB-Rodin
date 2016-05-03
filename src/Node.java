@@ -18,26 +18,17 @@ import java.util.Map;
 public class Node extends NodeType{
     
     String ID;      //ID que identifica esta instância de nodo
-    //HashMaps que armazenam os atributos, ID->Valor
-    Map <String, Integer> integerAttributes;
-    Map <String, Float> floatAttributes;
-    Map <String, Double> doubleAttributes;
-    Map <String, Boolean> booleanAttributes;
-    Map <String, Long> longAttributes;
-    Map <String, String> stringAttributes;
-    //Pegar nomes dos atributos
 
     /*Construtor que recebe como parâmetro o tipo do nodo e sua identificação única*/
     public Node(String type, String ID){
         super(type);
         this.ID = ID;
-        integerAttributes = new HashMap<>();
-        floatAttributes = new HashMap<>();
-        doubleAttributes = new HashMap<>();
-        booleanAttributes = new HashMap<>();
-        longAttributes = new HashMap<>();
-        stringAttributes = new HashMap<>();
     }
 
+    public void insertAttribute(String type, String name, String ID, String value){
+        Attribute newAtt = new Attribute(type, ID, name, value);
+        attributes.add(newAtt);
+    }
+    
 }
 

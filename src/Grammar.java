@@ -25,12 +25,16 @@ public class Grammar {
     //Uteis
    List <Rule> rules;   //Arraylist com as regras da gramática
    Graph host;
-    
+   TypeGraph typeGraph; 
+   
     //Vetores de String Auxiliares para quebrar comandos
     String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
     String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
     String[] auxiliar3; //Auxiliar 3 para quebrar substrings
-    TypeGraph typeGraph;
+    Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
+    Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
+    Map <String, String> nodeAtt;   //Hash map com ID do nodo e ID do att
+    
     String tokenAtual;
     Scanner entrada;
     
@@ -40,19 +44,61 @@ public class Grammar {
     }
 
     public void reader(String arquivo ){
-     
+        
+      attNames = new HashMap <>();
+      attTypes = new HashMap<>();
+      nodeAtt = new HashMap<>();
+      
+       String attName, attID, attType, rotuloID;
+       
+       
        try {
              entrada = new Scanner(new FileReader(arquivo)).useDelimiter("<");  //le e usa > como delimitador
              
         //Definição de Nodes ou Edges - inútil, pois é definido novamente no grafo tipo
         tokenAtual = entrada.next();
         while(!tokenAtual.contains("kind=\"TG\"")){ //itera até achar o início do grafo tipo
-              tokenAtual = entrada.next();                    //itera para o próximo comando
+            if (tokenAtual.contains("/NodeType"))
+                tokenAtual = entrada.next();
+            if (tokenAtual.contains("NodeType")){   //se for nodo
+                
+                //Pega ID do nodo
+                auxiliar = tokenAtual.split(" ");
+                auxiliar2 = auxiliar[1].split("\"");
+                rotuloID = auxiliar2[1];
+                
+                tokenAtual = entrada.next();
+                if (!tokenAtual.contains("kind=\"TG\"")){ //e se tem atributo, salva o nome do atributo e seu ID tipo
+                    if (tokenAtual.contains("AttrType")){
+                        auxiliar = tokenAtual.split(" ");
+                        //salva ID
+                        auxiliar2 = auxiliar[1].split("\"");
+                        attID = auxiliar2[1];
+                        //salva nome
+                        auxiliar2 = auxiliar[2].split("\"");
+                        attName = auxiliar2[1];
+                        
+                        //salva Tipo
+                        auxiliar2 = auxiliar[3].split("\"");
+                        attType = auxiliar2[1];
+                        
+                        //adiciona no hashmap
+                        attNames.put(attID, attName);
+                        attTypes.put(attID, attType);
+                        nodeAtt.put(rotuloID, attID);
+                    }               
+                }
+            }
+            if (!tokenAtual.contains("kind=\"TG\""))
+                tokenAtual = entrada.next();                    //itera para o próximo comando
         }
         //Definição de Grafo Tipo, se existir
         //Definição de nodos e
         //Define HashMap que converte para os "Ids Tipo" (confusão do AGG)
         Map <String, String> types = new HashMap<>();
+        NodeType newNodeType;
+        String nodeTypeID;
+        AttributeType newAttType;
         if (tokenAtual.contains("kind=\"TG\"")){
             tokenAtual = entrada.next();
             while (tokenAtual.contains("Node ID") || tokenAtual.contains("Layout") ||tokenAtual.contains("/Node")){        //cria hashmap para os tipos dentro do grafo tipo
@@ -60,7 +106,19 @@ public class Grammar {
                     auxiliar = tokenAtual.split(" ");       //dá split
                     auxiliar2 = auxiliar[1].split("\"");     //coloca ID no auxiliar 2
                     auxiliar3 = auxiliar[2].split("\"");      //coloca tipo no auxiliar 3
-                    typeGraph.addNode(auxiliar2[1], auxiliar3[1]); //associa ID ao tipo para tradução (adiconará internamente no grafo tipo a coleção de nodos, pois esta esta associada aos valoresdo hashmap)
+                    nodeTypeID = auxiliar2[1];
+                    //Cria nodo passando tipo
+                    newNodeType = new NodeType(nodeTypeID);
+                    //Se nodo possuia atributos no rótulo
+                    if (nodeAtt.containsKey(auxiliar3[1])){
+                        //Crianova instancia de atributo contendo o tipo
+                        newAttType = new AttributeType(attTypes.get(nodeAtt.get(auxiliar3[1])));
+                        //Insere atributo no nodo
+                        newNodeType.attributes.add(newAttType);
+                    }
+                   //Insere nodo no grafo de tadução
+                    typeGraph.addTranslNode(auxiliar2[1], auxiliar3[1]); //associa ID ao tipo para tradução (adiconará internamente no grafo tipo a coleção de nodos, pois esta esta associada aos valoresdo hashmap)
+                    typeGraph.allowedNodes.add(newNodeType);
                 }
                 tokenAtual = entrada.next();
             }            
@@ -214,6 +272,7 @@ public class Grammar {
     
     /**
      * Função chamada pela função defineRules() para definir as NACs
+     * @param rule - regra que terá suas regras de aplicação definidas
      */
     public void defineApplicationConditions(Rule rule){
         
@@ -321,7 +380,8 @@ public class Grammar {
     */
     public void defineGraphNodes(Graph graph){
         Node newNode;
-        String ID, type, attributeID;
+        String ID, type, attributeID, atributeValue, atributeType;
+        Attribute newAtt;
         //enquanto for nodo...
         while(tokenAtual.contains("Node") || tokenAtual.contains("Layout")){
                 
@@ -347,7 +407,10 @@ public class Grammar {
                     
                     //Pega ID do atributo
                     auxiliar = tokenAtual.split(" ");
-                    auxiliar2 = auxiliar[1].split("\"");
+                    if (auxiliar[1].contains("type="))
+                        auxiliar2 = auxiliar[1].split("\"");
+                    else if (auxiliar[2].contains("type="))
+                        auxiliar2 = auxiliar[2].split("\"");
                     attributeID = auxiliar2[1];
                     
                     tokenAtual = entrada.next(); // Descarta "abertura" do atributo
@@ -357,38 +420,61 @@ public class Grammar {
                     if (tokenAtual.contains("int")){
                         //Tira o <int>
                         auxiliar3 = tokenAtual.split(">");
+                        atributeType = "int";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.integerAttributes.put(attributeID, Integer.parseInt(auxiliar3[1]));
+                        //newNode.integerAttributes.put(attributeID, Integer.parseInt(auxiliar3[1]));
                     }
                     else if (tokenAtual.contains("float")){
-                        //Tira o <int>
-                         auxiliar3 = tokenAtual.split(">");
+                            //Tira o <int>
+                        auxiliar3 = tokenAtual.split(">");
+                        atributeType = "float";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.floatAttributes.put(attributeID, Float.parseFloat(auxiliar3[1]));
+                       // newNode.floatAttributes.put(attributeID, Float.parseFloat(auxiliar3[1]));
                     }
                     else if (tokenAtual.contains("double")){
                         //Tira o <int>
                         auxiliar3 = tokenAtual.split(">");
+                        atributeType = "double";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.doubleAttributes.put(attributeID, Double.parseDouble(auxiliar3[1]));
+                       // newNode.doubleAttributes.put(attributeID, Double.parseDouble(auxiliar3[1]));
                     }
                     else if (tokenAtual.contains("boolean")){
                         //Tira o <int>
                         auxiliar3 = tokenAtual.split(">");
+                        atributeType = "boolean";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.booleanAttributes.put(attributeID, Boolean.parseBoolean(auxiliar3[1]));
+                       // newNode.booleanAttributes.put(attributeID, Boolean.parseBoolean(auxiliar3[1]));
                     }
                     else if (tokenAtual.contains("long")){
-                        //Tira o <int>
                         auxiliar3 = tokenAtual.split(">");
+                        atributeType = "long";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.longAttributes.put(attributeID, Long.parseLong(auxiliar3[1]));
+                       // newNode.longAttributes.put(attributeID, Long.parseLong(auxiliar3[1]));
                     }
                     else if (tokenAtual.contains("string")){
                         //Tira o <int>
-                         auxiliar3 = tokenAtual.split(">");
+                        auxiliar3 = tokenAtual.split(">");
+                        atributeType = "string";
+                        atributeValue = auxiliar3[1];
+                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                        newNode.attributes.add(newAtt);
                         //Adiciona no hashMap
-                        newNode.stringAttributes.put(attributeID, auxiliar3[1]); 
+                       // newNode.stringAttributes.put(attributeID, auxiliar3[1]); 
                     }
                     else{
                         //Deu erro ao definir atributo
@@ -467,6 +553,12 @@ public class Grammar {
         
        Grammar test = new Grammar();
        test.reader(arquivo);
+       
+       //Clear
+       test.attTypes.clear();
+       test.attNames.clear();
+       test.nodeAtt.clear();
+       
        System.out.println("Finished!");
     }
 }

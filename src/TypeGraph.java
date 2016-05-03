@@ -20,7 +20,9 @@ import java.util.Map;
 public class TypeGraph {
     String type;
     //Collection de Nodos contendo o tipos dos nodos permitidos
-    Collection <String> allowedNodes;
+    
+    List <NodeType> allowedNodes;
+    //Collection <String> allowedNodes;
     //Mapa associando ID usado nas arestas do grafo ID do tipo (confusão do AGG)
     Map <String, String> translationNodes;
     //ArrayList de Arestas  contedo obejtos Edges(tipo, source, target)
@@ -31,14 +33,15 @@ public class TypeGraph {
     public TypeGraph (){
         type = "TG";
         translationNodes = new HashMap<>();
-        allowedNodes = translationNodes.values();       //terá sempre todos os valores
+        allowedNodes = new ArrayList <> ();
         allowedEdges = new ArrayList <> ();
     }
     
      /* Adiciona nodo a lista
     */
-    public void addNode (String ID, String type){
+    public void addTranslNode (String ID, String type){
        translationNodes.put(ID, type);
+       
     }
     
     /* Adiciona aresta a lista

@@ -1,3 +1,7 @@
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,7 +15,7 @@
 public class NodeType {
     
     String type;
-
+    List <AttributeType> attributes;
 
     /* Construtor da classe Node, que recebe nome e ID como parâmetros e cria uma definição de vértice para o grafo
     *  @param name - nome do nodo criado
@@ -19,6 +23,7 @@ public class NodeType {
     */
     public NodeType(String type){
         this.type = type;
+        attributes = new ArrayList <>();
     }
     
      /* Método que retorna o tipo do nodo 
@@ -27,5 +32,6 @@ public class NodeType {
     public String getType(){
         return type;
     }
+   
 }
 
