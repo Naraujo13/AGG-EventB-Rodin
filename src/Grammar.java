@@ -22,16 +22,16 @@ import java.util.logging.Logger;
 public class Grammar {
     
    
-    //Uteis
+    //Atributos da gramática
    List <Rule> rules;   //Arraylist com as regras da gramática
-   Graph host;
-   TypeGraph typeGraph; 
+   Graph host;          //Grafo host
+   TypeGraph typeGraph;     //Grafo tipo
    
    
    
-    
-    String tokenAtual;
-    Scanner entrada;
+    //Auxiliares
+    String tokenAtual;      //token sendo analisado
+    Scanner entrada;        //scanner usado na leitura do arquivo
     
     public Grammar(){
         typeGraph = new TypeGraph();
