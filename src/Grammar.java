@@ -27,13 +27,8 @@ public class Grammar {
    Graph host;
    TypeGraph typeGraph; 
    
-    //Vetores de String Auxiliares para quebrar comandos
-    String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
-    String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
-    String[] auxiliar3; //Auxiliar 3 para quebrar substrings
-    Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
-    Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
-    Map <String, String> nodeAtt;   //Hash map com ID do nodo e ID do att
+   
+   
     
     String tokenAtual;
     Scanner entrada;
@@ -44,13 +39,19 @@ public class Grammar {
     }
 
     public void reader(String arquivo ){
-        
-      attNames = new HashMap <>();
-      attTypes = new HashMap<>();
-      nodeAtt = new HashMap<>();
+        //Hash Maps utilizados para definir nodos do grafo tipo com arestas
+        Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
+        Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
+        Map <String, String> nodeAtt;   //Hash map com ID do nodo e ID do att
+        attNames = new HashMap <>();
+        attTypes = new HashMap<>();
+        nodeAtt = new HashMap<>();
       
        String attName, attID, attType, rotuloID;
-       
+        //Vetores de String Auxiliares para quebrar comandos
+    String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+    String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+    String[] auxiliar3; //Auxiliar 3 para quebrar substrings
        
        try {
              entrada = new Scanner(new FileReader(arquivo)).useDelimiter("<");  //le e usa > como delimitador
@@ -106,7 +107,7 @@ public class Grammar {
                     auxiliar = tokenAtual.split(" ");       //dá split
                     auxiliar2 = auxiliar[1].split("\"");     //coloca ID no auxiliar 2
                     auxiliar3 = auxiliar[2].split("\"");      //coloca tipo no auxiliar 3
-                    nodeTypeID = auxiliar2[1];
+                    nodeTypeID = auxiliar3[1];
                     //Cria nodo passando tipo
                     newNodeType = new NodeType(nodeTypeID);
                     //Se nodo possuia atributos no rótulo
@@ -161,7 +162,7 @@ public class Grammar {
         host = new Graph("HOST");
         tokenAtual = entrada.next();
         //Nodos do HOST
-        defineGraphNodes(host);     //Funcionando até aqui
+        defineGraphNodes(host, attNames, attTypes);     //Funcionando até aqui
         
         //Arestas do HOST
         defineGraphEdges(host);
@@ -171,7 +172,7 @@ public class Grammar {
        
        //REGRAS
        //Mais vantajoso ID LHS -> ID RHS ou ID RHS -> ID LHS ? Até o momento RHS ou NAC -> LHS
-       defineRules();
+       defineRules(attNames, attTypes);
        
        // /GraphTrasnformationSystem
        if (tokenAtual.contains("/GraphTransformationSystem"))
@@ -193,12 +194,19 @@ public class Grammar {
     
     /**
      * Função que define as Regras de uma Gramática (RHS, LHS e NACs)
+     * @param attNames map contendo os nomes dos atributos associado ao seu ID
+     * @param attTypes map contendo os tipos dos atributos associados ao seu ID
      */
-    public void defineRules(){
+    public void defineRules(Map <String, String> attNames, Map <String, String> attTypes){
         //Definição de uma Regra...
        Graph RHS = null, LHS = null;
        Rule rule = null;
        String name;
+       
+        //Vetores de String Auxiliares para quebrar comandos
+        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+        String[] auxiliar3; //Auxiliar 3 para quebrar substrings
        
        while (tokenAtual.contains("Rule")){
            
@@ -217,7 +225,7 @@ public class Grammar {
                 tokenAtual = entrada.next();
                 LHS = new Graph ("LHS");
                //Define Nodos
-               defineGraphNodes(LHS);
+               defineGraphNodes(LHS, attNames, attTypes);
                //DEfine arestas
                defineGraphEdges(LHS);
                //Descarta /Graph
@@ -233,7 +241,7 @@ public class Grammar {
                tokenAtual = entrada.next();
                RHS = new Graph ("RHS");
                //Define Nodos
-               defineGraphNodes(RHS);
+               defineGraphNodes(RHS, attNames, attTypes);
                //DEfine arestas
                defineGraphEdges(RHS);
                //Descarta /Graph
@@ -251,7 +259,7 @@ public class Grammar {
             defineMorphism(RHS);
                                                
             //Condições de Aplicação
-            defineApplicationConditions(rule);
+            defineApplicationConditions(rule, attNames, attTypes);
             
             //Itera Layer, Prioridade e /Rule
             while (!tokenAtual.contains("/Rule"))
@@ -273,8 +281,10 @@ public class Grammar {
     /**
      * Função chamada pela função defineRules() para definir as NACs
      * @param rule - regra que terá suas regras de aplicação definidas
+     * @param attNames - map contendo os nomes dos atributos associados ao seu ID
+     * @param attTypes - map contendo os tipos dos atributos associados ao seu ID
      */
-    public void defineApplicationConditions(Rule rule){
+    public void defineApplicationConditions(Rule rule, Map <String,String> attNames, Map <String, String> attTypes){
         
             Graph NAC;
         
@@ -290,7 +300,7 @@ public class Grammar {
                     //Itera pós ID-Nome e etc do NAC
                     tokenAtual = entrada.next();
                     //Define Nodos
-                    defineGraphNodes(NAC);
+                    defineGraphNodes(NAC,attNames, attTypes);
                     //Define Arestas
                     defineGraphEdges(NAC);
                     
@@ -323,6 +333,12 @@ public class Grammar {
      * @param graph - grafo a ter o morfismo definido
      */
     public void defineMorphism (Graph graph){
+        
+         //Vetores de String Auxiliares para quebrar comandos
+        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+        String[] auxiliar3; //Auxiliar 3 para quebrar substrings
+        
         //Inserir Morfismo
         if (tokenAtual.contains("Morphism")){
             tokenAtual = entrada.next();
@@ -349,6 +365,12 @@ public class Grammar {
     public void defineTypeGraphEdges(TypeGraph graph){
         EdgeType newEdgeType;
         while(tokenAtual.contains("Edge")){
+            
+             //Vetores de String Auxiliares para quebrar comandos
+            String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+            String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+            String[] auxiliar3; //Auxiliar 3 para quebrar substrings
+            
             //Extrai tipo da aresta e salva como ID
             auxiliar = tokenAtual.split(" ");
             auxiliar2 = auxiliar[4].split("\"");
@@ -378,7 +400,12 @@ public class Grammar {
      * parêmtro
      * @param graph - grafo cujos nodos serão extraídas do arquivo
     */
-    public void defineGraphNodes(Graph graph){
+    public void defineGraphNodes(Graph graph, Map <String,String> attNames, Map <String, String> attTypes){
+         //Vetores de String Auxiliares para quebrar comandos
+        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+        String[] auxiliar3; //Auxiliar 3 para quebrar substrings
+        
         Node newNode;
         String ID, type, attributeID, atributeValue, atributeType;
         Attribute newAtt;
@@ -417,69 +444,14 @@ public class Grammar {
                     tokenAtual = entrada.next(); // Descarta Value
                     
                     //Verifica tipo do argumento
-                    if (tokenAtual.contains("int")){
-                        //Tira o <int>
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "int";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                        //newNode.integerAttributes.put(attributeID, Integer.parseInt(auxiliar3[1]));
-                    }
-                    else if (tokenAtual.contains("float")){
-                            //Tira o <int>
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "float";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                       // newNode.floatAttributes.put(attributeID, Float.parseFloat(auxiliar3[1]));
-                    }
-                    else if (tokenAtual.contains("double")){
-                        //Tira o <int>
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "double";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                       // newNode.doubleAttributes.put(attributeID, Double.parseDouble(auxiliar3[1]));
-                    }
-                    else if (tokenAtual.contains("boolean")){
-                        //Tira o <int>
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "boolean";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                       // newNode.booleanAttributes.put(attributeID, Boolean.parseBoolean(auxiliar3[1]));
-                    }
-                    else if (tokenAtual.contains("long")){
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "long";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                       // newNode.longAttributes.put(attributeID, Long.parseLong(auxiliar3[1]));
-                    }
-                    else if (tokenAtual.contains("string")){
-                        //Tira o <int>
-                        auxiliar3 = tokenAtual.split(">");
-                        atributeType = "string";
-                        atributeValue = auxiliar3[1];
-                        newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                        newNode.attributes.add(newAtt);
-                        //Adiciona no hashMap
-                       // newNode.stringAttributes.put(attributeID, auxiliar3[1]); 
-                    }
-                    else{
-                        //Deu erro ao definir atributo
-                        System.out.println("Erro ao definir atributo");
-                    }
+                    
+                    //Teste
+                    atributeType = attTypes.get(attributeID);
+                    auxiliar3 = tokenAtual.split(">");
+                    atributeValue = auxiliar3[1];
+                    newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
+                    newNode.attributes.add(newAtt);
+                    
                     while (!tokenAtual.contains("/Attribute")){
                     tokenAtual = entrada.next();
                     }
@@ -511,6 +483,11 @@ public class Grammar {
      * @param graph - grafo cujas arestas serão extraídas do arquivo
     */
     public void defineGraphEdges(Graph graph){
+         //Vetores de String Auxiliares para quebrar comandos
+        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+        String[] auxiliar3; //Auxiliar 3 para quebrar substrings
+        
          Edge newEdge;
         String type, ID, source, target;
         //Enquanto for aresta...
@@ -554,10 +531,7 @@ public class Grammar {
        Grammar test = new Grammar();
        test.reader(arquivo);
        
-       //Clear
-       test.attTypes.clear();
-       test.attNames.clear();
-       test.nodeAtt.clear();
+
        
        System.out.println("Finished!");
     }
