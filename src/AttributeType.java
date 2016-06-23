@@ -6,7 +6,7 @@
 
 /**
  *
- * @author nicol
+ * @author Nícolas Oreques de Araujo
  */
 public class AttributeType {
     String type;
