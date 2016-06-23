@@ -11,7 +11,6 @@ import java.util.Map;
  */
 
 /**
- * @author Nícolas Oreques de Araujo
  * Esta classe representa uma instancia de nodo no grafo host.
  * Ela herda da classe NodeType (nodos do grafo tipo) e difere da mesma pois
  * armazena o ID do nodo.

@@ -1,8 +1,6 @@
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -12,7 +10,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author Nícolas Oreques de Araujo
+ * @author nicol
  */
 public class Rule {
     
@@ -31,51 +29,4 @@ public class Rule {
     public void insertNAC(Graph NAC){
         this.NAC.add(NAC);
     }
-
-    /**
-     * Função chamada pela função defineRules() para definir as NACs
-     * @param rule - regra que terá suas regras de aplicação definidas
-     * @param attNames - map contendo os nomes dos atributos associados ao seu ID
-     * @param attTypes - map contendo os tipos dos atributos associados ao seu ID
-     */
-    public void defineApplicationConditions(String tokenAtual,Scanner entrada, Map <String,String> attNames, Map <String, String> attTypes){
-        
-            Graph newNAC;
-        
-             //Condições de Aplicação
-            if (tokenAtual.contains("ApplCondition")){
-                tokenAtual = entrada.next();
-                
-                //NAC
-                while (tokenAtual.contains("NAC")){ //cada iteração do while é uma NAC
-                    tokenAtual = entrada.next();
-                    
-                    newNAC = new Graph("NAC");
-                    //Itera pós ID-Nome e etc do NAC
-                    tokenAtual = entrada.next();
-                    //Define Nodos
-                    newNAC.defineGraphNodes(tokenAtual, entrada, attNames, attTypes);
-                    //Define Arestas
-                    newNAC.defineGraphEdges(tokenAtual, entrada);
-                    
-                    //Descarta /Graph
-                   tokenAtual = entrada.next();
-                   
-                   //Inserir Morfismo de LHS -> NAC
-                   newNAC.defineMorphism(tokenAtual, entrada);
-                   
-                   //Itera /NAC
-                   if (tokenAtual.contains("/NAC"))
-                       tokenAtual = entrada.next();
-                   
-                   //Adiciona NAC no ArrayList
-                   this.insertNAC(newNAC);
-                }
-                
-                //Itera /ApplCondition
-                if (tokenAtual.contains("/ApplCondition"))
-                    tokenAtual = entrada.next();           
-            }
-    }
-    
 }

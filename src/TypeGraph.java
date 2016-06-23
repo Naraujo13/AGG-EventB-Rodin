@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,7 +13,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author Nícolas Oreques de Araujo
+ * @author nicol
  */
 
 
@@ -45,55 +44,14 @@ public class TypeGraph {
        
     }
     
-    /**
-     * Função que adiciona aresta ao grafo tipo atual.
-     * @param e ser adicionada 
-     */
+    /* Adiciona aresta a lista
+    */
     public void addEdge (EdgeType e){
         allowedEdges.add(e);
     }
     
-    /**
-     * Função que realiza a tradução dos IDs de um grafo tipo para desfazer confusão do AGG
-     * @param ID - ID a ser traduzido
-     * @return - Retorna uma string contendo o ID traduzido
-     */
+    //Acessa hashmap e retorna tradução
     public String translate(String ID){
         return translationNodes.get(ID);
     }
-    
-    /**
-     * Função que define nodos do grafo tipo atual, extraindo-os do arquivo corrente.
-     * @param tokenAtual - tokenAtualmente sendo analisado no arquivo
-     * @param entrada - scanner do arquivo sendo lido no momento
-     */
-    public void defineTypeGraphEdges(String tokenAtual,Scanner entrada){
-        EdgeType newEdgeType;
-        while(tokenAtual.contains("Edge")){
-            
-             //Vetores de String Auxiliares para quebrar comandos
-            String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
-            String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
-            
-            //Extrai tipo da aresta e salva como ID
-            auxiliar = tokenAtual.split(" ");
-            auxiliar2 = auxiliar[4].split("\"");
-            newEdgeType = new EdgeType(auxiliar2[1]);
-            
-            //Extrai Source
-            auxiliar2 = auxiliar[2].split("\"");
-            newEdgeType.addSource(this.translate((auxiliar2[1])));
-            
-            //Extrai Target
-            auxiliar2 = auxiliar[3].split("\"");
-            newEdgeType.addTarget(this.translate(auxiliar2[1]));
-            
-            //Descarta opções de Layout
-            while (!tokenAtual.contains("/Edge")){
-                tokenAtual = entrada.next(); 
-            }
-            //Descarta /Edge
-            tokenAtual = entrada.next();
-        }
-    }  
 }

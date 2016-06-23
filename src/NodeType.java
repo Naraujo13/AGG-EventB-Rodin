@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author Nícolas Oreques de Araujo
+ * @author nicol
  */
 public class NodeType {
     
