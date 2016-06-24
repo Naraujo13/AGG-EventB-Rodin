@@ -16,5 +16,5 @@ Work in progress...
 
 Given the current state of development, the following conditions must be applied:
 The graph definided in AGG HAS to be defined by a type graph.
-It can contain as many rules as wanted, but cant have an Constraint, wheter it being atomic or not.
-There is support for attributes in nodes, although that isn't true for edges. It was a project decision since the research who aims to use the program does not use it, thogh it can be added as an extra after the end of the original project.
+It can contain as many rules as wanted, but can NOT have an Constraint, wheter it being atomic or not.
+There is support for attributes in nodes, although that isn't true for edges. It was a project decision since the research who aims to use the program does not need it, though it can be added as an extra after the end of the original project.
