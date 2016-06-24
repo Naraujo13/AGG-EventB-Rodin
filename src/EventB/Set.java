@@ -10,5 +10,21 @@ package EventB;
  * @author Nícolas Oreques de Araujo
  */
 public class Set {
+    String name;
+    String ID;
+    
+    public Set (String name, String ID){
+        this.name = name;
+        this.ID = ID;
+    }
+    
+    /**
+     * Função de acesso ao nome do set
+     * @return retorna nome do set
+     */
+    public String getName(){
+        return name;
+    }
+    
     
 }

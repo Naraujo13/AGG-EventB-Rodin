@@ -11,4 +11,17 @@ package EventB;
  */
 public class Constant {
     
+    String name;
+
+    public Constant(String name){
+        this.name = name;
+    }
+    
+    /**
+     * Função de acesso ao nome da constantes
+     * @return - retorna string com nome da constante
+     */
+    public String getName(){
+        return name;
+    }
 }

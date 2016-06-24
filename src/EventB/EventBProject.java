@@ -4,23 +4,24 @@
  * and open the template in the editor.
  */
 package EventB;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Nícolas Oreques de Araujo
  */
-public class Axiom {
+public class EventBProject {
     String name;
-    String predicate;
+    List <Context> contexts;
+    List <Machine> machines;
     
-    /**
-     * Cria axioma com nome e predicado indicados
-     * @param name - nome do axioma a ser criado.
-     * @param predicate - predicado do axioma a ser criado.
-     */
-    public Axiom(String name, String predicate){
+    /* --- Auxiliares --- */
+   
+    
+    public void EventBProject(String name){
         this.name = name;
-        this.predicate = predicate;
+        contexts = new ArrayList<>();
+        machines = new ArrayList<>();
     }
-    
 }

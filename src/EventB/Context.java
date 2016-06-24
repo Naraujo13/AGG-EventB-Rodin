@@ -5,6 +5,7 @@
  */
 package EventB;
 
+import AGG.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class Context {
     List <Set> sets;
     List <Constant> constants;
     List <Axiom> axioms;
+  
+    /* -- Auxiliares -- */
+     int axiomLabelCount;
     
     /**
      * Função que cria um contexto.
@@ -26,6 +30,7 @@ public class Context {
      */
     public Context(String name){
         this.name = name;
+        axiomLabelCount = 0;
         sets = new ArrayList <> ();
         constants = new ArrayList <> ();
         axioms = new ArrayList <> ();
@@ -53,6 +58,15 @@ public class Context {
      */
     public void addAxiom (Axiom axiom){
         axioms.add(axiom);
+        axiomLabelCount++;
+    }    
+
+    /**
+     * Função de acesso ao contador usado para criação das labels dos axiomas.
+     * @return retorna inteiro informando quantos axiomas foram criados.
+     */
+    public int getAxiomLabelCount(){
+        return axiomLabelCount;
     }
 }
 
