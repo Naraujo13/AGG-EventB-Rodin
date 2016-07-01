@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 
 import java.util.ArrayList;
@@ -39,16 +39,43 @@ public class TypeGraph {
         allowedEdges = new ArrayList <> ();
     }
     
-     /* Adiciona nodo a lista
-    */
+      /**
+     * Método de acesso ao hashmap para tradução da confusão do agg.
+     * @return hashmap com idConfusao->idRealDoTipo
+     */
+    public Map<String,String> getTranslationNodes(){
+        return translationNodes;
+    }
+    
+     /**
+      * Adiciona nodo em um hasmap para tradução.
+      * @param ID - ID associado a esta instancia.
+      * @param type - ID relacionado ao tipo
+      */
     public void addTranslNode (String ID, String type){
        translationNodes.put(ID, type);
        
     }
     
     /**
+     * Método de acesso aos nodos de um grafo tipo.
+     * @return - retorna arraylist com nodos do grafo tipo
+     */
+    public List<NodeType> getAllowedNodes(){
+        return allowedNodes;
+    }
+    
+    /**
+     * Método de acesso as arestas de um grafo tipo.
+     * @return retorna arraylist com arestas do grafo tipo.
+     */
+    public List<EdgeType> getAllowedEdges(){
+        return allowedEdges;
+    }
+    
+      /**
      * Função que adiciona aresta ao grafo tipo atual.
-     * @param e ser adicionada 
+     * @param e - ser adicionada 
      */
     public void addEdge (EdgeType e){
         allowedEdges.add(e);

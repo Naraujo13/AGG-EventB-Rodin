@@ -1,46 +1,30 @@
-package AGG;
-
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package Tradutores;
+
+import GraphGrammar.AttributeType;
+import GraphGrammar.EdgeType;
+import GraphGrammar.Grammar;
+import GraphGrammar.Graph;
+import GraphGrammar.NodeType;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author Nícolas Oreques de Araujo
+ * @author nicol
  */
-public class Grammar {
+public class AGGToGraphGrammar {
     
-   
-    //Atributos da gramática
-   List <Rule> rules;   //Arraylist com as regras da gramática
-   Graph host;          //Grafo host
-   TypeGraph typeGraph;     //Grafo tipo
-   
-   
-   
-    //Auxiliares
-    String tokenAtual;      //token sendo analisado
-    Scanner entrada;        //scanner usado na leitura do arquivo
-    
-    public Grammar(){
-        typeGraph = new TypeGraph();
-        rules = new ArrayList <>();
-    }
-
-    public void reader(String arquivo ){
+    public static void aggReader(String arquivo, Grammar grammar){
         //Hash Maps utilizados para definir nodos do grafo tipo com arestas
         Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
         Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
@@ -49,11 +33,15 @@ public class Grammar {
         attTypes = new HashMap<>();
         nodeAtt = new HashMap<>();
       
-       String attName, attID, attType, rotuloID;
+        //Auxiliares
+        String tokenAtual;      //token sendo analisado
+        Scanner entrada;        //scanner usado na leitura do arquivo
+        
+        String attName, attID, attType, rotuloID;
         //Vetores de String Auxiliares para quebrar comandos
-    String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
-    String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
-    String[] auxiliar3; //Auxiliar 3 para quebrar substrings
+        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
+        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
+        String[] auxiliar3; //Auxiliar 3 para quebrar substrings
        
        try {
              entrada = new Scanner(new FileReader(arquivo)).useDelimiter("<");  //le e usa > como delimitador
@@ -117,11 +105,11 @@ public class Grammar {
                         //Crianova instancia de atributo contendo o tipo
                         newAttType = new AttributeType(attTypes.get(nodeAtt.get(auxiliar3[1])));
                         //Insere atributo no nodo
-                        newNodeType.attributes.add(newAttType);
+                        newNodeType.getAttributes().add(newAttType);
                     }
                    //Insere nodo no grafo de tadução
-                    typeGraph.addTranslNode(auxiliar2[1], auxiliar3[1]); //associa ID ao tipo para tradução (adiconará internamente no grafo tipo a coleção de nodos, pois esta esta associada aos valoresdo hashmap)
-                    typeGraph.allowedNodes.add(newNodeType);
+                    grammar.getTypeGraph().addTranslNode(auxiliar2[1], auxiliar3[1]); //associa ID ao tipo para tradução (adiconará internamente no grafo tipo a coleção de nodos, pois esta esta associada aos valoresdo hashmap)
+                    grammar.getTypeGraph().getAllowedNodes().add(newNodeType);
                 }
                 tokenAtual = entrada.next();
             }            
@@ -136,14 +124,14 @@ public class Grammar {
             
             //Extrai Source
             auxiliar2 = auxiliar[2].split("\"");
-            newEdgeType.addSource(typeGraph.translationNodes.get((auxiliar2[1])));
+            newEdgeType.addSource(grammar.getTypeGraph().getTranslationNodes().get((auxiliar2[1])));
             
             //Extrai Target
             auxiliar2 = auxiliar[3].split("\"");
-            newEdgeType.addTarget(typeGraph.translate(auxiliar2[1]));
+            newEdgeType.addTarget(grammar.getTypeGraph().translate(auxiliar2[1]));
             
             //Adiciona Aresta no ArrayList do Grafo Tipo
-            typeGraph.allowedEdges.add(newEdgeType);
+            grammar.getTypeGraph().getAllowedEdges().add(newEdgeType);
             
             //Descarta opções de Layout
             while(!tokenAtual.contains("/Edge")){
@@ -161,24 +149,30 @@ public class Grammar {
         }
         
         //INICIO GRAFO HOST
-        host = new Graph("HOST");
+        Graph newHost = new Graph("HOST");
         tokenAtual = entrada.next();
         //Nodos do HOST
-        host.defineGraphNodes(tokenAtual, entrada, attNames, attTypes);     //Funcionando até aqui
+        newHost.defineGraphNodes(tokenAtual, entrada, attNames, attTypes);     //Funcionando até aqui
+        
+        //Está saindo em I68 mais ou menos e indo para definição de arestas.
+        //Scanner não ta atualizando. Altera dentro de nodes e quando retorna volta ao original. Pq?
         
         //Arestas do HOST
-        host.defineGraphEdges(tokenAtual, entrada);
+        newHost.defineGraphEdges(tokenAtual, entrada);
         
        tokenAtual = entrada.next(); //Descarta /Graph do HOST
        //FIM DO HOST
+       grammar.setHost(newHost);
        
        //REGRAS
        //Mais vantajoso ID LHS -> ID RHS ou ID RHS -> ID LHS ? Até o momento RHS ou NAC -> LHS
-       defineRules(attNames, attTypes);
+       grammar.defineRules(tokenAtual, entrada, attNames, attTypes);
        
        // /GraphTrasnformationSystem
        if (tokenAtual.contains("/GraphTransformationSystem"))
            tokenAtual = entrada.next();
+       else
+           System.out.println("Erro em graph transformationSystem.\n");
        
        //FIM DO ARQUIVO ABAIXO
        
@@ -193,103 +187,17 @@ public class Grammar {
        
     }
     
-    
-        
-    /**
-     * Função que define as Regras de uma Gramática (RHS, LHS e NACs)
-     * @param attNames map contendo os nomes dos atributos associado ao seu ID
-     * @param attTypes map contendo os tipos dos atributos associados ao seu ID
-     */
-    public void defineRules(Map <String, String> attNames, Map <String, String> attTypes){
-        //Definição de uma Regra...
-       Graph RHS = null, LHS = null;
-       Rule rule = null;
-       String name;
-       
-        //Vetores de String Auxiliares para quebrar comandos
-        String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
-        String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
-       
-       while (tokenAtual.contains("Rule")){
-           
-           //Pega nome da regra.
-           auxiliar = tokenAtual.split(" ");
-           auxiliar2 = auxiliar[3].split("\"");
-           name = auxiliar2[1];
-           
-           
-           while (!tokenAtual.contains("Graph")){
-            tokenAtual = entrada.next();
-           }
-           
-                //Define LHS
-            if (tokenAtual.contains("LHS")){
-                tokenAtual = entrada.next();
-                LHS = new Graph ("LHS");
-               //Define Nodos
-               LHS.defineGraphNodes(tokenAtual, entrada, attNames, attTypes);
-               //DEfine arestas
-               LHS.defineGraphEdges(tokenAtual, entrada);
-               //Descarta /Graph
-               tokenAtual = entrada.next(); 
-            }
-            
-            while (!tokenAtual.contains("Graph")){
-                tokenAtual = entrada.next();
-            }
-            
-           //Define RHS
-           if (tokenAtual.contains("RHS")){
-               tokenAtual = entrada.next();
-               RHS = new Graph ("RHS");
-               //Define Nodos
-               RHS.defineGraphNodes(tokenAtual, entrada, attNames, attTypes);
-               //DEfine arestas
-               RHS.defineGraphEdges(tokenAtual, entrada);
-               //Descarta /Graph
-               tokenAtual = entrada.next(); 
-           }
-      
-            
-            //Cria regra e insere RHS e LHS definidos acima
-            if (RHS != null && LHS != null)
-                rule = new Rule(name, RHS, LHS);
-            else
-                System.out.println("Erro ao definir uma regra");
-            
-            //Define Morfismo de RHS -> LHS
-            if (RHS != null)
-                RHS.defineMorphism(tokenAtual, entrada);
-                                               
-            //Condições de Aplicação
-            if (rule != null)
-                rule.defineApplicationConditions(tokenAtual, entrada, attNames, attTypes);
-            
-            //Itera Layer, Prioridade e /Rule
-            while (!tokenAtual.contains("/Rule"))
-                tokenAtual = entrada.next();
-            tokenAtual = entrada.next();
-            
-            //Adiciona regra no Araylist de regras;
-            rules.add(rule);
-            
-             //Funcionando até aqui para 1 regra, testar com mais
-       }
-       //FIM DEFINIÇÂO DE REGRA
-    }
-  
-    /**
-     * @param args the command line arguments
-     */
+    /** Main para testes de conversão do AGG
+    * @param args the command line arguments
+    */
     public static void main(String[] args) {
         // TODO code application logic here
        String arquivo =  "PacmanAtributo.ggx";
         
-       Grammar test = new Grammar();
-       test.reader(arquivo);
-       
-
-       
+       Grammar test = new Grammar("PacmanAtributo");
+       aggReader(arquivo, test);
+       test.printGrammar();
        System.out.println("Finished!");
     }
+    
 }

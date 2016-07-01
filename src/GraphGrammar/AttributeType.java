@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,4 +17,14 @@ public class AttributeType {
         this.type = type;
     }
     
+ public String getID(){return "";}
+ public String getValue(){return "";}
+ public String getName(){return "";}
+    /**
+     * Método de acesso ao tipo do atributo.
+     * @return - tipo do atributo em forma de string.
+     */
+    public String getType() {
+        return type;
+    }
 }

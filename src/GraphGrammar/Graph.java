@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 
 import java.util.ArrayList;
@@ -158,7 +158,7 @@ public class Graph {
         String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
         
          Edge newEdge;
-        String type, ID, source, target;
+        String edgeType, ID, source, target;
         //Enquanto for aresta...
         while (tokenAtual.contains("Edge") || tokenAtual.contains("Layout")){
             //Se não for layout ou fechamento de seção
@@ -179,10 +179,10 @@ public class Graph {
 
                 //type
                 auxiliar2 = auxiliar[4].split("\"");
-                type = auxiliar2[1];
+                edgeType = auxiliar2[1];
 
                 //Instancia nova aresta e insere no grafo
-                newEdge = new Edge (type, ID, source, target);
+                newEdge = new Edge (edgeType, ID, source, target);
                 this.addEdge(newEdge);
             }
             tokenAtual = entrada.next(); //itera para próxima linh
@@ -219,5 +219,33 @@ public class Graph {
                 tokenAtual = entrada.next();
         }
      
+    }
+    
+      public boolean printGraph(){
+        if (this.type == null){
+            System.out.println("\t\tErro: o grafo atual não possui tipo.");
+            return false;
+        }
+        else
+            System.out.println("\t\tTipo: " + this.type);
+        
+        if (this.graphNodes.isEmpty())
+            System.out.println("\t\tO grafo atual não possui nodos.");
+        else{
+            for (Node node: graphNodes){
+                if (!node.printNode())
+                    return false;
+            }
+            if (this.graphEdges.isEmpty())
+                System.out.println("\t\tO grafo atual não possui arestas.");
+            else{
+                for (Edge edge: graphEdges){
+                    if(!edge.printEdge())
+                        return false;
+                }                
+            }
+        }
+        //Imprimir morfismo do grafo.
+        return true;
     }
 }

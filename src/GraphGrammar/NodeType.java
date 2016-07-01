@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 
 import java.util.ArrayList;
@@ -33,6 +33,14 @@ public class NodeType {
     */
     public String getType(){
         return type;
+    }
+    
+    /**
+     * Método que retorna arrayList com atributos do nodo.
+     * @return - ArrayList com atributos do nodo
+     */
+    public List<AttributeType> getAttributes(){
+        return attributes;
     }
    
 }

@@ -4,14 +4,15 @@
  * and open the template in the editor.
  */
 package Tradutores;
-import AGG.*;
+import GraphGrammar.EdgeType;
+import GraphGrammar.NodeType;
 import EventB.*;
 
 /**
  *
  * @author Nícolas Oreques de Araujo
  */
-public class EventBTranslator {
+public class GraphGrammarToEventB {
     
        /**
      * Cria um set para reprensentar um tipo do grafo tipo e o adiciona ao

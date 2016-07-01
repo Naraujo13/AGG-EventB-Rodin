@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 
 import java.util.ArrayList;

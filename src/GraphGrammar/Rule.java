@@ -1,4 +1,4 @@
-package AGG;
+package GraphGrammar;
 
 
 import java.util.ArrayList;
@@ -80,4 +80,31 @@ public class Rule {
             }
     }
     
+    public boolean printRule(){
+        System.out.println("\t\tImprimindo a regra " + this.name + ":");
+        if (this.LHS == null){
+            System.out.println("\t\t\tErro. A regra possui erros no LHS.");
+            return false;
+        }
+        
+        this.LHS.printGraph();
+    
+        
+        if (this.RHS == null){
+            System.out.println("\t\t\tErro. A regra possui erros no RHS.");
+            return false;
+        }
+        
+        this.RHS.printGraph();
+        
+        if (NAC.isEmpty())
+            System.out.println("\t\t\tEste grafo não possui NACs.");
+        else{
+            System.out.println("\t\t\tImprimindo NACs...");
+            for (Graph nac: NAC){
+                nac.printGraph();
+            }
+        }
+        return true;
+    }
 }
