@@ -29,6 +29,7 @@ public class Attribute extends AttributeType {
      * Método de acesso ao valor do atributo.
      * @return - valor do atributo em forma de string.
      */
+    @Override
     public String getValue() {
         return value;
     }
@@ -37,6 +38,7 @@ public class Attribute extends AttributeType {
      * Método de acesso ao nome do atributo.
      * @return - nome do atributo em forma de string.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -45,6 +47,7 @@ public class Attribute extends AttributeType {
      * Método de acesso ao ID do atributo.
      * @return - ID do atributo em forma de string.
      */
+    @Override
     public String getID() {
         return ID;
     }

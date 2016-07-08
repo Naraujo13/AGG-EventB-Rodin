@@ -89,39 +89,4 @@ public class TypeGraph {
     public String translate(String ID){
         return translationNodes.get(ID);
     }
-    
-    /**
-     * Função que define nodos do grafo tipo atual, extraindo-os do arquivo corrente.
-     * @param tokenAtual - tokenAtualmente sendo analisado no arquivo
-     * @param entrada - scanner do arquivo sendo lido no momento
-     */
-    public void defineTypeGraphEdges(String tokenAtual,Scanner entrada){
-        EdgeType newEdgeType;
-        while(tokenAtual.contains("Edge")){
-            
-             //Vetores de String Auxiliares para quebrar comandos
-            String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
-            String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
-            
-            //Extrai tipo da aresta e salva como ID
-            auxiliar = tokenAtual.split(" ");
-            auxiliar2 = auxiliar[4].split("\"");
-            newEdgeType = new EdgeType(auxiliar2[1]);
-            
-            //Extrai Source
-            auxiliar2 = auxiliar[2].split("\"");
-            newEdgeType.addSource(this.translate((auxiliar2[1])));
-            
-            //Extrai Target
-            auxiliar2 = auxiliar[3].split("\"");
-            newEdgeType.addTarget(this.translate(auxiliar2[1]));
-            
-            //Descarta opções de Layout
-            while (!tokenAtual.contains("/Edge")){
-                tokenAtual = entrada.next(); 
-            }
-            //Descarta /Edge
-            tokenAtual = entrada.next();
-        }
-    }  
 }

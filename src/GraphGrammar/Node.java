@@ -51,9 +51,9 @@ public class Node extends NodeType{
         }
         System.out.println("\t\t\tID: " + this.ID);
         
-        if (this.attributes.isEmpty())
-            System.out.println("\t\t\tO nodo atual não possui atributos.");
-        else{
+        if (!this.attributes.isEmpty()){
+            //System.out.println("\t\t\tO nodo atual não possui atributos.");
+        //else{
             System.out.println("\t\t\tAtributos:");
             int i=0;
             for (AttributeType att: this.attributes){
