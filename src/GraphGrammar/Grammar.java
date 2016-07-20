@@ -44,6 +44,14 @@ public class Grammar {
         return typeGraph;
     }
     
+    /**
+     * Método de acesso ao conjunto de regras
+     * @return - retorna o hashset contendo o conjunto de regras
+     */
+    public HashSet<Rule> getRules(){
+        return rules;
+    }
+    
      /**
      * Método de acesso ao grafo host
      * @return - grafo host.
@@ -52,8 +60,21 @@ public class Grammar {
         return host;
     }
     
+    /**
+     * Método de alteração do grafo host
+     * @param host - grafo a ser inserido como grafo host da gramática
+     */
     public void setHost(Graph host){
         this.host = host;
+    }
+    
+   
+    /**
+     * Método de acesso ao nome da gramática
+     * @return retorna string contendo o nome da gramática
+     */
+    public String getName(){
+        return name;
     }
     
     /**

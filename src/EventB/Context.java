@@ -5,8 +5,8 @@
  */
 package EventB;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Classe que representa um contexto na notação EventB.
@@ -15,10 +15,10 @@ import java.util.List;
 public class Context {
     String name;
     
-    List <Context> extend;
-    List <Set> sets;
-    List <Constant> constants;
-    List <Axiom> axioms;
+    HashSet <Context> extend;
+    HashSet <Set> sets;
+    HashSet <Constant> constants;
+    HashMap <String, Axiom> axioms;
   
     /* -- Auxiliares -- */
      int axiomLabelCount;
@@ -30,9 +30,9 @@ public class Context {
     public Context(String name){
         this.name = name;
         axiomLabelCount = 0;
-        sets = new ArrayList <> ();
-        constants = new ArrayList <> ();
-        axioms = new ArrayList <> ();
+        sets = new HashSet <> ();
+        constants = new HashSet <> ();
+        axioms = new HashMap <> ();
     }
     
     /**
@@ -56,7 +56,7 @@ public class Context {
      * @param axiom - axioma a ser adicionado
      */
     public void addAxiom (Axiom axiom){
-        axioms.add(axiom);
+        axioms.put(Integer.toString(axiomLabelCount), axiom);
         axiomLabelCount++;
     }    
 

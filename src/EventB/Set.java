@@ -11,11 +11,9 @@ package EventB;
  */
 public class Set {
     String name;
-    String ID;
     
-    public Set (String name, String ID){
+    public Set (String name){
         this.name = name;
-        this.ID = ID;
     }
     
     /**

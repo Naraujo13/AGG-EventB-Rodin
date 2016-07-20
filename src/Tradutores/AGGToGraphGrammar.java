@@ -15,11 +15,8 @@ import GraphGrammar.Node;
 import GraphGrammar.NodeType;
 import GraphGrammar.Rule;
 import GraphGrammar.TypeGraph;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -183,10 +180,7 @@ public class AGGToGraphGrammar {
        
        //FIM DO ARQUIVO ABAIXO
        
-       //Itera /Document
-         // if (tokenAtual.contains("/Document"))
-          // tokenAtual = entrada.next();
-        //Fecha o Sacnner
+       //Fecha o Sacnner
         entrada.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Grammar.class.getName()).log(Level.SEVERE, null, ex);
@@ -263,7 +257,7 @@ public class AGGToGraphGrammar {
 
                 //Instancia novo nodo e insere no grafo
                 newNode = new Node (nodeType, ID);
-                
+
                 //Itera para a próxima linha e testa se é atributo, caso seja define para este nodo
                 tokenAtual = entrada.next();
                 //Enquanto for um atributo, define o mesmo e adiciona ao arraylist do tipo do atributo na classe nodo de newNode
@@ -300,16 +294,6 @@ public class AGGToGraphGrammar {
             else
                 tokenAtual = entrada.next(); //itera para próxima linha
         }
-         
-        /*
-        //Descarta opções de Layout
-            while (!tokenAtual.contains("/Node")){
-                tokenAtual = entrada.next(); 
-            }
-           
-            //Descarta /Node
-            tokenAtual = entrada.next();
-         */
     }
     
          /**

@@ -7,12 +7,50 @@ package Tradutores;
 import GraphGrammar.EdgeType;
 import GraphGrammar.NodeType;
 import EventB.*;
+import GraphGrammar.Grammar;
 
 /**
  *
  * @author Nícolas Oreques de Araujo
  */
 public class GraphGrammarToEventB {
+    
+    public void translator(Grammar g){
+       
+        //Cria contexto
+       Context context = new Context (g.getName() + "ctx");
+       
+       /* --- Grafo Tipo --- */
+       //Cria Sets para representar o conjunto de vértices e conjunto de arestas do grafo tipo
+       Set nodeSet, edgeSet;
+       nodeSet = new Set("vertT");
+       edgeSet = new Set("edgeT");
+       context.addSet(nodeSet);
+       context.addSet(edgeSet);
+       
+       /** --- Regras --- */
+       //LHS
+       nodeSet = new Set ("vertL1");
+       context.addSet(nodeSet);
+       edgeSet = new Set("edgeL1");
+       context.addSet(edgeSet);
+       //RHS
+       nodeSet = new Set ("vertR1"); 
+       context.addSet(nodeSet); 
+       edgeSet = new Set("edgeT");
+       context.addSet(edgeSet);
+       
+       /** -- Tipos definidos -- **/
+       //Lê tipos no grafo tipo e define uma constante para cada
+       
+       //Cria constantes que representam funções source e target
+       
+       //Define axiomas das funções source e target
+       
+       //Define os axiomas que definem os tipos (Sets) ???
+       
+       //Define
+    }
     
        /**
      * Cria um set para reprensentar um tipo do grafo tipo e o adiciona ao
@@ -22,7 +60,7 @@ public class GraphGrammarToEventB {
      */
     public void createNodeType(NodeType nodeType, Context context){
         Set newSet;
-        newSet = new Set("vertT" + nodeType.getType(),nodeType.getType());
+        newSet = new Set("vertT" + nodeType.getType());
         context.addSet(newSet);
         
         Constant newConstant1 = new Constant(newSet.getName() + "1");
@@ -42,7 +80,7 @@ public class GraphGrammarToEventB {
      */
     public void createEdgeType(EdgeType edgeType, Set sourceNode, Set targetNode, Context context){
         Set newSet;
-        newSet = new Set ("edgeT" + edgeType.getType(), edgeType.getType());
+        newSet = new Set ("edgeT" + edgeType.getType());
         context.addSet(newSet);
         
         Constant newConstant1 = new Constant(newSet.getName() + "1");
