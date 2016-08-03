@@ -24,7 +24,39 @@ public class Edge{
         this.target = target;
     }  
     
-       /**
+    /**
+     * Método de acesso ao ID do nodo
+     * @return string representando ID do nodo
+     */
+    public String getID(){
+        return ID;
+    }
+    
+    /**
+     * Método de acesso ao tipo da aresta
+     * @return - retorna uma string representando o tipo da aresta.
+     */
+    public String getType(){
+        return type;
+    }
+    
+     /**
+     * Método de acesso ao nodo source da aresta
+     * @return - retorna uma string representando o source da aresta.
+     */
+    public String getSource(){
+        return source;
+    }
+    
+      /**
+     * Método de acesso ao target da aresta
+     * @return - retorna uma string representando o target da aresta.
+     */
+    public String getTarget(){
+        return target;
+    }
+    
+     /**
      * Método que imprime as informações da aresta corrente.
      * @return - retorna true se conseguiu imprimir as informações corretamete, false caso tenha encontrado algum erro.
      */

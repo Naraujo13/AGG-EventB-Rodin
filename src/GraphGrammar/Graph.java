@@ -34,6 +34,22 @@ public class Graph {
         graphNodes = new HashSet <> ();
         morphism = new HashMap <> ();
     }
+     
+    /**
+     * Método de acesso aos nodos do grafo
+     * @return - hashset com nodos do grafo
+     */
+    public HashSet<Node> getNodes(){
+        return graphNodes;
+    }
+    
+    /**
+     * Método de acesso as arestas do grafo.
+     * @return - hashset com arestas do grafo
+     */
+    public HashSet<Edge> getEdges(){
+        return graphEdges;
+    }
     
     /**
      * Função que adiciona novo nodo ao grafo atual.
@@ -63,7 +79,10 @@ public class Graph {
     
 
     
-    
+    /**
+     * Função que imprime o grafo. Usado para criaçãod e log.
+     * @return 
+     */
       public boolean printGraph(){
         int i;
         System.out.println("\t\t Grafo:");

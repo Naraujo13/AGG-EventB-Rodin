@@ -7,7 +7,10 @@ package Tradutores;
 import GraphGrammar.EdgeType;
 import GraphGrammar.NodeType;
 import EventB.*;
+import GraphGrammar.Edge;
 import GraphGrammar.Grammar;
+import GraphGrammar.Node;
+import GraphGrammar.Rule;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +29,9 @@ public class GraphGrammarToEventB {
        //Cria Sets para representar o conjunto de vértices e conjunto de arestas do grafo tipo
        if(!typeGraphTranslation(context, g))
            return false;
-       
-       p.addContext(context);
-       
+        
+       if(!rulesTranslation(context, g))
+           return false;
        /** --- Regras --- *//*
        //LHS
        nodeSet = new Set ("vertL1");
@@ -41,8 +44,172 @@ public class GraphGrammarToEventB {
        edgeSet = new Set("edgeT");
        context.addSet(edgeSet);*/
        
+       p.addContext(context);
        return true;
        
+    }
+    
+    /**
+     * Função que realiza a tradução de um conjunto de regras de uma gramática
+     * de grafos para a notação EventB
+     * @param context - contexto ao qual as regras devem ser inseridas
+     * @param g - gramática cujas regras serão traduzidas (fonte)
+     * @return - retorna true ou false, indicando sucesso ou falha na tradução
+     */
+    public boolean rulesTranslation(Context context, Grammar g){
+        
+        
+        //For para todas as regras
+        
+        /* ----------------------------------------------------------------*
+         *  A tradução de cada regra foi dividida em duas etapas:        --*
+         * (1) tradução do LHS da regra;                                 --*
+         * (2) tradução dos NACs da regra.                               --*
+         * ----------------------------------------------------------------*/
+         for (Rule r: g.getRules()){
+            /* -------------------*
+             * -- Passo 1: LHS ---* 
+             * -------------------*/
+             
+            //Define 2 sets para representar conjunto de vértices e de arestas
+            Set nodesL, edgesL;
+            nodesL = new Set("vertL" + r.getName());
+            edgesL = new Set("edgeL" + r.getName());
+            context.addSet(nodesL);
+            context.addSet(edgesL);
+                     
+            Constant nodeConstant, edgeConstant;
+            //Define uma constante para cada nodo no LHS da regra
+            for (Node n: r.getLHS().getNodes()){
+                nodeConstant = new Constant(r.getName() + "L" + n.getType());
+                context.addConstant(nodeConstant);
+                
+            }
+            
+            //Define uma constante para cada aresta no LHS da regra
+            for (Edge e: r.getLHS().getEdges()){
+                edgeConstant = new Constant(r.getName() + "L" + e.getType());
+                context.addConstant(edgeConstant);
+            }
+            
+            //Define constantes para funções source e target
+            Constant sourceL, targetL;
+            sourceL = new Constant("sourceL" + r.getName());
+            targetL = new Constant("targetL" + r.getName());
+            context.addConstant(sourceL);
+            context.addConstant(targetL);
+            
+            //Define duas constantes para represnetar a tipagem de arestas e nodos
+            //no LHS.
+            Constant tLv, tLe;
+            tLv = new Constant("t" + r.getName() + "v");
+            tLe = new Constant("t" + r.getName() + "e");
+            context.addConstant(tLv);
+            context.addConstant(tLe);
+            
+            String name, predicate;
+            //Define axiomas para conjuntos de vértices e de arestas
+            Axiom axmVertL, axmEdgeL;
+            
+            name = "axm_VertL" + r.getName();
+            predicate = "partition(" + nodesL.getName();
+            for (Node n: r.getLHS().getNodes()){
+                predicate = predicate + ", {" + n.getType() + "}";
+            }            
+            predicate = predicate + ")";
+            axmVertL = new Axiom(name, predicate);
+            
+            name = "axm_EdgeL" + r.getName();
+            predicate = "partition(" + edgesL.getName();
+            for (Edge e: r.getLHS().getEdges()){
+                predicate = predicate + ", {" + e.getType() + "}";
+            }            
+            predicate = predicate + ")";
+            axmEdgeL = new Axiom(name, predicate);
+            
+            context.addAxiom(axmVertL);
+            context.addAxiom(axmEdgeL);
+            
+            //Define axiomas para representar tipagem de funções source e target
+            Axiom axmSrcType, axmTgtType;
+            
+            name = "axm_srcL" + r.getName() + "type";
+            predicate = "sourceL" + r.getName() + " : edgeL" + r.getName() + " --> " + "vertL" + r.getName();
+            axmSrcType = new Axiom (name, predicate);
+            
+            name = "axm_tgtL" + r.getName() + "type";
+            predicate = "targetL" + r.getName() + " : edgeL" + r.getName() + " --> " + "vertL" + r.getName();
+            axmTgtType = new Axiom (name, predicate);
+            
+            context.addAxiom(axmSrcType);
+            context.addAxiom(axmTgtType);
+
+            //Define axiomas que representam a definição das funções source e target
+            Axiom axmSrcDef, axmTgtDef;
+            //source
+            name = "axm_srcL" + r.getName() + "def";
+            predicate = "partition(sourceL" + r.getName();
+            //Itera para cada tipo de aresta
+            for (Edge e: r.getLHS().getEdges()){
+                    predicate = predicate + ", {" + e.getType() + "|->" + e.getSource() +"}";
+            }
+            predicate = predicate + ")";
+            axmSrcDef = new Axiom(name, predicate);
+            context.addAxiom(axmSrcDef);
+            
+            //target
+            name = "axm_tgtL" + r.getName() + "def";
+            predicate = "partition(targetL" + r.getName();
+            //Itera para cada tipo de aresta
+            for (Edge e: r.getLHS().getEdges()){
+                    predicate = predicate + ", {" + e.getType() + "|->" + e.getTarget() +"}";
+            }
+            predicate = predicate + ")";
+            axmTgtDef = new Axiom(name, predicate);
+            context.addAxiom(axmTgtDef);
+            
+             String predicateAux;         
+            //Define axiomas que representam a tipagem dos vértices e arestas
+            Axiom tLvert, tLedg;
+            
+            name = "axm_tL" + r.getName() + "_V";
+            predicate = "tL" + r.getName() + " : " + nodesL.getName() + " --> vertT";
+            tLvert = new Axiom(name, predicate);
+            
+            name = "axm_tL" + r.getName() + "_E";
+            predicate = "tL" + r.getName() + " : " + edgesL.getName() + " --> edgeT";
+            tLedg = new Axiom(name, predicate);
+            
+            context.addAxiom(tLvert);
+            context.addAxiom(tLedg);
+            
+            //Define axiomas para definição das funções de tipagem
+            Axiom tLvDef, tLeDef;
+            
+            //Nodos
+            name = "axm_tL" + r.getName() + "_V_def";
+            predicate = "partition(tL" + r.getName() + "_V";
+            
+            for(Node n: r.getLHS().getNodes()){  
+                 predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
+            }
+            predicate = predicate + ")";
+            tLvDef = new Axiom(name, predicate);
+            
+            //Arestas
+            name = "axm_tL" + r.getName() + "_E_def";
+            predicate = "partition(tL" + r.getName() + "_E";
+            
+            for(Edge e: r.getLHS().getEdges()){  
+                 predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
+            }
+            predicate = predicate + ")";
+            tLeDef = new Axiom(name, predicate);
+            
+            context.addAxiom(tLvDef);
+            context.addAxiom(tLeDef);
+        }
+        return true;
     }
     
     /**
@@ -167,67 +334,7 @@ public class GraphGrammarToEventB {
         
        return true;
     }
-    
-    
-       /**
-     * Cria um set para reprensentar um tipo do grafo tipo e o adiciona ao
-     * contexto. Cria constantes associadas ao set criado
-     * @param nodeType - tipo de nodo que irá virar set
-     * @param context - contexto ao qual será adicionado o set craido.
-     */
-    public void createNodeType(NodeType nodeType, Context context){
-        Set newSet;
-        newSet = new Set("vertT" + nodeType.getType());
-        context.addSet(newSet);
-        
-        Constant newConstant1 = new Constant(newSet.getName() + "1");
-        context.addConstant(newConstant1);
-        Constant newConstant2 = new Constant(newSet.getName() + "2");
-        context.addConstant(newConstant2);
-       
-        Axiom newAxiom = new Axiom("axm" + context.getAxiomLabelCount(), "partition("+ newSet.getName() + ",{" + newConstant1.getName() + "}, {" + newConstant2.getName() + "})");
-        context.addAxiom(newAxiom);
-    }
-    
-    /**
-     * Cria um set para representar o tipo de aresta do grafo tipo e o adiciona
-     * ao contexto
-     * @param edgeType - tipo  de aresta que irá virar set
-     * @param context - contexto ao qual será adiciona o set criado.
-     */
-    public void createEdgeType(EdgeType edgeType, Set sourceNode, Set targetNode, Context context){
-        Set newSet;
-        newSet = new Set ("edgeT" + edgeType.getType());
-        context.addSet(newSet);
-        
-        Constant newConstant1 = new Constant(newSet.getName() + "1");
-        context.addConstant(newConstant1);
-        Constant newConstant2 = new Constant(newSet.getName() + "2");
-        context.addConstant(newConstant2);
-        
-        /* -- Creates axiom to represent the domain of the new type -- */
-        Axiom newAxiom = new Axiom("axm" + context.getAxiomLabelCount(), "partition("+ newSet.getName() + ",{" + newConstant1.getName() + "}, {" + newConstant2.getName() + "})");
-        context.addAxiom(newAxiom);
-        
-        /* -- Creates new Constants and axioms representing the source and target
-         * -- functions for the new edge type created. */
-        Constant newConstant3 = new Constant("sourceT" + newSet.getName());
-        context.addConstant(newConstant3);
-        Constant newConstant4 = new Constant("targetT" + newSet.getName());
-        context.addConstant(newConstant4);
-        
-        /* -- Creates source function -- */
-        newAxiom = new Axiom("axm" + context.getAxiomLabelCount(), newConstant3.getName() + " : " + newSet.getName() + " --> " + sourceNode.getName());
-        context.addAxiom(newAxiom);
-        newAxiom = new Axiom("axm" + context.getAxiomLabelCount(),"partition(" + newConstant3.getName() + ", {" + newConstant1.getName() + " |-> ");    //corrigir
-        
-        
-        /** -- Creates target function -- */
-        newAxiom = new Axiom("axm" + context.getAxiomLabelCount(), newConstant4.getName() + " : " + newSet.getName() + " --> " + targetNode.getName());
-        context.addAxiom(newAxiom);    
-    }
-    
-    
+      
     /** Main para testes de conversão de Agg para GG  e de GG para EventB
     * @param args the command line arguments
     */

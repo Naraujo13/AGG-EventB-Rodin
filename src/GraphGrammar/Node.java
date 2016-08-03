@@ -23,6 +23,14 @@ public class Node extends NodeType{
     }
 
     /**
+     * Método de acesso ao ID do nodo.
+     * @return string represnetando ID do nodo
+     */
+    public String getID(){
+        return ID;
+    }
+    
+    /**
      * Método que insere atributo na lista do nodo
      * @param type - tipo do atributo a ser inserido
      * @param name - nome do atributo a ser inserido
