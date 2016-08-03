@@ -38,10 +38,34 @@ public class EdgeType {
         return type;
     }
     
+    /**
+     * Método de acesso a lista de nodos fonte
+     * @return - retorna lista com nodos fonte desta aresta
+     */
+    public List<String> getSource(){
+        return source;
+    }
+    
+    /**
+     * Método de acesso a lista de nodos destino.
+     * @return - retorna lista com nodos destino desta aresta
+     */
+    public List<String> getTarget(){
+        return target;
+    }
+    
+    /**
+     * Método para adição de um novo tipo de nodo fonte para a aresta
+     * @param type - tipo de nodo a ser adicionado a lista
+     */
     public void addSource(String type){
         source.add(type);
     }
     
+    /**
+     * Método para adição de um novo tipo de nodo fonte para a aresta.
+     * @param type - tipo de nodo a ser adicionado a lista.
+     */
     public void addTarget(String type){
         target.add(type);
     }

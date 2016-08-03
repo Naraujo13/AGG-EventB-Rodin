@@ -56,7 +56,10 @@ public class Context {
      * @param axiom - axioma a ser adicionado
      */
     public void addAxiom (Axiom axiom){
-        axioms.put(Integer.toString(axiomLabelCount), axiom);
+        if (axioms.containsKey(axiom.getName()))
+            axioms.put(axiom.getName() + Integer.toString(axiomLabelCount), axiom);
+        else
+            axioms.put(axiom.getName(), axiom);
         axiomLabelCount++;
     }    
 

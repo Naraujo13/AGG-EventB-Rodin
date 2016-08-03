@@ -23,4 +23,12 @@ public class Axiom {
         this.predicate = predicate;
     }
     
+    /**
+     * Método de acesso ao nome do axioma
+     * @return retorna o nome do axioma
+     */
+    public String getName(){
+        return name;
+    }
+    
 }
