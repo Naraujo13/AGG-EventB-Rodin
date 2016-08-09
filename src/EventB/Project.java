@@ -20,14 +20,22 @@ public class Project {
     public Project(String name){
         this.name = name;
         contexts = new HashSet<>();
-        contexts = new HashSet<>();
+        machines = new HashSet<>();
     }
     
     /**
      * Método para adição de contextos a um projeto eventB
-     * @param context 
+     * @param c - contexto a ser adicionado
      */
-    public void addContext(Context context){
-        contexts.add(context);
+    public void addContext(Context c){
+        contexts.add(c);
+    }
+    
+    /**
+     * Método para adição de máquinas a um projeto eventB
+     * @param m - máquina a ser adicionada
+     */
+    public void addMachine(Machine m){
+        machines.add(m);
     }
 }

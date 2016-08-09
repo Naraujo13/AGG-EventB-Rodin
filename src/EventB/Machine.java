@@ -6,6 +6,7 @@
 package EventB;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class Machine {
     List <Context> sees;
     List <Machine> refinement;
     List <Variable> variables;
-    List <Invariant> invariants;
+    HashMap <String, Invariant> invariants;
     List <Event> events;
     
     /**
@@ -32,8 +33,32 @@ public class Machine {
         sees.add(context);
         refinement = new ArrayList <>();
         variables = new ArrayList <>();
-        invariants = new ArrayList <>();
+        invariants = new HashMap <>();
         events =  new ArrayList <>();
     }
     
+    /**
+     * Método de adição de variáveis
+     * @param v - variável a ser adicionada
+     */
+    public void addVariable(Variable v){
+        variables.add(v);
+    }
+    
+    /**
+     * Método para adição de invariantes.
+     * @param name - nome a ser associado com a invariante
+     * @param inv - invariante a ser adicionada
+     */
+    public void addInvariant(String name, Invariant inv){
+        invariants.put(name, inv);
+    }
+    
+    /**
+     * Método para adição de eventos
+     * @param e - evento a ser adicionado
+     */
+    public void addEvent(Event e){
+        events.add(e);
+    }
 }

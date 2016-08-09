@@ -24,31 +24,186 @@ public class GraphGrammarToEventB {
     public boolean translator(Project p, Grammar g){
        
         //Cria contexto
-       Context context = new Context (g.getName() + "ctx");
+       Context c = new Context (g.getName() + "ctx");
        
        /* --- Grafo Tipo --- */
        //Cria Sets para representar o conjunto de vértices e conjunto de arestas do grafo tipo
-       if(!typeGraphTranslation(context, g))
+       if(!typeGraphTranslation(c, g))
            return false;
         
-       if(!rulesTranslation(context, g))
+       if(!rulesTranslation(c, g))
            return false;
        
-       /** --- Regras --- *//*
-       //LHS
-       nodeSet = new Set ("vertL1");
-       context.addSet(nodeSet);
-       edgeSet = new Set("edgeL1");
-       context.addSet(edgeSet);
-       //RHS
-       nodeSet = new Set ("vertR1"); 
-       context.addSet(nodeSet); 
-       edgeSet = new Set("edgeT");
-       context.addSet(edgeSet);*/
+        Machine m = new Machine(g.getName() + "mch", c);
        
-       p.addContext(context);
+       if(!stateGraphTranslation(m, c, g))
+           return false;
+       
+     //Definições 18 ou 19 ou 20...
+  
+       p.addContext(c);
+       p.addMachine(m);
        return true;
        
+    }
+    
+    /**
+     * Método que realiza a tradução e criação do grafo estado e o insere em uma
+     * máquina. Em progresso... Faltando evento de inicialização.
+     * @param m
+     * @param c
+     * @param g
+     * @return 
+     */
+    public boolean stateGraphTranslation(Machine m, Context c, Grammar g){
+       
+        
+        Variable v;
+        v = new Variable("VertG");
+        m.addVariable(v);
+        v = new Variable("EdgeG");
+        m.addVariable(v);
+        v = new Variable("sourceG");
+        m.addVariable(v);
+        v = new Variable("targetG");
+        m.addVariable(v);
+        v = new Variable("tG_V");
+        m.addVariable(v);
+        v = new Variable("tG_E");
+        m.addVariable(v);
+        
+        //invariants
+        
+        Invariant invVertG, invEdgeG, invSourceG, invTargetG, invtGv, invtGe;
+        String name, predicate;
+        
+        name = "inv_vertG";
+        predicate = "VertG : POW(NAT)";
+        invVertG = new Invariant(name, predicate);
+        m.addInvariant(name, invVertG);
+        
+        name = "inv_edgeG";
+        predicate = "EdgeG : POW(NAT)";
+        invEdgeG = new Invariant (name, predicate);
+        m.addInvariant(name, invEdgeG);
+        
+        name = "inv_sourceG";
+        predicate = "sourceG : EdgeG --> VertG";
+        invSourceG = new Invariant(name, predicate);
+        m.addInvariant(invSourceG.getName(), invSourceG);
+        
+        name = "inv_targetG";
+        predicate = "targetG : EdgeG --> VertG";
+        invTargetG = new Invariant(name, predicate);
+        m.addInvariant(invTargetG.getName(), invTargetG);
+        
+        name = "inv_tGv";
+        predicate = "tGv : VertG --> VertT";
+        invtGv = new Invariant(name, predicate);
+        m.addInvariant(name, invtGv);
+        
+        name = "inv_tGe";
+        predicate = "tGe : EdgeG --> EdgeT";
+        invtGe = new Invariant(name, predicate);
+        m.addInvariant(name, invtGe);
+        
+        //initialization
+        Event initialisation = new Event ("INITIALISATION");
+        String aux[];
+        int flag;
+        //Nodos
+        name = "act_vertG";
+        predicate = "VertG = {";
+        flag = 0;
+        for(Node n: g.getHost().getNodes()){ 
+            aux = n.getID().split("I");
+            if (flag ==0)
+                predicate = predicate + aux[1];
+            else
+                predicate = predicate + ", " + aux[1];
+            flag = 1;
+        }
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        //Arestas
+        name = "act_edgeG";
+        predicate = "EdgeG = {";
+        flag = 0;
+        for(Edge e: g.getHost().getEdges()){ 
+            aux = e.getID().split("I");
+            if (flag !=0)
+                predicate = predicate + ", ";
+            predicate = predicate + aux[1];
+            flag = 1;
+        }
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        //SourceG
+        name = "act_srcG";
+        predicate = "sourceG = {";
+        
+        flag = 0;
+        for (Edge e: g.getHost().getEdges()){
+            aux = e.getID().split("I");
+            if (flag != 0)
+                predicate = predicate + ", ";
+            predicate = predicate + aux[1] + "|->" + e.getSource();
+            flag = 1;
+        }        
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        //TargetG
+        name = "act_tgtG";
+        predicate = "targetG = {";
+        
+        flag = 0;
+        for (Edge e: g.getHost().getEdges()){
+            aux = e.getID().split("I");
+            if (flag != 0)
+                predicate = predicate + ", ";
+            predicate = predicate + aux[1] + "|->" + e.getTarget();
+            flag = 1;
+        }        
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        //Tipagem dos nodos
+        name = "act_tG_V";
+        predicate = "tG_V = {";
+        
+        flag = 0;
+        for (Node n: g.getHost().getNodes()){
+            aux = n.getID().split("I");
+            if (flag != 0)
+                predicate = predicate + ", ";
+            predicate = predicate + aux[1] + "|->" + n.getType();
+            flag = 1;
+        }        
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        
+        //Tipagem das Arestas
+        name = "act_tG_E";
+        predicate = "tG_E = {";
+        
+        flag = 0;
+        for (Edge e: g.getHost().getEdges()){
+            aux = e.getID().split("I");
+            if (flag != 0)
+                predicate = predicate + ", ";
+            predicate = predicate + aux[1] + "|->" + e.getType();
+            flag = 1;
+        }        
+        predicate = predicate + "}";
+        initialisation.addAct(name, predicate);
+        
+        
+        m.addEvent(initialisation);
+        return true;
     }
     
     /**
@@ -306,9 +461,7 @@ public class GraphGrammarToEventB {
             c.addAxiom(axmlEDef);
         
             count++;
-        }   
-        
-        
+        }     
         
         return true;
     }

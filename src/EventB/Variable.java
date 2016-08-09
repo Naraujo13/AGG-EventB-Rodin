@@ -10,5 +10,10 @@ package EventB;
 * @author Nícolas Oreques de Araujo
  */
 public class Variable {
+        String name;
+        
+        public Variable (String name){
+            this.name = name;
+        }
     
 }
