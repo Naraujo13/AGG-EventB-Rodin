@@ -9,6 +9,7 @@ import GraphGrammar.NodeType;
 import EventB.*;
 import GraphGrammar.Edge;
 import GraphGrammar.Grammar;
+import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class GraphGrammarToEventB {
         
        if(!rulesTranslation(context, g))
            return false;
+       
        /** --- Regras --- *//*
        //LHS
        nodeSet = new Set ("vertL1");
@@ -208,7 +210,106 @@ public class GraphGrammarToEventB {
             
             context.addAxiom(tLvDef);
             context.addAxiom(tLeDef);
+            
+            if (!NACTranslation(context, g, r))
+                return false;
         }
+        return true;
+    }
+    
+    /**
+     * Método que realiza a tradução das NACs de uma regra
+     * @param c - contexto ao qual serão inseridas NACs
+     * @param g - gramática fonte
+     * @param r - regra da qual serão traduzidas as NACs
+     * @return - retorna true ou false, indicando sucesso ou falha do método
+     */
+    public boolean NACTranslation(Context c, Grammar g, Rule r){
+        int count = 0;
+        Set nacVert, nacEdge;
+        Constant source, target, nodeConstant, edgeConstant;
+        Constant tLVNAC, tLENAC, lV, lE; //Morfismos
+        Axiom axmlV, axmlVDef, axmlE, axmlEDef;
+        String name, predicate;
+        for (Graph nac: r.getNACs()){
+           
+            //Cria dois sets, para arestas e vértices desta nac
+            nacVert = new Set("Vert" + r.getName() + "NAC" + Integer.toString(count));
+            nacEdge = new Set("Edge" + r.getName() + "NAC" + Integer.toString(count));
+            c.addSet(nacVert);
+            c.addSet(nacEdge);
+            
+            //Cria duas constantes, para representar source e target desta NAC
+            source= new Constant("source"+ r.getName() +"NAC" + Integer.toString(count));
+            target= new Constant("target"+ r.getName() +"NAC" + Integer.toString(count));
+            c.addConstant(source);
+            c.addConstant(target);
+            
+            //Cria uma constante para cada tipo de vértice na NAC
+            for (Node n: nac.getNodes()){
+                nodeConstant = new Constant(n.getID());
+                c.addConstant(nodeConstant);
+            }
+            
+            //Cria uma constante para cada tipo de aresta
+            for (Edge e: nac.getEdges()){
+                edgeConstant = new Constant(e.getID());
+                c.addConstant(edgeConstant);
+            }
+            
+            //Cria duas constantes para representar o morfismo de vértices e arestas da NAC
+            tLVNAC = new Constant("t"+ r.getName() +"VNAC" + Integer.toString(count));
+            tLENAC = new Constant("t"+ r.getName() +"ENAC" + Integer.toString(count));
+            c.addConstant(tLVNAC);
+            c.addConstant(tLENAC);
+            
+            //Cria morfismo de vértices e arestas em relação ao LHS
+            lV = new Constant(r.getName() + "NAC" + Integer.toString(count) + "V");
+            lE = new Constant(r.getName() + "NAC" + Integer.toString(count) + "E");
+            c.addConstant(lV);
+            c.addConstant(lE);
+            
+          //Axiomas para inicialização de ljV e ljE
+            
+            //Axiomas do morfismo de vértices da NAC com LHS
+            
+            name = "axm_"+ r.getName() + Integer.toString(count) + "V";
+            predicate = r.getName() + Integer.toString(count) + "V : Vert"+ r.getName() +" --> Vert"+ r.getName() +"Nac" + Integer.toString(count);
+            axmlV = new Axiom(name, predicate);
+            
+            name = "axm_"+ r.getName() + Integer.toString(count) + "V_def";
+            predicate = "partition(" + r.getName() + Integer.toString(count) + "V";
+            for(Node n: nac.getNodes()){  
+                predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
+            }
+            predicate = predicate + ")";
+            axmlVDef = new Axiom(name, predicate);
+            
+            c.addAxiom(axmlV);
+            c.addAxiom(axmlVDef);
+            
+            //Axiomas do morfismo de arestas da NAC com LHS
+            
+            name = "axm_"+ r.getName() + Integer.toString(count) + "E";
+            predicate = r.getName() + Integer.toString(count) + "E : Edge"+ r.getName() +" --> Edge"+ r.getName() +"Nac" + Integer.toString(count);
+            axmlE = new Axiom(name, predicate);
+            
+            name = "axm_"+ r.getName() + Integer.toString(count) + "E_def";
+            predicate = "partition(" + r.getName() + Integer.toString(count) + "E";
+            for(Edge e: nac.getEdges()){  
+                predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
+            }
+            predicate = predicate + ")";
+            axmlEDef = new Axiom(name, predicate);
+            
+            c.addAxiom(axmlE);
+            c.addAxiom(axmlEDef);
+        
+            count++;
+        }   
+        
+        
+        
         return true;
     }
     
