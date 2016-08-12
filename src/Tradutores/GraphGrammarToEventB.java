@@ -13,6 +13,7 @@ import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -39,7 +40,8 @@ public class GraphGrammarToEventB {
        if(!stateGraphTranslation(m, c, g))
            return false;
        
-     //Definições 18 ou 19 ou 20...
+       if(!DPOApplication(c, m, g))
+           return false;
   
        p.addContext(c);
        p.addMachine(m);
@@ -220,8 +222,10 @@ public class GraphGrammarToEventB {
         
         /* ----------------------------------------------------------------*
          *  A tradução de cada regra foi dividida em duas etapas:        --*
-         * (1) tradução do LHS da regra;                                 --*
-         * (2) tradução dos NACs da regra.                               --*
+         * (1) tradução do LHS da regra (Definição 17 do paper);         --*
+         * (2) tradução da aplicação da regra DPO (Definição 22);        --*
+         * (3) tradução dos NACs da regra (definição 18);                --*
+         * (4) tradução das NACs como guarda (definição 20).             --*
          * ----------------------------------------------------------------*/
          for (Rule r: g.getRules()){
             /* -------------------*
@@ -366,8 +370,114 @@ public class GraphGrammarToEventB {
             context.addAxiom(tLvDef);
             context.addAxiom(tLeDef);
             
+            /* -------------------*
+             * -- Passo 2: DPO ---* 
+             * -------------------*/
+          
+            
+            
+            
+            /* -------------------*
+             * -- Passo 3: LHS ---* 
+             * -------------------*/
             if (!NACTranslation(context, g, r))
                 return false;
+        }
+        return true;
+    }
+    
+    public boolean DPOApplication(Context c, Machine m, Grammar g){
+        
+        Event ruleEvent;
+        String name, predicate;
+        
+        //Itera entre todas as regras
+        for (Rule r: g.getRules()){
+          
+            ruleEvent = new Event(r.getName());
+            
+            /* -------------------*
+             * -- Passo 1: ANY ---* 
+             * -------------------*/
+            
+            ruleEvent.addParameter("mV");
+            ruleEvent.addParameter("mE");
+            ruleEvent.addParameter("DelV");
+            ruleEvent.addParameter("PreservV");
+            ruleEvent.addParameter("DelE");
+            ruleEvent.addParameter("Dangling");
+            
+            //prefixed_list vertices criados pela regra
+            //prefixed list arestas criadas pela regra
+            
+            /* -------------------*
+             * -- Passo 2: WHERE -* 
+             * -------------------*/
+            
+            //Função total mapeando os vértices
+            name = "grd_mV";
+            predicate = "mV : Vert" + r.getName() + " --> VertG";
+            ruleEvent.addGuard(name, predicate);
+            
+            //Função total mapeando as arestas
+            name = "grd_mE";
+            predicate = "mE : Edge" + r.getName() + " --> EdgeG";
+            ruleEvent.addGuard(name, predicate);
+            
+            //Define o set de vértices excluídos
+            HashSet<Node> deletedVertices = new HashSet <>();
+            for (Node n: r.getLHS().getNodes()){
+                deletedVertices.add(n);
+            }
+            deletedVertices.removeAll(r.getRHS().getNodes());
+           
+            name = "grd_DelV";
+            predicate = "DelV := mV[";
+            String[] aux;
+            int flag = 0;
+            for (Node n: deletedVertices){
+                aux = n.getID().split("I");
+                if (flag != 0)
+                    predicate += ", ";
+                else
+                    flag = 1;
+                predicate = predicate + "{" + aux[1] + "}";
+            }
+            predicate += "]";
+            ruleEvent.addGuard(name, predicate);
+            
+            //Define conjunto de vértices preservados
+            name = "grd_PreV";
+            predicate = "PreservV := VertG \\ DelV";
+            ruleEvent.addGuard(name, predicate);
+            
+            //Define o conjunto de arestas deletadas
+            HashSet<Edge> deletedEdges =  new HashSet<>();
+            for (Edge e: r.getLHS().getEdges()){
+                deletedEdges.add(e);
+            }
+            deletedEdges.removeAll(r.getRHS().getEdges());
+            
+            name = "grd_DelE";
+            predicate = "DelE := mE[";
+            flag = 0;
+            for (Edge e: deletedEdges){
+                aux = e.getID().split("I");
+                if(flag != 0)
+                    predicate += ", ";
+                else
+                    flag = 1;
+                predicate += "{" + aux[1] + "}";
+            }
+            predicate += "]";
+            ruleEvent.addGuard(name, predicate);
+                     
+            //Arestas pendentes
+            name = "grd_Dang";
+            predicate = "Dangling = dom((source |> DelV) \\/ (targetG |> DelV))\\DelE";
+            ruleEvent.addGuard(name, predicate);
+            
+             m.addEvent(ruleEvent);
         }
         return true;
     }
