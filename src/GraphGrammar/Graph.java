@@ -1,7 +1,6 @@
 package GraphGrammar;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +9,12 @@ import java.util.Map;
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+ * String type; - indica tipo do grafo, normalmente sendo "RHS", "LHS" ou "HOST".
+ * HashSet <Edge> graphEdges - HashSet representando o conjunto de arestas do grafo.
+ * HashSet <Node> graphNodes - HashSet representando o conjunto de nodos do grafo.
+ * Map <String, String> morphism - HashMap representando do grafo em relação a outro, tal que:
+ *  chave -> ID no grafo atual
+ *  valor -> ID no grafo que está sendo mapeado
  */
 
 /**
@@ -21,7 +26,7 @@ public class Graph {
     String type;
     HashSet <Edge> graphEdges;
     HashSet <Node> graphNodes;
-    Map <String, String> morphism;
+    Map <String, String> morphism;  
     
     /**
      * Construtor da classe grafo. Cria novo grafo baseado no tipo passado como

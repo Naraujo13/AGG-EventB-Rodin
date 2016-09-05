@@ -13,8 +13,10 @@ import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -51,7 +53,7 @@ public class GraphGrammarToEventB {
     
     /**
      * Método que realiza a tradução e criação do grafo estado e o insere em uma
-     * máquina. Em progresso... Faltando evento de inicialização.
+     * máquina. 
      * @param m
      * @param c
      * @param g
@@ -386,11 +388,17 @@ public class GraphGrammarToEventB {
         return true;
     }
     
+    //Revisar tudo
     public boolean DPOApplication(Context c, Machine m, Grammar g){
         
         Event ruleEvent;
         String name, predicate;
-        
+        HashSet <String> preservedNodes;
+        HashSet <String> createdNodes;
+        HashSet<String> deletedNodes;
+        HashSet <String> preservedEdges;
+        HashSet <String> createdEdges;
+        HashSet<String> deletedEdges;
         //Itera entre todas as regras
         for (Rule r: g.getRules()){
           
@@ -407,8 +415,44 @@ public class GraphGrammarToEventB {
             ruleEvent.addParameter("DelE");
             ruleEvent.addParameter("Dangling");
             
-            //prefixed_list vertices criados pela regra
-            //prefixed list arestas criadas pela regra
+            //VERIFICAR SE ESTÁ CORRETO CONFORME DEFINIÇÃO
+            
+            preservedNodes = new HashSet<>();
+            createdNodes = new HashSet<>();
+            deletedNodes = new HashSet <>();
+            preservedEdges = new HashSet<>();
+            createdEdges = new HashSet<>();
+            deletedEdges =  new HashSet<>();
+            
+            
+            //Cria set com nodos preservados e criados
+            for (Node n: r.getRHS().getNodes()){
+                String temp = r.getRHS().getMorphism().get(n.getID());
+                if (temp!=null)
+                    preservedNodes.add(temp);
+                else
+                    createdNodes.add(n.getID());
+            }           
+            //Cria set com arestas preservadas e criadas
+            for (Edge e: r.getRHS().getEdges()){
+                String temp = r.getRHS().getMorphism().get(e.getID());
+                if (temp!=null)
+                    preservedEdges.add(temp);
+                else
+                    createdEdges.add(e.getID());
+            }   
+  
+            //prefixed_list vertices criados pela regra REVISAR
+            
+            for(String n: createdNodes){
+                ruleEvent.addParameter("new_" + n);
+            }
+            
+            //prefixed list arestas criadas pela regra REVISAR
+            for(String e: createdEdges){
+                ruleEvent.addParameter("new_" + e);
+            }
+            
             
             /* -------------------*
              * -- Passo 2: WHERE -* 
@@ -425,18 +469,18 @@ public class GraphGrammarToEventB {
             ruleEvent.addGuard(name, predicate);
             
             //Define o set de vértices excluídos
-            HashSet<Node> deletedVertices = new HashSet <>();
-            for (Node n: r.getLHS().getNodes()){
-                deletedVertices.add(n);
+            for(Node n: r.getLHS().getNodes()){
+                deletedNodes.add(n.getID());
             }
-            deletedVertices.removeAll(r.getRHS().getNodes());
+            deletedNodes.removeAll(r.getRHS().getMorphism().values());
+            
            
             name = "grd_DelV";
             predicate = "DelV := mV[";
             String[] aux;
             int flag = 0;
-            for (Node n: deletedVertices){
-                aux = n.getID().split("I");
+            for (String n: deletedNodes){
+                aux = n.split("I");
                 if (flag != 0)
                     predicate += ", ";
                 else
@@ -451,18 +495,17 @@ public class GraphGrammarToEventB {
             predicate = "PreservV := VertG \\ DelV";
             ruleEvent.addGuard(name, predicate);
             
-            //Define o conjunto de arestas deletadas
-            HashSet<Edge> deletedEdges =  new HashSet<>();
-            for (Edge e: r.getLHS().getEdges()){
-                deletedEdges.add(e);
+           //Define o set de vértices excluídos
+            for(Edge e: r.getLHS().getEdges()){
+                deletedEdges.add(e.getID());
             }
-            deletedEdges.removeAll(r.getRHS().getEdges());
+            deletedEdges.removeAll(r.getRHS().getMorphism().values());
             
             name = "grd_DelE";
             predicate = "DelE := mE[";
             flag = 0;
-            for (Edge e: deletedEdges){
-                aux = e.getID().split("I");
+            for (String e: deletedEdges){
+                aux = e.split("I");
                 if(flag != 0)
                     predicate += ", ";
                 else
@@ -477,10 +520,175 @@ public class GraphGrammarToEventB {
             predicate = "Dangling = dom((source |> DelV) \\/ (targetG |> DelV))\\DelE";
             ruleEvent.addGuard(name, predicate);
             
+            //Guarda para novos vertices pertencerem ao dominio 
+            for (String n: createdNodes){
+                name = "grd_new_v" + n;
+                predicate = "new_v" + n + ": NAT \\ VertG";
+                ruleEvent.addGuard(name, predicate);
+            }
+                      
+            
+            //Guarda para novas arestas pertencerem ao dominio
+            for (String e: createdEdges){
+                name = "grd_new_e" + e;
+                predicate = "new_e" + e + ": NAT \\ EdgeG";
+                ruleEvent.addGuard(name, predicate);
+            }
+            
+            //Guarda que garante unicidade do ID dos vértices
+            String nameAux;
+            for (String vi: createdNodes){
+                nameAux = "grd_diff" + vi;
+                for (String vj: createdNodes){
+                    if (!vi.equals(vj)){
+                        name = nameAux + vj;
+                        predicate = "new_" + vi + " /= " + "new_" + vj;
+                        ruleEvent.addGuard(name, predicate);
+                    }                   
+                }
+            }
+            
+            //Guarda que garante unicidade do ID das arestas
+            for (String ei: createdEdges){
+                nameAux = "grd_diff" + ei;
+                for (String ej: createdEdges){
+                    if (!ei.equals(ej)){
+                        name = nameAux + ej;
+                        predicate = "new_" + ei + " /= " + "new_" + ej;
+                        ruleEvent.addGuard(name, predicate);
+                    }                   
+                }
+            }
+            
+            //Define guardas que garantem compatibilidade dos tipos de arestas, vértice e das funçoes source e target
+            name = "grd_tV";
+            predicate = "!v.v : Vert" + r.getName() + "=> t" + r.getName() + "V(v) = tGV(mv(v))";
+            ruleEvent.addGuard(name, predicate);
+                         
+            name = "grd_tE";
+            predicate = "!e.e : Edge" + r.getName() + "=> t" + r.getName() + "E(e) = tGE(mE(e))";
+            ruleEvent.addGuard(name, predicate);
+                        
+            name = "grd_srctgt";
+            predicate = "!e.e : Edge" + r.getName() + "=> mV(source" + r.getName() + "(e)) = sourceG(mE(e)) ^ mV(target" + r.getName() + "(e)) = targetG(mE(e))";
+            ruleEvent.addGuard(name, predicate);            
+            
+            
+            
+            //TheoreticalNacs for this rule
+            //if(!setTheoreticalNACs(r))
+             //   return false;
+            
+            /* -------------------*
+             * -- Passo 3: THEN --* 
+             * -------------------*/
+            
+            //Act_V
+            name = "act_V";
+            predicate = "VertG := (VertG\\DelV)\\/{";
+            for (String n: createdNodes){
+                predicate += "new" + n;
+            }
+            predicate += "}";
+            ruleEvent.addAct(name, predicate);
+            
+            //Act_E
+            name = "act_E";
+            predicate = "EdgeG := (EdgeG\\DelE)\\/{";
+            for (String e: createdEdges){
+                predicate += "new_" + e;
+            }
+            predicate += "}";
+            ruleEvent.addAct(name, predicate);
+            
+            /*
+            //act_src
+            name = "act_src";
+            predicate = "sourceG := (DelE <<| sourceG) \\/\n\t{\n";
+            flag = 0;
+            for(Edge e: createdEdges){
+                if (flag != 0)
+                    predicate += ",";
+                else
+                    flag = 1;
+                predicate += "new_" + e.getID() + " |-> " + e.getSource();
+            }
+         
+             for (String e: preservedEdges){
+                if (flag != 0)
+                    predicate += ",";
+                else
+                    flag = 1;
+                predicate += "new_" + e + " |-> " + r.getRHS().getMorphism().get(e);
+            }
+            predicate += "\n}\n";  
+            ruleEvent.addAct(name, predicate);
+            */
+            
+            
              m.addEvent(ruleEvent);
         }
         return true;
     }
+    
+     
+    //Revisar tudo
+    public boolean setTheoreticalNACs(Rule r){
+        
+        String name, predicate, nodePredicate = "", edgePredicate = "";
+        int nacCount = 0, flag;
+        
+        //Para cada NAC
+        for (Graph g: r.getNACs()){
+            name = "grd_NAC" + Integer.toString(nacCount);
+            predicate = "not(#";
+            
+            flag = 0;
+            
+            for (Node n: g.getNodes()){
+                if (flag != 0)
+                    nodePredicate += ", ";
+                else
+                    flag = 1;
+                nodePredicate += n.getID();
+            }
+            predicate += nodePredicate;
+            
+            flag = 0;
+            for (Edge e: g.getEdges()){
+                edgePredicate += ", " + e.getID();
+            }
+            predicate = edgePredicate;
+            
+            predicate += ". where Vi : NAC" + Integer.toString(nacCount) + "V and Ei : NAC" + Integer.toString(nacCount) + "E \n";
+            predicate += "{" + nodePredicate + "} <: VertG \\ mV[Vert" + r.getName() + "] ^ \n";
+            predicate += "{" + edgePredicate + "} <: EdgeG \\ mE[Edge" + r.getName() + "] ^ \n";
+            
+            predicate += "!V1, V2 : NAC" + Integer.toString(nacCount) + "V with V1 /= V2 \n\t| v1 /= v2 \n";
+            predicate += "!E1, E2 : NAC" + Integer.toString(nacCount) + "E with E1 /= E2 \n\tE1 /= E2 \n";
+            
+            //For each vertice
+            for (Node n: g.getNodes()){
+                predicate += "!" + n.getID() + ": NAC" + Integer.toString(nacCount) + "V with t" + r.getName() + "VNAC" + Integer.toString(nacCount) + "(" + n.getID() + ") = t" + n.getID() + "\n";
+            }
+            //For each edge
+            for (Edge e: g.getEdges()){
+                predicate += "!" + e.getID() + ": NAC" + Integer.toString(nacCount) + "E with t" + r.getName() + "ENAC" + Integer.toString(nacCount) + "(" + e.getID() + ") = t" + e.getID() + "\n";
+            }
+            
+            //CONTINUE HERE
+            
+            /* -- Fim definição 20 -- */
+            
+            /* -- Início definição 22 -- */
+            /* -- Fim definição 22 -- */
+            
+            //TO DO
+            
+            nacCount++;
+        }
+        return true;
+    }   
     
     /**
      * Método que realiza a tradução das NACs de uma regra
