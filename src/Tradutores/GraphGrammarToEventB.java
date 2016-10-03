@@ -393,12 +393,24 @@ public class GraphGrammarToEventB {
         
         Event ruleEvent;
         String name, predicate;
+        //Preserved nodes ids
         HashSet <String> preservedNodes;
+        //Created nodes ids
         HashSet <String> createdNodes;
+        //Deleted nodes ids
         HashSet<String> deletedNodes;
+        
+        //Preserved edges ids
         HashSet <String> preservedEdges;
+        //Preserved edges reference
+        HashSet <Edge> preservedEdgesRef;
+        //Created edges ids
         HashSet <String> createdEdges;
+        //Reference to created edges
+        HashSet <Edge> createdEdgesRef;
+        //Deleted edges ids
         HashSet<String> deletedEdges;
+        
         //Itera entre todas as regras
         for (Rule r: g.getRules()){
           
@@ -421,7 +433,9 @@ public class GraphGrammarToEventB {
             createdNodes = new HashSet<>();
             deletedNodes = new HashSet <>();
             preservedEdges = new HashSet<>();
+            preservedEdgesRef = new HashSet<>();
             createdEdges = new HashSet<>();
+            createdEdgesRef = new HashSet<>();
             deletedEdges =  new HashSet<>();
             
             
@@ -436,10 +450,14 @@ public class GraphGrammarToEventB {
             //Cria set com arestas preservadas e criadas
             for (Edge e: r.getRHS().getEdges()){
                 String temp = r.getRHS().getMorphism().get(e.getID());
-                if (temp!=null)
+                if (temp!=null){
+                    preservedEdgesRef.add(e);
                     preservedEdges.add(temp);
-                else
+                }
+                else{
+                    createdEdgesRef.add(e);
                     createdEdges.add(e.getID());
+                }
             }   
   
             //prefixed_list vertices criados pela regra REVISAR
@@ -601,29 +619,24 @@ public class GraphGrammarToEventB {
             predicate += "}";
             ruleEvent.addAct(name, predicate);
             
-            /*
-            //act_src
+             
+            //Act_src (testado com pacman.ggx e preserved
             name = "act_src";
-            predicate = "sourceG := (DelE <<| sourceG) \\/\n\t{\n";
-            flag = 0;
-            for(Edge e: createdEdges){
-                if (flag != 0)
-                    predicate += ",";
-                else
-                    flag = 1;
-                predicate += "new_" + e.getID() + " |-> " + e.getSource();
+            predicate = "sourceG := (DelE <<| sourceG) \\/ \n{";
+            
+            for (Edge e: createdEdgesRef){
+                //Testa se nodo fonte da nova aresta é um novo nodo
+                if (createdNodes.contains(e.getSource()))
+                    predicate = predicate + "\n new_" + e.getID() + " |-> " + e.getSource();
+                else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getSource())))    //Testa se nodo fonte é um preservado
+                    predicate = predicate + "\n new_" + e.getID() + " |-> " + r.getRHS().getMorphism().get(e.getSource()); 
             }
-         
-             for (String e: preservedEdges){
-                if (flag != 0)
-                    predicate += ",";
-                else
-                    flag = 1;
-                predicate += "new_" + e + " |-> " + r.getRHS().getMorphism().get(e);
-            }
-            predicate += "\n}\n";  
+            predicate += "\n}";
             ruleEvent.addAct(name, predicate);
-            */
+         
+            
+            
+           
             
             
              m.addEvent(ruleEvent);
@@ -912,15 +925,15 @@ public class GraphGrammarToEventB {
     */
     public static void main(String[] args) {
        /**-- Step1 - AGG to GG translation --*/
-       String arquivo =  "PacmanAtributo.ggx";
+       String arquivo =  "pacman.ggx";
        AGGToGraphGrammar agg = new AGGToGraphGrammar();
-       Grammar test = new Grammar("PacmanAtributo");
+       Grammar test = new Grammar("pacman");
        agg.aggReader(arquivo, test);
        test.printGrammar();
        
        /*-- Step 2 - GG to EventB translation --*/
        GraphGrammarToEventB eventB = new GraphGrammarToEventB();
-       Project newProject = new Project ("PacmanAtributo");
+       Project newProject = new Project ("pacman");
        eventB.translator(newProject, test);       
        System.out.println("Finished!");
     }

@@ -5,26 +5,31 @@ Imprimindo gramática PacmanAtributo...
 		  Tipo: HOST
 		  Nodos:
 		   Nodo 0:
-			Type: I4
-			ID: I61
-		   Nodo 1:
 			Type: I3
-			ID: I50
+			ID: I34
+		   Nodo 1:
+			Type: I2
+			ID: I38
 		   Nodo 2:
-			Type: I5
-			ID: I46
+			Type: I4
+			ID: I39
 		   Nodo 3:
-			Type: I5
+			Type: I4
 			ID: I36
 		   Nodo 4:
-			Type: I4
-			ID: I52
+			Type: I6
+			ID: I40
+			Atributos:
+				Atributo 1:
+					ID: I8
+					Tipo: int
+					Valor: 0
 		   Nodo 5:
 			Type: I5
 			ID: I30
 		   Nodo 6:
 			Type: I5
-			ID: I44
+			ID: I27
 		   Nodo 7:
 			Type: I5
 			ID: I31
@@ -32,857 +37,693 @@ Imprimindo gramática PacmanAtributo...
 			Type: I5
 			ID: I32
 		   Nodo 9:
-			Type: I2
-			ID: I58
-		   Nodo 10:
 			Type: I5
 			ID: I25
-		   Nodo 11:
-			Type: I5
-			ID: I54
-		   Nodo 12:
-			Type: I6
-			ID: I55
-			Atributos:
-				Atributo 1:
-					ID: I8
-					Tipo: int
-					Valor: 0
-		   Nodo 13:
+		   Nodo 10:
 			Type: I5
 			ID: I26
-		   Nodo 14:
-			Type: I5
-			ID: I48
-		   Nodo 15:
-			Type: I5
-			ID: I35
-		   Nodo 16:
-			Type: I5
-			ID: I43
-		   Nodo 17:
-			Type: I5
-			ID: I37
-		   Nodo 18:
-			Type: I3
-			ID: I34
-		   Nodo 19:
-			Type: I5
-			ID: I38
-		   Nodo 20:
-			Type: I5
-			ID: I39
-		   Nodo 21:
-			Type: I5
-			ID: I47
-		   Nodo 22:
-			Type: I5
-			ID: I42
-		   Nodo 23:
-			Type: I4
-			ID: I60
-		   Nodo 24:
-			Type: I3
-			ID: I49
-		   Nodo 25:
-			Type: I5
-			ID: I27
-		   Nodo 26:
-			Type: I5
-			ID: I41
-		   Nodo 27:
-			Type: I4
-			ID: I59
-		   Nodo 28:
-			Type: I5
-			ID: I40
-		   Nodo 29:
+		   Nodo 11:
 			Type: I5
 			ID: I29
-		   Nodo 30:
+		   Nodo 12:
 			Type: I5
 			ID: I33
-		   Nodo 31:
+		   Nodo 13:
+			Type: I3
+			ID: I35
+		   Nodo 14:
 			Type: I4
-			ID: I53
-		   Nodo 32:
+			ID: I43
+		   Nodo 15:
 			Type: I5
 			ID: I28
-		   Nodo 33:
-			Type: I5
-			ID: I45
-		   Nodo 34:
+		   Nodo 16:
 			Type: I4
-			ID: I51
+			ID: I37
 		  Arestas:
 		   Aresta 0:
-			Type: I9
-			ID: I91
-			Nodo Fonte: I48
-			Nodo Destino: I25
+			Type: I10
+			ID: I61
+			Nodo Fonte: I43
+			Nodo Destino: I26
 		   Aresta 1:
-			Type: I11
-			ID: I100
-			Nodo Fonte: I58
-			Nodo Destino: I25
+			Type: I12
+			ID: I60
+			Nodo Fonte: I35
+			Nodo Destino: I31
 		   Aresta 2:
 			Type: I9
-			ID: I78
-			Nodo Fonte: I30
-			Nodo Destino: I39
-		   Aresta 3:
-			Type: I10
-			ID: I92
-			Nodo Fonte: I51
-			Nodo Destino: I28
-		   Aresta 4:
-			Type: I9
-			ID: I74
-			Nodo Fonte: I47
-			Nodo Destino: I48
-		   Aresta 5:
-			Type: I10
-			ID: I94
-			Nodo Fonte: I53
-			Nodo Destino: I35
-		   Aresta 6:
-			Type: I9
-			ID: I77
-			Nodo Fonte: I31
-			Nodo Destino: I40
-		   Aresta 7:
-			Type: I9
-			ID: I63
-			Nodo Fonte: I26
-			Nodo Destino: I27
-		   Aresta 8:
-			Type: I9
-			ID: I66
-			Nodo Fonte: I29
-			Nodo Destino: I30
-		   Aresta 9:
-			Type: I9
-			ID: I87
-			Nodo Fonte: I29
-			Nodo Destino: I37
-		   Aresta 10:
-			Type: I9
-			ID: I65
-			Nodo Fonte: I28
-			Nodo Destino: I29
-		   Aresta 11:
-			Type: I9
-			ID: I83
-			Nodo Fonte: I35
-			Nodo Destino: I43
-		   Aresta 12:
-			Type: I10
-			ID: I96
-			Nodo Fonte: I60
-			Nodo Destino: I26
-		   Aresta 13:
-			Type: I9
-			ID: I79
-			Nodo Fonte: I29
-			Nodo Destino: I41
-		   Aresta 14:
-			Type: I9
-			ID: I80
-			Nodo Fonte: I26
-			Nodo Destino: I38
-		   Aresta 15:
-			Type: I9
-			ID: I81
-			Nodo Fonte: I27
-			Nodo Destino: I35
-		   Aresta 16:
-			Type: I9
-			ID: I86
-			Nodo Fonte: I36
-			Nodo Destino: I37
-		   Aresta 17:
-			Type: I9
-			ID: I69
-			Nodo Fonte: I33
-			Nodo Destino: I25
-		   Aresta 18:
-			Type: I9
-			ID: I90
-			Nodo Fonte: I45
-			Nodo Destino: I46
-		   Aresta 19:
-			Type: I10
-			ID: I95
-			Nodo Fonte: I59
-			Nodo Destino: I37
-		   Aresta 20:
-			Type: I9
-			ID: I72
-			Nodo Fonte: I32
-			Nodo Destino: I28
-		   Aresta 21:
-			Type: I9
-			ID: I85
-			Nodo Fonte: I35
-			Nodo Destino: I36
-		   Aresta 22:
-			Type: I9
-			ID: I76
-			Nodo Fonte: I31
-			Nodo Destino: I46
-		   Aresta 23:
-			Type: I12
-			ID: I99
-			Nodo Fonte: I49
-			Nodo Destino: I38
-		   Aresta 24:
-			Type: I9
-			ID: I70
-			Nodo Fonte: I33
-			Nodo Destino: I32
-		   Aresta 25:
-			Type: I12
-			ID: I97
-			Nodo Fonte: I50
-			Nodo Destino: I46
-		   Aresta 26:
-			Type: I9
-			ID: I75
-			Nodo Fonte: I33
-			Nodo Destino: I47
-		   Aresta 27:
-			Type: I9
-			ID: I82
-			Nodo Fonte: I35
-			Nodo Destino: I44
-		   Aresta 28:
-			Type: I9
-			ID: I73
-			Nodo Fonte: I32
-			Nodo Destino: I30
-		   Aresta 29:
-			Type: I10
-			ID: I93
-			Nodo Fonte: I52
-			Nodo Destino: I30
-		   Aresta 30:
-			Type: I9
-			ID: I88
-			Nodo Fonte: I37
-			Nodo Destino: I42
-		   Aresta 31:
-			Type: I10
-			ID: I98
-			Nodo Fonte: I61
-			Nodo Destino: I33
-		   Aresta 32:
-			Type: I9
-			ID: I64
-			Nodo Fonte: I27
-			Nodo Destino: I28
-		   Aresta 33:
-			Type: I9
-			ID: I68
-			Nodo Fonte: I31
-			Nodo Destino: I33
-		   Aresta 34:
-			Type: I9
-			ID: I84
-			Nodo Fonte: I28
-			Nodo Destino: I36
-		   Aresta 35:
-			Type: I9
-			ID: I62
-			Nodo Fonte: I25
-			Nodo Destino: I26
-		   Aresta 36:
-			Type: I9
-			ID: I71
-			Nodo Fonte: I32
-			Nodo Destino: I26
-		   Aresta 37:
-			Type: I12
-			ID: I101
-			Nodo Fonte: I34
-			Nodo Destino: I37
-		   Aresta 38:
-			Type: I9
-			ID: I89
-			Nodo Fonte: I37
-			Nodo Destino: I45
-		   Aresta 39:
-			Type: I9
-			ID: I67
+			ID: I49
 			Nodo Fonte: I30
 			Nodo Destino: I31
-	Imprimindo as regras:
-		Imprimindo a regra Eat:
-		 Grafo:
-		  Tipo: LHS
-		  Nodos:
-		   Nodo 0:
-			Type: I4
-			ID: I119
-		   Nodo 1:
-			Type: I6
-			ID: I120
-			Atributos:
-				Atributo 1:
-					ID: I8
-					Tipo: int
-					Valor: s
-		   Nodo 2:
-			Type: I5
-			ID: I117
-		   Nodo 3:
-			Type: I2
-			ID: I118
-		  Arestas:
-		   Aresta 0:
+		   Aresta 3:
+			Type: I9
+			ID: I45
+			Nodo Fonte: I26
+			Nodo Destino: I27
+		   Aresta 4:
+			Type: I9
+			ID: I46
+			Nodo Fonte: I27
+			Nodo Destino: I28
+		   Aresta 5:
+			Type: I9
+			ID: I51
+			Nodo Fonte: I33
+			Nodo Destino: I25
+		   Aresta 6:
+			Type: I12
+			ID: I59
+			Nodo Fonte: I34
+			Nodo Destino: I29
+		   Aresta 7:
+			Type: I9
+			ID: I48
+			Nodo Fonte: I29
+			Nodo Destino: I30
+		   Aresta 8:
+			Type: I9
+			ID: I55
+			Nodo Fonte: I32
+			Nodo Destino: I30
+		   Aresta 9:
 			Type: I10
-			ID: I123
-			Nodo Fonte: I119
-			Nodo Destino: I117
-		   Aresta 1:
+			ID: I57
+			Nodo Fonte: I37
+			Nodo Destino: I30
+		   Aresta 10:
+			Type: I10
+			ID: I58
+			Nodo Fonte: I39
+			Nodo Destino: I33
+		   Aresta 11:
+			Type: I9
+			ID: I53
+			Nodo Fonte: I32
+			Nodo Destino: I26
+		   Aresta 12:
+			Type: I9
+			ID: I54
+			Nodo Fonte: I32
+			Nodo Destino: I28
+		   Aresta 13:
+			Type: I10
+			ID: I56
+			Nodo Fonte: I36
+			Nodo Destino: I28
+		   Aresta 14:
+			Type: I9
+			ID: I47
+			Nodo Fonte: I28
+			Nodo Destino: I29
+		   Aresta 15:
+			Type: I9
+			ID: I52
+			Nodo Fonte: I33
+			Nodo Destino: I32
+		   Aresta 16:
 			Type: I11
-			ID: I124
-			Nodo Fonte: I118
-			Nodo Destino: I117
-		 Grafo:
-		  Tipo: RHS
-		  Nodos:
-		   Nodo 0:
-			Type: I2
-			ID: I126
-		   Nodo 1:
-			Type: I6
-			ID: I128
-			Atributos:
-				Atributo 1:
-					ID: I8
-					Tipo: int
-					Valor: s+1
-		   Nodo 2:
-			Type: I5
-			ID: I127
-		  Arestas:
-		   Aresta 0:
-			Type: I11
-			ID: I131
-			Nodo Fonte: I126
-			Nodo Destino: I127
-			Este grafo não possui NACs.
+			ID: I62
+			Nodo Fonte: I38
+			Nodo Destino: I25
+		   Aresta 17:
+			Type: I9
+			ID: I44
+			Nodo Fonte: I25
+			Nodo Destino: I26
+		   Aresta 18:
+			Type: I9
+			ID: I50
+			Nodo Fonte: I31
+			Nodo Destino: I33
+	Imprimindo as regras:
 		Imprimindo a regra MoveForwardGhost:
 		 Grafo:
 		  Tipo: LHS
 		  Nodos:
 		   Nodo 0:
 			Type: I5
-			ID: I177
+			ID: I138
 		   Nodo 1:
 			Type: I5
-			ID: I178
+			ID: I139
 		   Nodo 2:
-			Type: I4
-			ID: I180
-		   Nodo 3:
-			Type: I2
-			ID: I181
-		   Nodo 4:
 			Type: I3
-			ID: I179
+			ID: I140
+		   Nodo 3:
+			Type: I4
+			ID: I141
+		   Nodo 4:
+			Type: I2
+			ID: I142
 		  Arestas:
 		   Aresta 0:
 			Type: I9
-			ID: I182
-			Nodo Fonte: I177
-			Nodo Destino: I178
+			ID: I143
+			Nodo Fonte: I138
+			Nodo Destino: I139
 		   Aresta 1:
 			Type: I12
-			ID: I183
-			Nodo Fonte: I179
-			Nodo Destino: I177
+			ID: I144
+			Nodo Fonte: I140
+			Nodo Destino: I138
 		 Grafo:
 		  Tipo: RHS
 		  Nodos:
 		   Nodo 0:
-			Type: I5
-			ID: I185
-		   Nodo 1:
-			Type: I4
-			ID: I188
-		   Nodo 2:
 			Type: I3
-			ID: I187
-		   Nodo 3:
+			ID: I148
+		   Nodo 1:
 			Type: I5
-			ID: I186
+			ID: I147
+		   Nodo 2:
+			Type: I5
+			ID: I146
+		   Nodo 3:
+			Type: I4
+			ID: I149
 		   Nodo 4:
 			Type: I2
-			ID: I189
+			ID: I150
 		  Arestas:
 		   Aresta 0:
 			Type: I12
-			ID: I191
-			Nodo Fonte: I187
-			Nodo Destino: I186
+			ID: I152
+			Nodo Fonte: I148
+			Nodo Destino: I147
 		   Aresta 1:
 			Type: I9
-			ID: I190
-			Nodo Fonte: I185
-			Nodo Destino: I186
+			ID: I151
+			Nodo Fonte: I146
+			Nodo Destino: I147
 			Imprimindo NACs...
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
-			Type: I2
-			ID: I195
+			Type: I3
+			ID: I154
 		   Nodo 1:
 			Type: I5
-			ID: I194
+			ID: I155
 		   Nodo 2:
-			Type: I3
-			ID: I193
+			Type: I2
+			ID: I156
 		  Arestas:
 		   Aresta 0:
 			Type: I11
-			ID: I197
-			Nodo Fonte: I195
-			Nodo Destino: I194
+			ID: I158
+			Nodo Fonte: I156
+			Nodo Destino: I155
 		   Aresta 1:
 			Type: I12
-			ID: I196
-			Nodo Fonte: I193
-			Nodo Destino: I194
+			ID: I157
+			Nodo Fonte: I154
+			Nodo Destino: I155
 		Imprimindo a regra MoveBackGhost:
 		 Grafo:
 		  Tipo: LHS
 		  Nodos:
 		   Nodo 0:
-			Type: I3
-			ID: I245
-		   Nodo 1:
-			Type: I2
-			ID: I246
-		   Nodo 2:
-			Type: I5
-			ID: I243
-		   Nodo 3:
-			Type: I5
-			ID: I244
-		   Nodo 4:
 			Type: I4
-			ID: I247
+			ID: I208
+		   Nodo 1:
+			Type: I5
+			ID: I205
+		   Nodo 2:
+			Type: I3
+			ID: I206
+		   Nodo 3:
+			Type: I2
+			ID: I207
+		   Nodo 4:
+			Type: I5
+			ID: I204
 		  Arestas:
 		   Aresta 0:
 			Type: I12
-			ID: I249
-			Nodo Fonte: I245
-			Nodo Destino: I244
+			ID: I210
+			Nodo Fonte: I206
+			Nodo Destino: I205
 		   Aresta 1:
 			Type: I9
-			ID: I248
-			Nodo Fonte: I243
-			Nodo Destino: I244
+			ID: I209
+			Nodo Fonte: I204
+			Nodo Destino: I205
 		 Grafo:
 		  Tipo: RHS
 		  Nodos:
 		   Nodo 0:
 			Type: I5
-			ID: I252
+			ID: I212
 		   Nodo 1:
-			Type: I5
-			ID: I251
-		   Nodo 2:
 			Type: I4
-			ID: I255
-		   Nodo 3:
+			ID: I216
+		   Nodo 2:
 			Type: I2
-			ID: I254
-		   Nodo 4:
+			ID: I215
+		   Nodo 3:
 			Type: I3
-			ID: I253
+			ID: I214
+		   Nodo 4:
+			Type: I5
+			ID: I213
 		  Arestas:
 		   Aresta 0:
 			Type: I12
-			ID: I257
-			Nodo Fonte: I253
-			Nodo Destino: I251
+			ID: I218
+			Nodo Fonte: I214
+			Nodo Destino: I212
 		   Aresta 1:
 			Type: I9
-			ID: I256
-			Nodo Fonte: I251
-			Nodo Destino: I252
+			ID: I217
+			Nodo Fonte: I212
+			Nodo Destino: I213
 			Imprimindo NACs...
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
-			Type: I2
-			ID: I261
+			Type: I3
+			ID: I221
 		   Nodo 1:
 			Type: I5
-			ID: I259
+			ID: I220
 		   Nodo 2:
-			Type: I3
-			ID: I260
+			Type: I2
+			ID: I222
 		  Arestas:
 		   Aresta 0:
-			Type: I11
-			ID: I263
-			Nodo Fonte: I261
-			Nodo Destino: I259
-		   Aresta 1:
 			Type: I12
-			ID: I262
-			Nodo Fonte: I260
-			Nodo Destino: I259
+			ID: I223
+			Nodo Fonte: I221
+			Nodo Destino: I220
+		   Aresta 1:
+			Type: I11
+			ID: I224
+			Nodo Fonte: I222
+			Nodo Destino: I220
 		Imprimindo a regra MoveForwardPacman:
 		 Grafo:
 		  Tipo: LHS
 		  Nodos:
 		   Nodo 0:
-			Type: I5
-			ID: I135
+			Type: I2
+			ID: I98
 		   Nodo 1:
 			Type: I5
-			ID: I136
+			ID: I96
 		   Nodo 2:
-			Type: I2
-			ID: I137
+			Type: I5
+			ID: I97
 		   Nodo 3:
 			Type: I4
-			ID: I138
+			ID: I99
 		  Arestas:
 		   Aresta 0:
 			Type: I11
-			ID: I140
-			Nodo Fonte: I137
-			Nodo Destino: I135
+			ID: I101
+			Nodo Fonte: I98
+			Nodo Destino: I96
 		   Aresta 1:
 			Type: I9
-			ID: I139
-			Nodo Fonte: I135
-			Nodo Destino: I136
+			ID: I100
+			Nodo Fonte: I96
+			Nodo Destino: I97
 		 Grafo:
 		  Tipo: RHS
 		  Nodos:
 		   Nodo 0:
-			Type: I4
-			ID: I145
+			Type: I2
+			ID: I104
 		   Nodo 1:
 			Type: I5
-			ID: I144
+			ID: I103
 		   Nodo 2:
-			Type: I2
-			ID: I143
+			Type: I4
+			ID: I106
 		   Nodo 3:
 			Type: I5
-			ID: I142
+			ID: I105
 		  Arestas:
 		   Aresta 0:
-			Type: I9
-			ID: I146
-			Nodo Fonte: I142
-			Nodo Destino: I144
-		   Aresta 1:
 			Type: I11
-			ID: I147
-			Nodo Fonte: I143
-			Nodo Destino: I144
+			ID: I108
+			Nodo Fonte: I104
+			Nodo Destino: I105
+		   Aresta 1:
+			Type: I9
+			ID: I107
+			Nodo Fonte: I103
+			Nodo Destino: I105
 			Imprimindo NACs...
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
 			Type: I2
-			ID: I150
+			ID: I131
 		   Nodo 1:
 			Type: I5
-			ID: I151
-		   Nodo 2:
-			Type: I3
-			ID: I152
-		   Nodo 3:
-			Type: I5
-			ID: I149
-		  Arestas:
-		   Aresta 0:
-			Type: I12
-			ID: I155
-			Nodo Fonte: I152
-			Nodo Destino: I151
-		   Aresta 1:
-			Type: I11
-			ID: I153
-			Nodo Fonte: I150
-			Nodo Destino: I149
-		   Aresta 2:
-			Type: I9
-			ID: I154
-			Nodo Fonte: I149
-			Nodo Destino: I151
-		 Grafo:
-		  Tipo: NAC
-		  Nodos:
-		   Nodo 0:
-			Type: I5
-			ID: I169
-		   Nodo 1:
-			Type: I2
-			ID: I170
+			ID: I130
 		   Nodo 2:
 			Type: I4
-			ID: I171
+			ID: I132
+		  Arestas:
+		   Aresta 0:
+			Type: I10
+			ID: I133
+			Nodo Fonte: I132
+			Nodo Destino: I130
+		   Aresta 1:
+			Type: I11
+			ID: I134
+			Nodo Fonte: I131
+			Nodo Destino: I130
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I3
+			ID: I126
+		   Nodo 1:
+			Type: I5
+			ID: I124
+		   Nodo 2:
+			Type: I5
+			ID: I125
+		  Arestas:
+		   Aresta 0:
+			Type: I9
+			ID: I128
+			Nodo Fonte: I125
+			Nodo Destino: I124
+		   Aresta 1:
+			Type: I12
+			ID: I127
+			Nodo Fonte: I126
+			Nodo Destino: I125
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I5
+			ID: I112
+		   Nodo 1:
+			Type: I5
+			ID: I110
+		   Nodo 2:
+			Type: I2
+			ID: I111
+		   Nodo 3:
+			Type: I3
+			ID: I113
+		  Arestas:
+		   Aresta 0:
+			Type: I12
+			ID: I116
+			Nodo Fonte: I113
+			Nodo Destino: I112
+		   Aresta 1:
+			Type: I11
+			ID: I114
+			Nodo Fonte: I111
+			Nodo Destino: I110
+		   Aresta 2:
+			Type: I9
+			ID: I115
+			Nodo Fonte: I110
+			Nodo Destino: I112
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I5
+			ID: I119
+		   Nodo 1:
+			Type: I3
+			ID: I120
+		   Nodo 2:
+			Type: I5
+			ID: I118
+		  Arestas:
+		   Aresta 0:
+			Type: I12
+			ID: I122
+			Nodo Fonte: I120
+			Nodo Destino: I119
+		   Aresta 1:
+			Type: I9
+			ID: I121
+			Nodo Fonte: I118
+			Nodo Destino: I119
+		Imprimindo a regra Kill:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I67
+		   Nodo 1:
+			Type: I3
+			ID: I68
+		   Nodo 2:
+			Type: I5
+			ID: I66
+		  Arestas:
+		   Aresta 0:
+			Type: I12
+			ID: I69
+			Nodo Fonte: I68
+			Nodo Destino: I66
+		   Aresta 1:
+			Type: I11
+			ID: I70
+			Nodo Fonte: I67
+			Nodo Destino: I66
+		 Grafo:
+		  Tipo: RHS
+		  Nodos:
+		   Nodo 0:
+			Type: I3
+			ID: I73
+		   Nodo 1:
+			Type: I5
+			ID: I72
+		  Arestas:
+		   Aresta 0:
+			Type: I12
+			ID: I74
+			Nodo Fonte: I73
+			Nodo Destino: I72
+			Este grafo não possui NACs.
+		Imprimindo a regra Eat:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I5
+			ID: I78
+		   Nodo 1:
+			Type: I2
+			ID: I79
+		   Nodo 2:
+			Type: I6
+			ID: I81
+			Atributos:
+				Atributo 1:
+					ID: I8
+					Tipo: int
+					Valor: s
+		   Nodo 3:
+			Type: I4
+			ID: I80
 		  Arestas:
 		   Aresta 0:
 			Type: I11
-			ID: I173
-			Nodo Fonte: I170
-			Nodo Destino: I169
+			ID: I85
+			Nodo Fonte: I79
+			Nodo Destino: I78
 		   Aresta 1:
 			Type: I10
-			ID: I172
-			Nodo Fonte: I171
-			Nodo Destino: I169
+			ID: I84
+			Nodo Fonte: I80
+			Nodo Destino: I78
 		 Grafo:
-		  Tipo: NAC
+		  Tipo: RHS
 		  Nodos:
 		   Nodo 0:
-			Type: I5
-			ID: I157
+			Type: I2
+			ID: I87
 		   Nodo 1:
-			Type: I3
-			ID: I159
-		   Nodo 2:
 			Type: I5
-			ID: I158
+			ID: I88
+		   Nodo 2:
+			Type: I6
+			ID: I89
+			Atributos:
+				Atributo 1:
+					ID: I8
+					Tipo: int
+					Valor: s+1
 		  Arestas:
 		   Aresta 0:
-			Type: I9
-			ID: I160
-			Nodo Fonte: I157
-			Nodo Destino: I158
-		   Aresta 1:
-			Type: I12
-			ID: I161
-			Nodo Fonte: I159
-			Nodo Destino: I158
-		 Grafo:
-		  Tipo: NAC
-		  Nodos:
-		   Nodo 0:
-			Type: I5
-			ID: I163
-		   Nodo 1:
-			Type: I3
-			ID: I165
-		   Nodo 2:
-			Type: I5
-			ID: I164
-		  Arestas:
-		   Aresta 0:
-			Type: I12
-			ID: I166
-			Nodo Fonte: I165
-			Nodo Destino: I164
-		   Aresta 1:
-			Type: I9
-			ID: I167
-			Nodo Fonte: I164
-			Nodo Destino: I163
+			Type: I11
+			ID: I92
+			Nodo Fonte: I87
+			Nodo Destino: I88
+			Este grafo não possui NACs.
 		Imprimindo a regra MovaBackPacman:
 		 Grafo:
 		  Tipo: LHS
 		  Nodos:
 		   Nodo 0:
 			Type: I2
-			ID: I202
+			ID: I163
 		   Nodo 1:
 			Type: I5
-			ID: I203
+			ID: I164
 		   Nodo 2:
 			Type: I4
-			ID: I204
+			ID: I165
 		   Nodo 3:
 			Type: I5
-			ID: I201
+			ID: I162
 		  Arestas:
 		   Aresta 0:
-			Type: I9
-			ID: I205
-			Nodo Fonte: I201
-			Nodo Destino: I203
-		   Aresta 1:
 			Type: I11
-			ID: I206
-			Nodo Fonte: I202
-			Nodo Destino: I203
+			ID: I167
+			Nodo Fonte: I163
+			Nodo Destino: I164
+		   Aresta 1:
+			Type: I9
+			ID: I166
+			Nodo Fonte: I162
+			Nodo Destino: I164
 		 Grafo:
 		  Tipo: RHS
 		  Nodos:
 		   Nodo 0:
 			Type: I5
-			ID: I209
+			ID: I170
 		   Nodo 1:
-			Type: I5
-			ID: I208
+			Type: I2
+			ID: I171
 		   Nodo 2:
 			Type: I4
-			ID: I211
+			ID: I172
 		   Nodo 3:
-			Type: I2
-			ID: I210
+			Type: I5
+			ID: I169
 		  Arestas:
 		   Aresta 0:
 			Type: I11
-			ID: I213
-			Nodo Fonte: I210
-			Nodo Destino: I208
+			ID: I174
+			Nodo Fonte: I171
+			Nodo Destino: I169
 		   Aresta 1:
 			Type: I9
-			ID: I212
-			Nodo Fonte: I208
-			Nodo Destino: I209
+			ID: I173
+			Nodo Fonte: I169
+			Nodo Destino: I170
 			Imprimindo NACs...
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
-			Type: I5
-			ID: I216
-		   Nodo 1:
 			Type: I3
-			ID: I218
+			ID: I192
+		   Nodo 1:
+			Type: I5
+			ID: I191
 		   Nodo 2:
 			Type: I5
-			ID: I215
-		   Nodo 3:
-			Type: I2
-			ID: I217
+			ID: I190
 		  Arestas:
 		   Aresta 0:
-			Type: I11
-			ID: I220
-			Nodo Fonte: I217
-			Nodo Destino: I216
+			Type: I9
+			ID: I194
+			Nodo Fonte: I191
+			Nodo Destino: I190
 		   Aresta 1:
 			Type: I12
-			ID: I221
-			Nodo Fonte: I218
-			Nodo Destino: I215
-		   Aresta 2:
-			Type: I9
-			ID: I219
-			Nodo Fonte: I215
-			Nodo Destino: I216
+			ID: I193
+			Nodo Fonte: I192
+			Nodo Destino: I191
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
-			Type: I5
-			ID: I223
-		   Nodo 1:
-			Type: I3
-			ID: I225
-		   Nodo 2:
-			Type: I5
-			ID: I224
-		  Arestas:
-		   Aresta 0:
-			Type: I9
-			ID: I226
-			Nodo Fonte: I223
-			Nodo Destino: I224
-		   Aresta 1:
-			Type: I12
-			ID: I227
-			Nodo Fonte: I225
-			Nodo Destino: I224
-		 Grafo:
-		  Tipo: NAC
-		  Nodos:
-		   Nodo 0:
-			Type: I3
-			ID: I231
-		   Nodo 1:
-			Type: I5
-			ID: I229
-		   Nodo 2:
-			Type: I5
-			ID: I230
-		  Arestas:
-		   Aresta 0:
-			Type: I9
-			ID: I233
-			Nodo Fonte: I230
-			Nodo Destino: I229
-		   Aresta 1:
-			Type: I12
-			ID: I232
-			Nodo Fonte: I231
-			Nodo Destino: I230
-		 Grafo:
-		  Tipo: NAC
-		  Nodos:
-		   Nodo 0:
-			Type: I5
-			ID: I236
-		   Nodo 1:
 			Type: I4
-			ID: I237
+			ID: I198
+		   Nodo 1:
+			Type: I5
+			ID: I197
 		   Nodo 2:
 			Type: I2
-			ID: I235
+			ID: I196
 		  Arestas:
 		   Aresta 0:
 			Type: I10
-			ID: I239
-			Nodo Fonte: I237
-			Nodo Destino: I236
+			ID: I200
+			Nodo Fonte: I198
+			Nodo Destino: I197
 		   Aresta 1:
 			Type: I11
-			ID: I238
-			Nodo Fonte: I235
-			Nodo Destino: I236
-		Imprimindo a regra Kill:
+			ID: I199
+			Nodo Fonte: I196
+			Nodo Destino: I197
 		 Grafo:
-		  Tipo: LHS
+		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
 			Type: I3
-			ID: I107
+			ID: I179
 		   Nodo 1:
-			Type: I5
-			ID: I105
-		   Nodo 2:
 			Type: I2
-			ID: I106
+			ID: I178
+		   Nodo 2:
+			Type: I5
+			ID: I176
+		   Nodo 3:
+			Type: I5
+			ID: I177
 		  Arestas:
 		   Aresta 0:
 			Type: I12
-			ID: I108
-			Nodo Fonte: I107
-			Nodo Destino: I105
+			ID: I182
+			Nodo Fonte: I179
+			Nodo Destino: I176
 		   Aresta 1:
+			Type: I9
+			ID: I180
+			Nodo Fonte: I176
+			Nodo Destino: I177
+		   Aresta 2:
 			Type: I11
-			ID: I109
-			Nodo Fonte: I106
-			Nodo Destino: I105
+			ID: I181
+			Nodo Fonte: I178
+			Nodo Destino: I177
 		 Grafo:
-		  Tipo: RHS
+		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
 			Type: I5
-			ID: I111
+			ID: I185
 		   Nodo 1:
 			Type: I3
-			ID: I112
+			ID: I186
+		   Nodo 2:
+			Type: I5
+			ID: I184
 		  Arestas:
 		   Aresta 0:
+			Type: I9
+			ID: I187
+			Nodo Fonte: I184
+			Nodo Destino: I185
+		   Aresta 1:
 			Type: I12
-			ID: I113
-			Nodo Fonte: I112
-			Nodo Destino: I111
-			Este grafo não possui NACs.
+			ID: I188
+			Nodo Fonte: I186
+			Nodo Destino: I185
