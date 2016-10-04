@@ -1,7 +1,11 @@
 # AGG-Rodin
 Given a  graph grammar defined in AGG (.ggx) using a type graph, converts the file to a new one,  usable in Rodin,
-containing the same definition.
-It reads the .ggx file and extracts the data, storing it in the data structure called Grammar defined in the package AGG (temporary name).
+containing the same definition represent in Event-B.
+It reads the .ggx file and extracts the data, storing it in the data structure called Grammar defined in the package AGG (temporary name). This structure can represent any strucutre that satisfies the follwoing conditions:
+      1. It needs to be a typed grammar, that is, the grammar NEEDS to have a type graph.
+      2. Only nodes can have attributes. This was defined during development due to the convention of modelling object as nodes, so it  wouldn't make sense to allow edges to have too. This can be changed in the future.
+      3. Due to an AGG limitation, no user defined types are allowed yet. This can also be changed in the future.
+      
 From this datastrucuture, it can convert it to a new data structere in EventB notation (in progress) using structers from the EventB package. Furthermore, the goal is to implement a third package that creates Rodin Files from this EventB data structure. The project was divided in differentes structres so it can be reused for other programs, aside Rodin and AGG.
 
 
