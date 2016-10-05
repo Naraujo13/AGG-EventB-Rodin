@@ -416,6 +416,62 @@ Imprimindo gramática pacman...
 			Nodo Fonte: I216
 			Nodo Destino: I215
 			Este grafo não possui NACs.
+		Imprimindo a regra act_tgtTest:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I5
+			ID: I240
+		   Nodo 1:
+			Type: I2
+			ID: I239
+		   Nodo 2:
+			Type: I5
+			ID: I241
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I243
+			Nodo Fonte: I240
+			Nodo Destino: I239
+		   Aresta 1:
+			Type: I6
+			ID: I242
+			Nodo Fonte: I241
+			Nodo Destino: I239
+		 Grafo:
+		  Tipo: RHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I246
+		   Nodo 1:
+			Type: I5
+			ID: I247
+		   Nodo 2:
+			Type: I5
+			ID: I245
+		   Nodo 3:
+			Type: I2
+			ID: I248
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I250
+			Nodo Fonte: I246
+			Nodo Destino: I248
+		   Aresta 1:
+			Type: I6
+			ID: I249
+			Nodo Fonte: I245
+			Nodo Destino: I246
+		   Aresta 2:
+			Type: I6
+			ID: I251
+			Nodo Fonte: I247
+			Nodo Destino: I248
+			Este grafo não possui NACs.
 		Imprimindo a regra moveBackG:
 		 Grafo:
 		  Tipo: LHS
@@ -677,48 +733,48 @@ Imprimindo gramática pacman...
 		  Nodos:
 		   Nodo 0:
 			Type: I4
-			ID: I228
+			ID: I227
 		   Nodo 1:
 			Type: I5
-			ID: I226
+			ID: I225
 		   Nodo 2:
 			Type: I2
-			ID: I227
+			ID: I226
 		  Arestas:
 		   Aresta 0:
 			Type: I6
-			ID: I229
-			Nodo Fonte: I226
-			Nodo Destino: I227
+			ID: I228
+			Nodo Fonte: I225
+			Nodo Destino: I226
 		   Aresta 1:
 			Type: I7
-			ID: I231
-			Nodo Fonte: I228
-			Nodo Destino: I227
+			ID: I229
+			Nodo Fonte: I227
+			Nodo Destino: I226
 			Imprimindo NACs...
 		 Grafo:
 		  Tipo: NAC
 		  Nodos:
 		   Nodo 0:
 			Type: I4
-			ID: I235
+			ID: I233
 		   Nodo 1:
 			Type: I5
-			ID: I233
+			ID: I231
 		   Nodo 2:
 			Type: I2
-			ID: I234
+			ID: I232
 		  Arestas:
 		   Aresta 0:
 			Type: I6
-			ID: I236
-			Nodo Fonte: I233
-			Nodo Destino: I234
+			ID: I234
+			Nodo Fonte: I231
+			Nodo Destino: I232
 		   Aresta 1:
 			Type: I7
-			ID: I238
-			Nodo Fonte: I235
-			Nodo Destino: I234
+			ID: I235
+			Nodo Fonte: I233
+			Nodo Destino: I232
 		Imprimindo a regra moveToG:
 		 Grafo:
 		  Tipo: LHS

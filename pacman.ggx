@@ -839,7 +839,7 @@
                         <Node ID="I192" type="I2">
                             <NodeLayout X="342" Y="85"/>
                             <additionalLayout age="0" force="10"
-                                frozen="false" zone="50"/>
+                                frozen="true" zone="50"/>
                         </Node>
                         <Edge ID="I193" source="I190" target="I191" type="I8">
                             <EdgeLayout bendX="0" bendY="0"
@@ -947,83 +947,145 @@
             <TaggedValue Tag="priority" TagValue="0"/>
         </Rule>
         <Rule ID="I218" formula="true" name="createApples">
-            <Graph ID="I220" kind="LHS" name="Left">
+            <Graph ID="I220" kind="LHS" name="LeftOf_createApples">
                 <Node ID="I221" type="I2">
                     <NodeLayout X="259" Y="83"/>
-                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
                 </Node>
                 <Node ID="I222" type="I5">
                     <NodeLayout X="150" Y="83"/>
-                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
                 </Node>
                 <Edge ID="I223" source="I222" target="I221" type="I6">
                     <EdgeLayout bendX="209" bendY="87" textOffsetX="0" textOffsetY="-22"/>
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I225" kind="RHS" name="Right">
-                <Node ID="I226" type="I5">
+            <Graph ID="I224" kind="RHS" name="RightOf_createApples">
+                <Node ID="I225" type="I5">
                     <NodeLayout X="164" Y="83"/>
-                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
                 </Node>
-                <Node ID="I227" type="I2">
+                <Node ID="I226" type="I2">
                     <NodeLayout X="271" Y="81"/>
-                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
                 </Node>
-                <Node ID="I228" type="I4">
+                <Node ID="I227" type="I4">
                     <NodeLayout X="303" Y="35"/>
-                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
                 </Node>
-                <Edge ID="I229" source="I226" target="I227" type="I6">
+                <Edge ID="I228" source="I225" target="I226" type="I6">
                     <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
-                <Edge ID="I231" source="I228" target="I227" type="I7">
+                <Edge ID="I229" source="I227" target="I226" type="I7">
                     <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism name="createApples">
-                <Mapping image="I226" orig="I222"/>
-                <Mapping image="I227" orig="I221"/>
-                <Mapping image="I229" orig="I223"/>
+            <Morphism comment="Formula: true" name="createApples">
+                <Mapping image="I225" orig="I222"/>
+                <Mapping image="I226" orig="I221"/>
+                <Mapping image="I228" orig="I223"/>
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I232" kind="NAC" name="Avoid2Apple">
-                        <Node ID="I233" type="I5">
+                    <Graph ID="I230" kind="NAC" name="Avoid2Apple">
+                        <Node ID="I231" type="I5">
                             <NodeLayout X="132" Y="79"/>
                             <additionalLayout age="0" force="10"
-                                frozen="false" zone="50"/>
+                                frozen="true" zone="50"/>
                         </Node>
-                        <Node ID="I234" type="I2">
+                        <Node ID="I232" type="I2">
                             <NodeLayout X="233" Y="87"/>
                             <additionalLayout age="0" force="10"
-                                frozen="false" zone="50"/>
+                                frozen="true" zone="50"/>
                         </Node>
-                        <Node ID="I235" type="I4">
+                        <Node ID="I233" type="I4">
                             <NodeLayout X="283" Y="49"/>
                             <additionalLayout age="0" force="10"
-                                frozen="false" zone="50"/>
+                                frozen="true" zone="50"/>
                         </Node>
-                        <Edge ID="I236" source="I233" target="I234" type="I6">
+                        <Edge ID="I234" source="I231" target="I232" type="I6">
                             <EdgeLayout bendX="185" bendY="82"
                                 textOffsetX="0" textOffsetY="-22"/>
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
-                        <Edge ID="I238" source="I235" target="I234" type="I7">
+                        <Edge ID="I235" source="I233" target="I232" type="I7">
                             <EdgeLayout bendX="0" bendY="0"
                                 textOffsetX="0" textOffsetY="-22"/>
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
                     <Morphism name="Avoid2Apple">
-                        <Mapping image="I233" orig="I222"/>
-                        <Mapping image="I234" orig="I221"/>
-                        <Mapping image="I236" orig="I223"/>
+                        <Mapping image="I231" orig="I222"/>
+                        <Mapping image="I232" orig="I221"/>
+                        <Mapping image="I234" orig="I223"/>
                     </Morphism>
                 </NAC>
             </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I236" formula="true" name="act_tgtTest">
+            <Graph ID="I238" kind="LHS" name="Left">
+                <Node ID="I239" type="I2">
+                    <NodeLayout X="221" Y="81"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Node ID="I240" type="I5">
+                    <NodeLayout X="321" Y="122"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Node ID="I241" type="I5">
+                    <NodeLayout X="120" Y="96"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Edge ID="I242" source="I241" target="I239" type="I6">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I243" source="I240" target="I239" type="I6">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Graph ID="I244" kind="RHS" name="Right">
+                <Node ID="I245" type="I5">
+                    <NodeLayout X="186" Y="122"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Node ID="I246" type="I2">
+                    <NodeLayout X="221" Y="82"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Node ID="I247" type="I5">
+                    <NodeLayout X="370" Y="136"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Node ID="I248" type="I2">
+                    <NodeLayout X="300" Y="80"/>
+                    <additionalLayout age="0" force="10" frozen="false" zone="50"/>
+                </Node>
+                <Edge ID="I249" source="I245" target="I246" type="I6">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I250" source="I246" target="I248" type="I6">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I251" source="I247" target="I248" type="I6">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism name="act_tgtTest">
+                <Mapping image="I245" orig="I241"/>
+                <Mapping image="I246" orig="I239"/>
+                <Mapping image="I247" orig="I240"/>
+                <Mapping image="I249" orig="I242"/>
+            </Morphism>
             <TaggedValue Tag="layer" TagValue="0"/>
             <TaggedValue Tag="priority" TagValue="0"/>
         </Rule>
