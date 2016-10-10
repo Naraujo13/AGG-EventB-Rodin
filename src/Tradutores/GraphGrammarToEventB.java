@@ -13,10 +13,8 @@ import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -34,7 +32,7 @@ public class GraphGrammarToEventB {
        if(!typeGraphTranslation(c, g))
            return false;
         
-       if(!rulesTranslation(c, g))
+       if(!rulePatternTranslation(c, g))
            return false;
        
         Machine m = new Machine(g.getName() + "mch", c);
@@ -53,7 +51,7 @@ public class GraphGrammarToEventB {
     
     /**
      * Método que realiza a tradução e criação do grafo estado e o insere em uma
-     * máquina. 
+     * máquina.
      * @param m
      * @param c
      * @param g
@@ -217,7 +215,7 @@ public class GraphGrammarToEventB {
      * @param g - gramática cujas regras serão traduzidas (fonte)
      * @return - retorna true ou false, indicando sucesso ou falha na tradução
      */
-    public boolean rulesTranslation(Context context, Grammar g){
+    public boolean rulePatternTranslation(Context context, Grammar g){
         
         
         //For para todas as regras
@@ -710,7 +708,7 @@ public class GraphGrammarToEventB {
     }   
     
     
-    //REVISAR
+    //REFAZER
     /**
      * Método que realiza a tradução das NACs de uma regra segundo a definição 18
      * @param c - contexto ao qual serão inseridas NACs
@@ -719,94 +717,134 @@ public class GraphGrammarToEventB {
      * @return - retorna true ou false, indicando sucesso ou falha do método
      */
     public boolean NACTranslation(Context c, Grammar g, Rule r){
-        int count = 0;
-        Set nacVert, nacEdge;
-        Constant source, target, nodeConstant, edgeConstant;
-        Constant tLVNAC, tLENAC, lV, lE; //Morfismos
-        Axiom axmlV, axmlVDef, axmlE, axmlEDef;
-        String name, predicate;
-        for (Graph nac: r.getNACs()){
-           
-            //Cria dois sets, para arestas e vértices desta nac
-            nacVert = new Set("Vert" + r.getName() + "NAC" + Integer.toString(count));
-            nacEdge = new Set("Edge" + r.getName() + "NAC" + Integer.toString(count));
-            c.addSet(nacVert);
-            c.addSet(nacEdge);
-            
-            //Cria duas constantes, para representar source e target desta NAC
-            source= new Constant("source"+ r.getName() +"NAC" + Integer.toString(count));
-            target= new Constant("target"+ r.getName() +"NAC" + Integer.toString(count));
-            c.addConstant(source);
-            c.addConstant(target);
-            
-            //Cria uma constante para cada tipo de vértice na NAC
-            for (Node n: nac.getNodes()){
-                nodeConstant = new Constant(n.getID());
-                c.addConstant(nodeConstant);
-            }
-            
-            //Cria uma constante para cada tipo de aresta
-            for (Edge e: nac.getEdges()){
-                edgeConstant = new Constant(e.getID());
-                c.addConstant(edgeConstant);
-            }
-            
-            //Cria duas constantes para representar o morfismo de vértices e arestas da NAC
-            tLVNAC = new Constant("t"+ r.getName() +"VNAC" + Integer.toString(count));
-            tLENAC = new Constant("t"+ r.getName() +"ENAC" + Integer.toString(count));
-            c.addConstant(tLVNAC);
-            c.addConstant(tLENAC);
-            
-            //Cria morfismo de vértices e arestas em relação ao LHS
-            lV = new Constant(r.getName() + "NAC" + Integer.toString(count) + "V");
-            lE = new Constant(r.getName() + "NAC" + Integer.toString(count) + "E");
-            c.addConstant(lV);
-            c.addConstant(lE);
-            
-          //Axiomas para inicialização de ljV e ljE
-            
-            //Axiomas do morfismo de vértices da NAC com LHS
-            
-            name = "axm_"+ r.getName() + Integer.toString(count) + "V";
-            predicate = r.getName() + Integer.toString(count) + "V : Vert"+ r.getName() +" --> Vert"+ r.getName() +"Nac" + Integer.toString(count);
-            axmlV = new Axiom(name, predicate);
-            
-            name = "axm_"+ r.getName() + Integer.toString(count) + "V_def";
-            predicate = "partition(" + r.getName() + Integer.toString(count) + "V";
-            for(Node n: nac.getNodes()){  
-                predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
-            }
-            predicate = predicate + ")";
-            axmlVDef = new Axiom(name, predicate);
-            
-            c.addAxiom(axmlV);
-            c.addAxiom(axmlVDef);
-            
-            //Axiomas do morfismo de arestas da NAC com LHS
-            
-            name = "axm_"+ r.getName() + Integer.toString(count) + "E";
-            predicate = r.getName() + Integer.toString(count) + "E : Edge"+ r.getName() +" --> Edge"+ r.getName() +"Nac" + Integer.toString(count);
-            axmlE = new Axiom(name, predicate);
-            
-            name = "axm_"+ r.getName() + Integer.toString(count) + "E_def";
-            predicate = "partition(" + r.getName() + Integer.toString(count) + "E";
-            for(Edge e: nac.getEdges()){  
-                predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
-            }
-            predicate = predicate + ")";
-            axmlEDef = new Axiom(name, predicate);
-            
-            c.addAxiom(axmlE);
-            c.addAxiom(axmlEDef);
         
-            count++;
-        }     
+        //Montar conjunto NAC (proibidos)
+        //Vertices
+        HashSet <Node> forbiddenVertices = new HashSet<>();
+        HashSet <String> vertNAC = new HashSet<>();
+        //Arestas
+        HashSet <Edge> forbiddenEdges = new HashSet<>();
+        HashSet <String> edgeNAC = new HashSet<>();
+        
+        //Contador de controle das NACs
+        int cont = 0;
+        
+        
+         //NACV - Forbidden vertices = NACv - (NACv intersecçao LHS)
+        for (Graph NAC: r.getNACs()){
+            //Limpa auxiliares
+            forbiddenVertices.clear();
+            vertNAC.clear();
+            forbiddenEdges.clear();
+            edgeNAC.clear();
+            
+            //Monta vertNAC e forbiddenVertices
+            for (Node n: NAC.getNodes()){
+                String temp = NAC.getMorphism().get(n.getID());
+                if (temp!=null){
+                    vertNAC.add(temp);
+                }
+                else{
+                    vertNAC.add(n.getID());
+                    forbiddenVertices.add(n);
+                }
+            }   
+           
+            //Monta edgeNac e forbiddenEdges
+            //Monta vertNAC e forbiddenVertices
+            for (Edge e: NAC.getEdges()){
+                String temp = NAC.getMorphism().get(e.getID());
+                if (temp!=null){
+                    edgeNAC.add(temp);
+                }
+                else{
+                    edgeNAC.add(e.getID());
+                    forbiddenEdges.add(e);
+                }
+            }
+            
+            //Montar forbidden identification, mais complexo
+            
+            
+            //SETS e CONSTANTS
+            //VertLNACj
+            for (Node n: forbiddenVertices){
+                c.addConstant(new Constant(n.getID()));
+                c.addSet(new Set("Vert" + r.getName() + "NAC" + cont));
+            }
+            //EdgeLNACj
+            for(Edge e: forbiddenEdges){
+                c.addConstant( new Constant(e.getID()));
+                c.addSet(new Set("Edge" + r.getName() + "NAC" + cont));
+            }
+            
+            //sourceLNACj
+            c.addConstant( new Constant("source" + r.getName() + "NAC" + cont));
+            
+            //targetLNACj
+            c.addConstant(new Constant("target" + r.getName() + "NAC" + cont));
+            
+            //tLVNACj- tipagem nodos NAC->Tipo
+            c.addConstant(new Constant("t" + r.getName() + "VNAC" + cont));
+            
+            //tLENACj - tipagem arestas NAC->Tipo
+            c.addConstant(new Constant("t" + r.getName() + "ENAC" + cont));
+            
+            //ljV - morfismo nodos NAC->LHS
+            c.addConstant(new Constant("l" + r.getName() + cont + "V"));
+            
+            //ljE - morfismo arestas NAC->LHS
+            c.addConstant(new Constant("l" + r.getName() + cont + "E"));
+            
+            //AXIOMAS
+            String name, predicate;
+            
+            //axm_ljV
+            name = "axm_" + "l" + r.getName() + cont + "V";
+            predicate =  "l" + r.getName() + cont + "V : Vert" + r.getName() + "NAC" + cont;
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljV_def
+            name =  "axm_" + "l" + r.getName() + cont + "V_def";
+            predicate = "partition(" + "l" + r.getName() + cont + "V";
+
+            for(Node n: NAC.getNodes()){
+                String temp = NAC.getMorphism().get(n.getID());
+                if (temp!=null){
+                     predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
+                }             
+            }
+            predicate = predicate + ")";
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljE
+            name = "axm_" + "l" + r.getName() + cont + "E";
+            predicate =  "l" + r.getName() + cont + "E : Edge" + r.getName() + "NAC" + cont;
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljE_def
+            name =  "axm_" + "l" + r.getName() + cont + "E_def";
+            predicate = "partition(" + "l" + r.getName() + cont + "E";
+
+            for(Edge e: NAC.getEdges()){
+                String temp = NAC.getMorphism().get(e.getID());
+                if (temp!=null){
+                     predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
+                }             
+            }
+            predicate = predicate + ")";
+            c.addAxiom(new Axiom(name, predicate));
+            
+            cont++; 
+        }
+        
+        
         
         return true;
     }
     
     /**
-     * Função que realiza a tradução do grafo tipo.
+     * Função que realiza a tradução do grafo tipo  segundo definição 15.
      * @param context - contexto ao qual serão inseridos os elementos eventB
      * @param g - gramática que está sendo traduzida 
      * @return - retorna true ou false indicando se a operação foi bem sucedida ou não
