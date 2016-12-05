@@ -49,7 +49,101 @@ public class GraphGrammarToEventB {
        
     }
     
+    //Revisado
     /**
+     * DEFINITION 15
+     * Função que realiza a tradução do grafo tipo.
+     * @param context - contexto ao qual serão inseridos os elementos eventB
+     * @param g - gramática que está sendo traduzida 
+     * @return - retorna true ou false indicando se a operação foi bem sucedida ou não
+     */
+    public boolean typeGraphTranslation(Context context, Grammar g){   
+        
+       /* -- Instanciações e adições ao contexto -- */
+       //Sets
+       context.addSet(new Set("vertT"));
+       context.addSet(new Set("edgeT"));
+       //Constants
+       context.addConstant(new Constant ("sourceT"));
+       context.addConstant(new Constant("targetT"));
+      
+       /* -- Traduz os tipos de nodos e arestas definidos no grafo tipo -- */
+  
+       /* Define constantes para representar tipos de nodos e arestas definidos no grafo tipo */
+        //Cria uma constante para cada tipo de nodo e adiciona estas constantes ao contexto
+        for (NodeType nodeType: g.getTypeGraph().getAllowedNodes()){
+           context.addConstant(new Constant(nodeType.getType()));
+       }
+       //Cria uma constante para cada tipo de aresta e adiciona estas constantes ao contexto
+         for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
+           context.addConstant(new Constant(edgeType.getType()));
+       }
+      
+       /* -- Axioms --*/
+       String name, predicate;
+       
+       //Define axiomas que representam tipagem das funções source e target
+       name = "axm_srcTtype";
+       predicate = "sourceT : edgeT --> vertT";
+       context.addAxiom(new Axiom(name, predicate));
+       name = "axm_tgtTtype";
+       predicate = "targetT : edgeT --> vertT";
+       context.addAxiom( new Axiom(name, predicate));
+       
+       //Define axiomas para representar os tipos de vertT e edgeT
+       //vertT
+       name = "axm_vertT";
+       predicate = "partition(vertT";
+       
+       for (NodeType nodeType: g.getTypeGraph().getAllowedNodes()){
+           predicate = predicate + ", {" + nodeType.getType() + "}";
+       }
+       predicate = predicate + ")";
+       context.addAxiom(new Axiom (name, predicate));
+       
+       //edgeT
+       name = "axm_edgeT";
+       predicate = "partition(edgeT";
+       
+       for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
+           predicate = predicate + ", {" + edgeType.getType() + "}";
+       }
+       predicate = predicate + ")";
+       context.addAxiom(new Axiom (name, predicate));
+
+        //Define axiomas para representar funções source e target
+        //source
+        name = "axm_srcTdef";
+        predicate = "partition(sourceT";
+        //Itera para cada tipo de aresta
+        for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
+            //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
+            for (String source: edgeType.getSource()){
+                predicate += ", {" + edgeType.getType() + "|->" + source +"}";
+            }
+        }
+        predicate += ")";
+        context.addAxiom(new Axiom(name, predicate));
+        
+        //target
+        name = "axm_tgtTdef";
+        predicate = "partition(targetT";
+        //Itera para cada tipo de aresta
+        for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
+            //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
+            for (String target: edgeType.getTarget()){
+                predicate += ", {" + edgeType.getType() + "|->" + target +"}";
+            }
+        }
+        predicate += ")";
+        context.addAxiom(new Axiom(name, predicate));
+        
+       return true;
+    }
+    
+    //Revisado
+    /**
+     * DEFINITION 16
      * Método que realiza a tradução e criação do grafo estado e o insere em uma
      * máquina.
      * @param m
@@ -59,63 +153,64 @@ public class GraphGrammarToEventB {
      */
     public boolean stateGraphTranslation(Machine m, Context c, Grammar g){
        
+        /* -- Adiciona variáveis do grafo estado -- */
+        //Vértices
+        m.addVariable(new Variable("vertG"));
+        //Arestas
+        m.addVariable(new Variable("vdgeG"));
+        //Fonte
+        m.addVariable(new Variable("sourceG"));
+        //Destino
+        m.addVariable(new Variable("targetG"));
+        //Tipagem de vértices
+        m.addVariable(new Variable("tG_V"));
+        //Tipagem de Arestas
+        m.addVariable(new Variable("tG_E"));
         
-        Variable v;
-        v = new Variable("VertG");
-        m.addVariable(v);
-        v = new Variable("EdgeG");
-        m.addVariable(v);
-        v = new Variable("sourceG");
-        m.addVariable(v);
-        v = new Variable("targetG");
-        m.addVariable(v);
-        v = new Variable("tG_V");
-        m.addVariable(v);
-        v = new Variable("tG_E");
-        m.addVariable(v);
-        
-        //invariants
-        
-        Invariant invVertG, invEdgeG, invSourceG, invTargetG, invtGv, invtGe;
+         /* -- Adiciona invariantes do grafo estado -- */
+        //Auxiliares
         String name, predicate;
         
+        //Invariante para vertices pertencerem a partes dos naturais
         name = "inv_vertG";
-        predicate = "VertG : POW(NAT)";
-        invVertG = new Invariant(name, predicate);
-        m.addInvariant(name, invVertG);
+        predicate = "vertG : POW(NAT)";
+        m.addInvariant(name, new Invariant(name, predicate));
         
+        //Invariante para arestas pertencerem a partes dos naturais
         name = "inv_edgeG";
-        predicate = "EdgeG : POW(NAT)";
-        invEdgeG = new Invariant (name, predicate);
-        m.addInvariant(name, invEdgeG);
+        predicate = "edgeG : POW(NAT)";
+        m.addInvariant(name, new Invariant (name, predicate));
         
+        //Invariante para de definir domínio da fonte de aresta para nodo (EdgeG->VertG)
         name = "inv_sourceG";
-        predicate = "sourceG : EdgeG --> VertG";
-        invSourceG = new Invariant(name, predicate);
-        m.addInvariant(invSourceG.getName(), invSourceG);
+        predicate = "sourceG : edgeG --> vertG";
+        m.addInvariant(name, new Invariant(name, predicate));
         
+        //Invariante para de definir domínio da destino de aresta para nodo (EdgeG->VertG)
         name = "inv_targetG";
-        predicate = "targetG : EdgeG --> VertG";
-        invTargetG = new Invariant(name, predicate);
-        m.addInvariant(invTargetG.getName(), invTargetG);
+        predicate = "targetG : edgeG --> vertG";
+        m.addInvariant(name, new Invariant(name, predicate));
         
+        //Invariante para de definir tipagem de vértices de vertice do estado para vertice do tipo (vertG->vertT)
         name = "inv_tGv";
-        predicate = "tGv : VertG --> VertT";
-        invtGv = new Invariant(name, predicate);
-        m.addInvariant(name, invtGv);
+        predicate = "tGv : vertG --> vertT";
+        m.addInvariant(name, new Invariant(name, predicate));
         
+       //Invariante para de definir tipagem de arestas de aresta do estado para aresta do tipo (edgeG->edgeT)
         name = "inv_tGe";
-        predicate = "tGe : EdgeG --> EdgeT";
-        invtGe = new Invariant(name, predicate);
-        m.addInvariant(name, invtGe);
+        predicate = "tGe : edgeG --> edgeT";
+        m.addInvariant(name, new Invariant(name, predicate));
         
-        //initialization
+          /* -- Adiciona eventos -- */        
+        
+        //Evento de inicialização do grafo estado
         Event initialisation = new Event ("INITIALISATION");
         String aux[];
         int flag;
-        //Nodos
+        
+        //Act para inicialização de nodos
         name = "act_vertG";
-        predicate = "VertG = {";
+        predicate = "vertG = {";
         flag = 0;
         for(Node n: g.getHost().getNodes()){ 
             aux = n.getID().split("I");
@@ -125,12 +220,12 @@ public class GraphGrammarToEventB {
                 predicate = predicate + ", " + aux[1];
             flag = 1;
         }
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
         
-        //Arestas
+        //Act para inicialização das arestas
         name = "act_edgeG";
-        predicate = "EdgeG = {";
+        predicate = "edgeG = {";
         flag = 0;
         for(Edge e: g.getHost().getEdges()){ 
             aux = e.getID().split("I");
@@ -139,13 +234,12 @@ public class GraphGrammarToEventB {
             predicate = predicate + aux[1];
             flag = 1;
         }
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
         
-        //SourceG
+        //Act para definir função source
         name = "act_srcG";
         predicate = "sourceG = {";
-        
         flag = 0;
         for (Edge e: g.getHost().getEdges()){
             aux = e.getID().split("I");
@@ -154,61 +248,60 @@ public class GraphGrammarToEventB {
             predicate = predicate + aux[1] + "|->" + e.getSource();
             flag = 1;
         }        
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
         
-        //TargetG
+        //Act para definir função target
         name = "act_tgtG";
         predicate = "targetG = {";
-        
         flag = 0;
         for (Edge e: g.getHost().getEdges()){
             aux = e.getID().split("I");
             if (flag != 0)
                 predicate = predicate + ", ";
-            predicate = predicate + aux[1] + "|->" + e.getTarget();
+            predicate += aux[1] + "|->" + e.getTarget();
             flag = 1;
         }        
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
         
-        //Tipagem dos nodos
+        //Act para tipagem dos nodos
         name = "act_tG_V";
         predicate = "tG_V = {";
-        
         flag = 0;
         for (Node n: g.getHost().getNodes()){
             aux = n.getID().split("I");
             if (flag != 0)
-                predicate = predicate + ", ";
-            predicate = predicate + aux[1] + "|->" + n.getType();
+                predicate += ", ";
+            predicate += aux[1] + "|->" + n.getType();
             flag = 1;
         }        
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
         
         
-        //Tipagem das Arestas
+        //Act para tipagem das arestas
         name = "act_tG_E";
         predicate = "tG_E = {";
-        
         flag = 0;
         for (Edge e: g.getHost().getEdges()){
             aux = e.getID().split("I");
             if (flag != 0)
-                predicate = predicate + ", ";
-            predicate = predicate + aux[1] + "|->" + e.getType();
+                predicate += ", ";
+            predicate += aux[1] + "|->" + e.getType();
             flag = 1;
         }        
-        predicate = predicate + "}";
+        predicate += "}";
         initialisation.addAct(name, predicate);
-        
-        
+       
+        //Adiciona evento
         m.addEvent(initialisation);
         return true;
     }
     
+    
     /**
+     * DEFINITION 17,
      * Função que realiza a tradução de um conjunto de regras de uma gramática
      * de grafos para a notação EventB
      * @param context - contexto ao qual as regras devem ser inseridas
@@ -216,10 +309,7 @@ public class GraphGrammarToEventB {
      * @return - retorna true ou false, indicando sucesso ou falha na tradução
      */
     public boolean rulePatternTranslation(Context context, Grammar g){
-        
-        
-        //For para todas as regras
-        
+              
         /* ----------------------------------------------------------------*
          *  A tradução de cada regra foi dividida em duas etapas:        --*
          * (1) tradução do LHS da regra (Definição 17 do paper);         --*
@@ -227,6 +317,8 @@ public class GraphGrammarToEventB {
          * (3) tradução dos NACs da regra (definição 18);                --*
          * (4) tradução das NACs como guarda (definição 20).             --*
          * ----------------------------------------------------------------*/
+        
+        //Itera conjunto de regras
          for (Rule r: g.getRules()){
             /* -------------------*
              * -- Passo 1: LHS ---* 
@@ -239,74 +331,60 @@ public class GraphGrammarToEventB {
             context.addSet(nodesL);
             context.addSet(edgesL);
                      
-            Constant nodeConstant, edgeConstant;
             //Define uma constante para cada nodo no LHS da regra
             for (Node n: r.getLHS().getNodes()){
-                nodeConstant = new Constant(r.getName() + "L" + n.getType());
-                context.addConstant(nodeConstant);
+                context.addConstant(new Constant(r.getName() + "L" + n.getType()));
                 
             }
             
             //Define uma constante para cada aresta no LHS da regra
             for (Edge e: r.getLHS().getEdges()){
-                edgeConstant = new Constant(r.getName() + "L" + e.getType());
-                context.addConstant(edgeConstant);
+                context.addConstant(new Constant(r.getName() + "L" + e.getType()));
             }
             
             //Define constantes para funções source e target
-            Constant sourceL, targetL;
-            sourceL = new Constant("sourceL" + r.getName());
-            targetL = new Constant("targetL" + r.getName());
-            context.addConstant(sourceL);
-            context.addConstant(targetL);
+            context.addConstant(new Constant("sourceL" + r.getName()));
+            context.addConstant(new Constant("targetL" + r.getName()));
             
             //Define duas constantes para represnetar a tipagem de arestas e nodos
             //no LHS.
-            Constant tLv, tLe;
-            tLv = new Constant("t" + r.getName() + "v");
-            tLe = new Constant("t" + r.getName() + "e");
-            context.addConstant(tLv);
-            context.addConstant(tLe);
+            context.addConstant(new Constant("t" + r.getName() + "v"));
+            context.addConstant(new Constant("t" + r.getName() + "e"));
             
+            /* -- Axiomas para vértices e arestas -- */
+            //Auxiliares
             String name, predicate;
-            //Define axiomas para conjuntos de vértices e de arestas
-            Axiom axmVertL, axmEdgeL;
             
+            //HERE - 05/12
+            
+            //ERRADO????
             name = "axm_VertL" + r.getName();
             predicate = "partition(" + nodesL.getName();
             for (Node n: r.getLHS().getNodes()){
                 predicate = predicate + ", {" + n.getType() + "}";
             }            
             predicate = predicate + ")";
-            axmVertL = new Axiom(name, predicate);
+            context.addAxiom(new Axiom(name, predicate));
             
+            //ERRADO????
             name = "axm_EdgeL" + r.getName();
             predicate = "partition(" + edgesL.getName();
             for (Edge e: r.getLHS().getEdges()){
                 predicate = predicate + ", {" + e.getType() + "}";
             }            
-            predicate = predicate + ")";
-            axmEdgeL = new Axiom(name, predicate);
+            predicate = predicate + ")"; 
+            context.addAxiom(new Axiom(name, predicate));
             
-            context.addAxiom(axmVertL);
-            context.addAxiom(axmEdgeL);
-            
-            //Define axiomas para representar tipagem de funções source e target
-            Axiom axmSrcType, axmTgtType;
-            
+            /* -- Define axiomas de tipagem -- */            
             name = "axm_srcL" + r.getName() + "type";
             predicate = "sourceL" + r.getName() + " : edgeL" + r.getName() + " --> " + "vertL" + r.getName();
-            axmSrcType = new Axiom (name, predicate);
+            context.addAxiom(new Axiom (name, predicate));
             
             name = "axm_tgtL" + r.getName() + "type";
             predicate = "targetL" + r.getName() + " : edgeL" + r.getName() + " --> " + "vertL" + r.getName();
-            axmTgtType = new Axiom (name, predicate);
-            
-            context.addAxiom(axmSrcType);
-            context.addAxiom(axmTgtType);
-
+            context.addAxiom(new Axiom (name, predicate));
+         
             //Define axiomas que representam a definição das funções source e target
-            Axiom axmSrcDef, axmTgtDef;
             //source
             name = "axm_srcL" + r.getName() + "def";
             predicate = "partition(sourceL" + r.getName();
@@ -315,8 +393,7 @@ public class GraphGrammarToEventB {
                     predicate = predicate + ", {" + e.getType() + "|->" + e.getSource() +"}";
             }
             predicate = predicate + ")";
-            axmSrcDef = new Axiom(name, predicate);
-            context.addAxiom(axmSrcDef);
+            context.addAxiom(new Axiom(name, predicate));
             
             //target
             name = "axm_tgtL" + r.getName() + "def";
@@ -326,25 +403,19 @@ public class GraphGrammarToEventB {
                     predicate = predicate + ", {" + e.getType() + "|->" + e.getTarget() +"}";
             }
             predicate = predicate + ")";
-            axmTgtDef = new Axiom(name, predicate);
-            context.addAxiom(axmTgtDef);
+            context.addAxiom(new Axiom(name, predicate));
                  
             //Define axiomas que representam a tipagem dos vértices e arestas
-            Axiom tLvert, tLedg;
             
             name = "axm_tL" + r.getName() + "_V";
             predicate = "tL" + r.getName() + " : " + nodesL.getName() + " --> vertT";
-            tLvert = new Axiom(name, predicate);
+            context.addAxiom(new Axiom(name, predicate));
             
             name = "axm_tL" + r.getName() + "_E";
             predicate = "tL" + r.getName() + " : " + edgesL.getName() + " --> edgeT";
-            tLedg = new Axiom(name, predicate);
-            
-            context.addAxiom(tLvert);
-            context.addAxiom(tLedg);
+            context.addAxiom(new Axiom(name, predicate));
             
             //Define axiomas para definição das funções de tipagem
-            Axiom tLvDef, tLeDef;
             
             //Nodos
             name = "axm_tL" + r.getName() + "_V_def";
@@ -354,7 +425,7 @@ public class GraphGrammarToEventB {
                  predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
             }
             predicate = predicate + ")";
-            tLvDef = new Axiom(name, predicate);
+            context.addAxiom(new Axiom(name, predicate));
             
             //Arestas
             name = "axm_tL" + r.getName() + "_E_def";
@@ -363,11 +434,8 @@ public class GraphGrammarToEventB {
             for(Edge e: r.getLHS().getEdges()){  
                  predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
             }
-            predicate = predicate + ")";
-            tLeDef = new Axiom(name, predicate);
-            
-            context.addAxiom(tLvDef);
-            context.addAxiom(tLeDef);
+            predicate = predicate + ")";        
+            context.addAxiom(new Axiom(name, predicate));
             
             //Define NACs da regra
             if (!NACTranslation(context, g, r))
@@ -376,8 +444,146 @@ public class GraphGrammarToEventB {
         return true;
     }
     
+    //REVISAR
     /**
-     * Segue a definição 22 de aplicação de regras. Cria os eventos e outros ele-
+     * DEFINIÇÃO 18
+     * Método que realiza a tradução das NACs de uma regra
+     * @param c - contexto ao qual serão inseridas NACs
+     * @param g - gramática fonte
+     * @param r - regra da qual serão traduzidas as NACs
+     * @return - retorna true ou false, indicando sucesso ou falha do método
+     */
+    public boolean NACTranslation(Context c, Grammar g, Rule r){
+        
+        //Montar conjunto NAC (proibidos)
+        //Vertices
+        HashSet <Node> forbiddenVertices = new HashSet<>();
+        HashSet <String> vertNAC = new HashSet<>();
+        //Arestas
+        HashSet <Edge> forbiddenEdges = new HashSet<>();
+        HashSet <String> edgeNAC = new HashSet<>();
+        
+        //Contador de controle das NACs
+        int cont = 0;
+        
+        
+         //NACV - Forbidden vertices = NACv - (NACv intersecçao LHS)
+        for (Graph NAC: r.getNACs()){
+            //Limpa auxiliares
+            forbiddenVertices.clear();
+            vertNAC.clear();
+            forbiddenEdges.clear();
+            edgeNAC.clear();
+            
+            //Monta vertNAC e forbiddenVertices
+            for (Node n: NAC.getNodes()){
+                String temp = NAC.getMorphism().get(n.getID());
+                if (temp!=null){
+                    vertNAC.add(temp);
+                }
+                else{
+                    vertNAC.add(n.getID());
+                    forbiddenVertices.add(n);
+                }
+            }   
+           
+            //Monta edgeNac e forbiddenEdges
+            //Monta vertNAC e forbiddenVertices
+            for (Edge e: NAC.getEdges()){
+                String temp = NAC.getMorphism().get(e.getID());
+                if (temp!=null){
+                    edgeNAC.add(temp);
+                }
+                else{
+                    edgeNAC.add(e.getID());
+                    forbiddenEdges.add(e);
+                }
+            }
+            
+            //Montar forbidden identification, mais complexo
+            
+            
+            //SETS e CONSTANTS
+            //VertLNACj
+            for (Node n: forbiddenVertices){
+                c.addConstant(new Constant(n.getID()));
+                c.addSet(new Set("Vert" + r.getName() + "NAC" + cont));
+            }
+            //EdgeLNACj
+            for(Edge e: forbiddenEdges){
+                c.addConstant( new Constant(e.getID()));
+                c.addSet(new Set("Edge" + r.getName() + "NAC" + cont));
+            }
+            
+            //sourceLNACj
+            c.addConstant( new Constant("source" + r.getName() + "NAC" + cont));
+            
+            //targetLNACj
+            c.addConstant(new Constant("target" + r.getName() + "NAC" + cont));
+            
+            //tLVNACj- tipagem nodos NAC->Tipo
+            c.addConstant(new Constant("t" + r.getName() + "VNAC" + cont));
+            
+            //tLENACj - tipagem arestas NAC->Tipo
+            c.addConstant(new Constant("t" + r.getName() + "ENAC" + cont));
+            
+            //ljV - morfismo nodos NAC->LHS
+            c.addConstant(new Constant("l" + r.getName() + cont + "V"));
+            
+            //ljE - morfismo arestas NAC->LHS
+            c.addConstant(new Constant("l" + r.getName() + cont + "E"));
+            
+            //AXIOMAS
+            String name, predicate;
+            
+            //axm_ljV
+            name = "axm_" + "l" + r.getName() + cont + "V";
+            predicate =  "l" + r.getName() + cont + "V : Vert" + r.getName() + "NAC" + cont;
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljV_def
+            name =  "axm_" + "l" + r.getName() + cont + "V_def";
+            predicate = "partition(" + "l" + r.getName() + cont + "V";
+
+            for(Node n: NAC.getNodes()){
+                String temp = NAC.getMorphism().get(n.getID());
+                if (temp!=null){
+                     predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
+                }             
+            }
+            predicate = predicate + ")";
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljE
+            name = "axm_" + "l" + r.getName() + cont + "E";
+            predicate =  "l" + r.getName() + cont + "E : Edge" + r.getName() + "NAC" + cont;
+            c.addAxiom(new Axiom(name, predicate));
+            
+            //axm_ljE_def
+            name =  "axm_" + "l" + r.getName() + cont + "E_def";
+            predicate = "partition(" + "l" + r.getName() + cont + "E";
+
+            for(Edge e: NAC.getEdges()){
+                String temp = NAC.getMorphism().get(e.getID());
+                if (temp!=null){
+                     predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
+                }             
+            }
+            predicate = predicate + ")";
+            c.addAxiom(new Axiom(name, predicate));
+            
+            cont++; 
+        }
+        
+        
+        
+        return true;
+    }
+    
+    
+    /**
+     * DEFINITIION 22
+     * Método que define a aplicação de regras. Cria os eventos e outros ele-
      * mentos necessários para aplicação das regras
      * @param c - contexto fonte
      * @param m - máquina destino
@@ -706,265 +912,8 @@ public class GraphGrammarToEventB {
       
         return true;
     }   
-    
-    
-    //REFAZER
-    /**
-     * Método que realiza a tradução das NACs de uma regra segundo a definição 18
-     * @param c - contexto ao qual serão inseridas NACs
-     * @param g - gramática fonte
-     * @param r - regra da qual serão traduzidas as NACs
-     * @return - retorna true ou false, indicando sucesso ou falha do método
-     */
-    public boolean NACTranslation(Context c, Grammar g, Rule r){
-        
-        //Montar conjunto NAC (proibidos)
-        //Vertices
-        HashSet <Node> forbiddenVertices = new HashSet<>();
-        HashSet <String> vertNAC = new HashSet<>();
-        //Arestas
-        HashSet <Edge> forbiddenEdges = new HashSet<>();
-        HashSet <String> edgeNAC = new HashSet<>();
-        
-        //Contador de controle das NACs
-        int cont = 0;
-        
-        
-         //NACV - Forbidden vertices = NACv - (NACv intersecçao LHS)
-        for (Graph NAC: r.getNACs()){
-            //Limpa auxiliares
-            forbiddenVertices.clear();
-            vertNAC.clear();
-            forbiddenEdges.clear();
-            edgeNAC.clear();
-            
-            //Monta vertNAC e forbiddenVertices
-            for (Node n: NAC.getNodes()){
-                String temp = NAC.getMorphism().get(n.getID());
-                if (temp!=null){
-                    vertNAC.add(temp);
-                }
-                else{
-                    vertNAC.add(n.getID());
-                    forbiddenVertices.add(n);
-                }
-            }   
-           
-            //Monta edgeNac e forbiddenEdges
-            //Monta vertNAC e forbiddenVertices
-            for (Edge e: NAC.getEdges()){
-                String temp = NAC.getMorphism().get(e.getID());
-                if (temp!=null){
-                    edgeNAC.add(temp);
-                }
-                else{
-                    edgeNAC.add(e.getID());
-                    forbiddenEdges.add(e);
-                }
-            }
-            
-            //Montar forbidden identification, mais complexo
-            
-            
-            //SETS e CONSTANTS
-            //VertLNACj
-            for (Node n: forbiddenVertices){
-                c.addConstant(new Constant(n.getID()));
-                c.addSet(new Set("Vert" + r.getName() + "NAC" + cont));
-            }
-            //EdgeLNACj
-            for(Edge e: forbiddenEdges){
-                c.addConstant( new Constant(e.getID()));
-                c.addSet(new Set("Edge" + r.getName() + "NAC" + cont));
-            }
-            
-            //sourceLNACj
-            c.addConstant( new Constant("source" + r.getName() + "NAC" + cont));
-            
-            //targetLNACj
-            c.addConstant(new Constant("target" + r.getName() + "NAC" + cont));
-            
-            //tLVNACj- tipagem nodos NAC->Tipo
-            c.addConstant(new Constant("t" + r.getName() + "VNAC" + cont));
-            
-            //tLENACj - tipagem arestas NAC->Tipo
-            c.addConstant(new Constant("t" + r.getName() + "ENAC" + cont));
-            
-            //ljV - morfismo nodos NAC->LHS
-            c.addConstant(new Constant("l" + r.getName() + cont + "V"));
-            
-            //ljE - morfismo arestas NAC->LHS
-            c.addConstant(new Constant("l" + r.getName() + cont + "E"));
-            
-            //AXIOMAS
-            String name, predicate;
-            
-            //axm_ljV
-            name = "axm_" + "l" + r.getName() + cont + "V";
-            predicate =  "l" + r.getName() + cont + "V : Vert" + r.getName() + "NAC" + cont;
-            c.addAxiom(new Axiom(name, predicate));
-            
-            //axm_ljV_def
-            name =  "axm_" + "l" + r.getName() + cont + "V_def";
-            predicate = "partition(" + "l" + r.getName() + cont + "V";
 
-            for(Node n: NAC.getNodes()){
-                String temp = NAC.getMorphism().get(n.getID());
-                if (temp!=null){
-                     predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
-                }             
-            }
-            predicate = predicate + ")";
-            c.addAxiom(new Axiom(name, predicate));
-            
-            //axm_ljE
-            name = "axm_" + "l" + r.getName() + cont + "E";
-            predicate =  "l" + r.getName() + cont + "E : Edge" + r.getName() + "NAC" + cont;
-            c.addAxiom(new Axiom(name, predicate));
-            
-            //axm_ljE_def
-            name =  "axm_" + "l" + r.getName() + cont + "E_def";
-            predicate = "partition(" + "l" + r.getName() + cont + "E";
-
-            for(Edge e: NAC.getEdges()){
-                String temp = NAC.getMorphism().get(e.getID());
-                if (temp!=null){
-                     predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
-                }             
-            }
-            predicate = predicate + ")";
-            c.addAxiom(new Axiom(name, predicate));
-            
-            cont++; 
-        }
-        
-        
-        
-        return true;
-    }
     
-    /**
-     * Função que realiza a tradução do grafo tipo  segundo definição 15.
-     * @param context - contexto ao qual serão inseridos os elementos eventB
-     * @param g - gramática que está sendo traduzida 
-     * @return - retorna true ou false indicando se a operação foi bem sucedida ou não
-     */
-    public boolean typeGraphTranslation(Context context, Grammar g){
-       /* -- Declarações -- */
-       //Sets
-       Set nodeSet, edgeSet;
-       //Constants
-       Constant sourceT, targetT;
-       
-       /* -- Instanciações -- */
-       //Sets
-       nodeSet = new Set("vertT");
-       edgeSet = new Set("edgeT");
-       //Constants
-       sourceT = new Constant("sourceT");
-       targetT = new Constant("targetT");
-       
-       /* -- Adições ao contexto fornecido como parâmetro -- */
-       //Sets
-       context.addSet(nodeSet);
-       context.addSet(edgeSet);
-       //Constants
-       context.addConstant(sourceT);
-       context.addConstant(targetT);
-       
-       /* -- Traduz os tipos de nodos e arestas definidos no grafo tipo -- */
-       List vertT, edgeT;
-       vertT = new ArrayList <> ();
-       edgeT = new ArrayList <> ();
-       
-       /* Define constantes para representar tipos de nodos e arestas definidos no grafo tipo */
-         Constant auxConstant;
-        //Cria uma constante para cada tipo de nodo e adiciona estas constantes ao contexto
-        for (NodeType nodeType: g.getTypeGraph().getAllowedNodes()){
-           auxConstant = new Constant(nodeType.getType());
-           context.addConstant(auxConstant);
-       }
-       //Cria uma constante para cada tipo de aresta e adiciona estas constantes ao contexto
-         for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
-           auxConstant = new Constant(edgeType.getType());
-           context.addConstant(auxConstant);
-       }
-      
-       /* -- Axioms --*/
-       String name, predicate;
-       Axiom sourceTypeAxm, sourceDefAxm, targetTypeAxm, targetDefAxm, vertTAxm, edgeTAxm;
-       
-       //Define axiomas que representam tipagem das funções source e target
-       name = "axm_srcTtype";
-       predicate = "sourceT : EdgeT --> VertT";
-       sourceTypeAxm = new Axiom(name, predicate);
-       name = "axm_tgtTtype";
-       predicate = "targetT : EdgeT --> vertT";
-       targetTypeAxm = new Axiom(name, predicate);
-       context.addAxiom(sourceTypeAxm);
-       context.addAxiom(targetTypeAxm);
-       
-       //Define axiomas para representar os tipos de vertT e edgeT
-       //vertT
-       name = "axm_vertT";
-       predicate = "partition(vertT,";
-       
-       for (NodeType nodeType: g.getTypeGraph().getAllowedNodes()){
-           predicate = predicate + ", {" + nodeType.getType() + "}";
-       }
-       predicate = predicate + ")";
-       
-       vertTAxm = new Axiom (name, predicate);
-       context.addAxiom(vertTAxm);
-       
-       //edgeT
-       name = "axm_edgeT";
-       predicate = "partition(edgeT,";
-       
-       for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
-           predicate = predicate + ", {" + edgeType.getType() + "}";
-       }
-       predicate = predicate + ")";
-       
-       edgeTAxm = new Axiom (name, predicate);
-       context.addAxiom(edgeTAxm);
-
-        //Define axiomas para representar funções source e target
-        String predicateAux;
-        //source
-        name = "axm_srcTdef";
-        predicate = "partition(sourceT";
-        //Itera para cada tipo de aresta
-        for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
-            predicateAux = "";
-            //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
-            for (String source: edgeType.getSource()){
-                predicateAux = ", {" + edgeType.getType() + "|->" + source +"}";
-            }
-            predicate = predicate + predicateAux;
-        }
-        predicate = predicate + ")";
-        sourceDefAxm = new Axiom(name, predicate);
-        context.addAxiom(sourceDefAxm);
-        
-        //target
-        name = "axm_tgtTdef";
-        predicate = "partition(targetT";
-        //Itera para cada tipo de aresta
-        for (EdgeType edgeType: g.getTypeGraph().getAllowedEdges()){
-            predicateAux = "";
-            //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
-            for (String target: edgeType.getTarget()){
-                predicateAux = ", {" + edgeType.getType() + "|->" + target +"}";
-            }
-            predicate = predicate + predicateAux;
-        }
-        predicate = predicate + ")";
-        targetDefAxm = new Axiom(name, predicate);
-        context.addAxiom(targetDefAxm);
-        
-       return true;
-    }
       
     /** Main para testes de conversão de Agg para GG  e de GG para EventB
     * @param args the command line arguments
