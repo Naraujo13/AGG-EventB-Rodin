@@ -20,7 +20,10 @@ import java.util.List;
  *
  * @author Nícolas Oreques de Araujo
  */
-public class GraphGrammarToEventB {  
+public class GraphGrammarToEventB {
+    
+    HashSet <Node> forbiddenVertices = new HashSet<>();
+    HashSet <Edge> forbiddenEdges = new HashSet<>();
     
     public boolean translator(Project p, Grammar g){
        
@@ -403,10 +406,8 @@ public class GraphGrammarToEventB {
         
         //Montar conjunto NAC (proibidos)
         //Vertices
-        HashSet <Node> forbiddenVertices = new HashSet<>();
         HashSet <String> vertNAC = new HashSet<>();
         //Arestas
-        HashSet <Edge> forbiddenEdges = new HashSet<>();
         HashSet <String> edgeNAC = new HashSet<>();
         
         //Contador de controle das NACs
@@ -446,6 +447,7 @@ public class GraphGrammarToEventB {
                 }
             }
             
+            //TODO
             //Montar forbidden identification, mais complexo
             
             
@@ -787,7 +789,6 @@ public class GraphGrammarToEventB {
             }
             predicate += "}";
             ruleEvent.addAct(name, predicate);
-            
              
             /* -- Act_src (testado com pacman.ggx) -- */
             name = "act_src";
@@ -864,10 +865,40 @@ public class GraphGrammarToEventB {
     }
     
      
-    //TO DO
+    /**
+     * Theoretical NACs - segundo definition 20
+     * @param r
+     * @return true || false de acordo com sucesso || insucesso da definição
+     */
     public boolean setTheoreticalNACs(Rule r){
+        String name, predicate;
+        name = "grd_NAC" + r.getName();
+        predicate = "not(#";
         
-      
+        String nodeSetString = "", edgeSetString = "";
+        int flag = 0;
+        for (Node n: forbiddenVertices){
+            if (flag == 0)
+                flag = 1;
+            else
+                nodeSetString += ", ";
+            nodeSetString += n.getID();
+        }
+        flag = 0;
+        for (Edge e: forbiddenEdges){
+             if (flag == 0)
+                flag = 1;
+            else
+                nodeSetString += ", ";
+            edgeSetString += e.getID();
+        }
+        
+        predicate += nodeSetString;
+        predicate += ", ";
+        predicate += edgeSetString;
+        
+        
+        predicate += ")";
         return true;
     }   
 
