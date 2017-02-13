@@ -850,115 +850,122 @@ public class GraphGrammarToEventB {
              * source e target --
              */
 
-            //TODO: DEFINIR THEORETICAL NACS JUNTO DE IDENTIDADES E ETC
-            /*
-             * -- Theoretical NACs --
-             */
+            /* ---------------------- *
+             * -- Theoretical NACs -- *
+             * ---------------------- */
             //Definir conjunto NAC e NACid
             if (!setTheoreticalNACs(r)) {
                 return false;
             }
 
-            /*
-             * -------------------*
-             * -- Passo 3: THEN --*
-             * -------------------
-             */
-            //Act_V
+            /* ------------------- *
+             * -- Passo 3: THEN -- *
+             * ------------------- */
+                       
+            /* --- Act_V --- */
+            flag = 0;
             name = "act_V";
             predicate = "VertG := (VertG\\DelV)\\/{";
             for (String n : createdNodes) {
+                if (flag == 0)
+                    flag = 1;
+                else
+                    predicate += ", ";
                 predicate += "new_" + n;
             }
             predicate += "}";
             ruleEvent.addAct(name, predicate);
+            /* ------------- */
 
-            //Act_E
+             /* --- Act_E --- */
+            flag = 0;
             name = "act_E";
             predicate = "EdgeG := (EdgeG\\DelE)\\/{";
             for (String e : createdEdges) {
+                if (flag == 0)
+                    flag = 1;
+                else
+                    predicate += ", ";
                 predicate += "new_" + e;
             }
             predicate += "}";
             ruleEvent.addAct(name, predicate);
+             /* ------------- */
 
-            /*
-             * -- Act_src (testado com pacman.ggx) --
-             */
+            //Needs further testing
+            /* --- Act_src --- */
             name = "act_src";
             predicate = "sourceG := (DelE <<| sourceG) \\/ \n{\n";
             flag = 0;
-            for (Edge e : createdEdgesRef) {
-                if (flag == 0) {
-                    flag = 1;
-                }
-                else {
-                    predicate += ", ";
-                }
-                //Testa se nodo fonte da nova aresta é um novo nodo
+            for (Edge e : createdEdgesRef) {               
+                //Testa se nodo fonte da aresta criada é também um nodo criado
                 if (createdNodes.contains(e.getSource())) {
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += ", ";
                     predicate = predicate + "new_" + e.getID() + " |-> " + e.getSource();
                 }
-                else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getSource()))) //Testa se nodo fonte é um preservado
+                //Testa se nodo fonte é um preservado
+                else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getSource()))) 
                 {
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += ", ";
                     predicate = predicate + "new_" + e.getID() + " |-> " + r.getRHS().getMorphism().get(e.getSource());
                 }                
             }
             predicate += "\n}\n";
             ruleEvent.addAct(name, predicate);
+            /* ------------- */
 
-            //TODO: verify this in some examples
-            /*
-             * -- Act_tgt (need verification --
-             */
+               //Needs further testing
+            /* --- Act_tgt --- */
             name = "act_tgt";
             predicate = "targetG := (DelE <<| targetG) \\/ \n{\n";
             flag = 0;
             for (Edge e : createdEdgesRef) {
-                if (flag == 0) {
-                    flag = 1;
-                }
-                else {
-                    predicate += ", ";
-                }
                 //Testa se nodo destino da nova aresta é um novo nodo
                 if (createdNodes.contains(e.getTarget())) {
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += ", ";
                     predicate = predicate + "new_" + e.getID() + " |-> " + e.getTarget();
                 }
-                else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getTarget()))) //Testa se nodo destino é um preservado
+                //Testa se nodo destino é um preservado
+                else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getTarget())))
                 {
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += ", ";
                     predicate = predicate + "new_" + e.getID() + " |-> " + r.getRHS().getMorphism().get(e.getTarget());
                 }                
             }
             predicate += "\n}";
             ruleEvent.addAct(name, predicate);
+            /* ------------- */
 
-            //TODO: verify this in some examples
-            /*
-             * -- Tipagem dos novos vértices (need verification) --
-             */
+            //Needs further testing
+            /* --- Act_tV --- */
             name = "act_tV";
             predicate = "tGV := (DelV <<| tGV \\/ \n{\n";
             flag = 0;
             for (Node n : createdNodesRef) {
-                if (flag == 0) {
+                if (flag == 0) 
                     flag = 1;
-                }
-                else {
+                else 
                     predicate += ", ";
-                }
                 predicate = "new_" + n.getID() + " |-> " + n.getType();
             }
-            predicate += "\n}";
+            predicate += "\n}";                                                                                                                                                                                                                                                                                                                                                                                                
             ruleEvent.addAct(name, predicate);
-            /*
-             * -- Fim Tipagem dos novos vértices (need verification) --
-             */
+            /* ------------- */
 
-            //TODO: verify this in some examples
-            /*
-             * -- Tipagem dos novas arestas (need verification) --
-             */
+              //Needs further testing
+            /* --- Act_tE --- */
             name = "act_tE";
             predicate = "tGE := (DelE <<| tGE \\/ \n{\n";
             flag = 0;
@@ -973,10 +980,9 @@ public class GraphGrammarToEventB {
             }
             predicate += "\n}";
             ruleEvent.addAct(name, predicate);
-            /*
-             * -- Fim Tipagem dos novos arestas (need verification) --
-             */
+            /* ------------- */
             
+            //Add the event with all the defined guards and acts
             m.addEvent(ruleEvent);
         }
         return true;
@@ -1016,25 +1022,28 @@ public class GraphGrammarToEventB {
                 edgeSetString += e.getID();
             }
             
-            predicate += nodeSetString + ", " + edgeSetString + ".";
+            //TODO: Check if next line goes into the event or not
+            predicate += nodeSetString + ", " + edgeSetString + ".";  
             predicate += "{" + nodeSetString + "} <: VertG \\ mE [Vert" + r.getName() + "] ^\n";
             predicate += "{" + edgeSetString + "} <: EdgeG \\ mE [Edge" + r.getName() + "] ^\n";
             
+            //Guarda que garante unicidade do ID dos vértices
             for (Node n1 : forbiddenVertices) {
                 for (Node n2 : forbiddenVertices) {
                     predicate += n1.getID() + "/=" + n2.getID();
                 }
             }
 
-            //Conection?
+            //Needs Conection?
             
+            //Guarda que garante unicidade do ID das arestas
             for (Edge e1 : forbiddenEdges) {
                 for (Edge e2 : forbiddenEdges) {
                     predicate += e1.getID() + "/=" + e2.getID();
                 }
             }
 
-            //Conection?
+            //Needs Conection?
             
             //Tipagem de vértices proibidos
             for (Node n1 : forbiddenVertices) {
@@ -1045,12 +1054,16 @@ public class GraphGrammarToEventB {
                 }
             }
             
+            //Check if tranlsation is correct
             //Tipagem de arestas proibidas
+            Graph LHS = r.getLHS();
+            Edge[] fEdges = (Edge[]) forbiddenEdges.toArray();
             for (Edge e1 : forbiddenEdges) {
                 String ID = null;
                 ID = NAC.getMorphism().get(e1.getID());
                 if (ID != null) {
-                    predicate += "tGE(" + e1.getID() + ") = " + ID + " ^ ";
+                    predicate += "tGE(" + e1.getID() + ") = " + ID + " ^ ";                  
+                    //NEEDS HELP                   
                 }
             }
             
