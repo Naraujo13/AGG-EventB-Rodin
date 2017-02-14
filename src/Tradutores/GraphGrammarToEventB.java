@@ -14,8 +14,9 @@ import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  *
@@ -23,8 +24,8 @@ import java.util.List;
  */
 public class GraphGrammarToEventB {
     
-    HashSet<Node> forbiddenVertices = new HashSet<>();
-    HashSet<Edge> forbiddenEdges = new HashSet<>();
+    HashMap<String, Node> forbiddenVertices = new HashMap<>();
+    HashMap<String, Edge> forbiddenEdges = new HashMap<>();
     
     public boolean translator(Project p, Grammar g) {
 
@@ -466,7 +467,7 @@ public class GraphGrammarToEventB {
                 }
                 else {
                     vertNAC.add(n.getID());
-                    forbiddenVertices.add(n);
+                    forbiddenVertices.put(n.getID(), n);
                 }
             }
 
@@ -479,7 +480,7 @@ public class GraphGrammarToEventB {
                 }
                 else {
                     edgeNAC.add(e.getID());
-                    forbiddenEdges.add(e);
+                    forbiddenEdges.put(e.getID(), e);
                 }
             }
 
@@ -491,12 +492,12 @@ public class GraphGrammarToEventB {
 
             //CONSTANTS
             //VertLNACj
-            for (Node n : forbiddenVertices) {
+            for (Node n : forbiddenVertices.values()) {
                 c.addConstant(new Constant(n.getID()));
                 
             }
             //EdgeLNACj
-            for (Edge e : forbiddenEdges) {
+            for (Edge e : forbiddenEdges.values()) {
                 c.addConstant(new Constant(e.getID()));
             }
 
@@ -843,7 +844,7 @@ public class GraphGrammarToEventB {
 
             //grd_srctgt
             name = "grd_srctgt";
-            predicate = "!e.e : Edge" + r.getName() + "=> mV(source" + r.getName() + "(e)) = sourceG(mE(e)) ^ mV(target" + r.getName() + "(e)) = targetG(mE(e))";
+            predicate = "!e.e : Edge" + r.getName() + "=> mV(source" + r.getName() + "(e)) = sourceG(mE(e)) and mV(target" + r.getName() + "(e)) = targetG(mE(e))";
             ruleEvent.addGuard(name, predicate);
             /*
              * -- Fim Compatibilidade de tipos de arestas, vértice e das funçoes
@@ -1002,7 +1003,7 @@ public class GraphGrammarToEventB {
             
             String nodeSetString = "", edgeSetString = "";
             int flag = 0;
-            for (Node n : forbiddenVertices) {
+            for (Node n : forbiddenVertices.values()) {
                 if (flag == 0) {
                     flag = 1;
                 }
@@ -1012,7 +1013,7 @@ public class GraphGrammarToEventB {
                 nodeSetString += n.getID();
             }
             flag = 0;
-            for (Edge e : forbiddenEdges) {
+            for (Edge e : forbiddenEdges.values()) {
                 if (flag == 0) {
                     flag = 1;
                 }
@@ -1022,52 +1023,112 @@ public class GraphGrammarToEventB {
                 edgeSetString += e.getID();
             }
             
-            //TODO: Check if next line goes into the event or not
             predicate += nodeSetString + ", " + edgeSetString + ".";  
-            predicate += "{" + nodeSetString + "} <: VertG \\ mE [Vert" + r.getName() + "] ^\n";
-            predicate += "{" + edgeSetString + "} <: EdgeG \\ mE [Edge" + r.getName() + "] ^\n";
+            predicate += "{" + nodeSetString + "} <: VertG \\ mE [Vert" + r.getName() + "] and\n";
+            predicate += "{" + edgeSetString + "} <: EdgeG \\ mE [Edge" + r.getName() + "] and\n";
             
             //Guarda que garante unicidade do ID dos vértices
-            for (Node n1 : forbiddenVertices) {
-                for (Node n2 : forbiddenVertices) {
-                    predicate += n1.getID() + "/=" + n2.getID();
+            for (Node n1 : forbiddenVertices.values()) {
+                for (Node n2 : forbiddenVertices.values()) {
+                    flag = 1;
+                    predicate += n1.getID() + "/=" + n2.getID() + " and ";
                 }
             }
-
-            //Needs Conection?
-            
+            predicate += "\n";
+                        
             //Guarda que garante unicidade do ID das arestas
-            for (Edge e1 : forbiddenEdges) {
-                for (Edge e2 : forbiddenEdges) {
-                    predicate += e1.getID() + "/=" + e2.getID();
+            for (Edge e1 : forbiddenEdges.values()) {
+                for (Edge e2 : forbiddenEdges.values()) {
+                    predicate += e1.getID() + "/=" + e2.getID() + " and ";
                 }
             }
-
-            //Needs Conection?
-            
+            predicate += "\n";
+           
+             //Needs testing
             //Tipagem de vértices proibidos
-            for (Node n1 : forbiddenVertices) {
+            for (Node n1 : forbiddenVertices.values()) {
                 String ID = null;
                 ID = NAC.getMorphism().get(n1.getID());
                 if (ID != null) {
-                    predicate += "tGV(" + n1.getID() + ") = " + ID + " ^ ";
+                    predicate += "tGV(" + n1.getID() + ") = " + ID + " and ";
                 }
             }
+            predicate += "\n";
             
-            //Check if tranlsation is correct
+            //Needs testing
             //Tipagem de arestas proibidas
             Graph LHS = r.getLHS();
-            Edge[] fEdges = (Edge[]) forbiddenEdges.toArray();
-            for (Edge e1 : forbiddenEdges) {
+            flag = 0;
+            for (Edge e1 : forbiddenEdges.values()) {
                 String ID = null;
                 ID = NAC.getMorphism().get(e1.getID());
                 if (ID != null) {
-                    predicate += "tGE(" + e1.getID() + ") = " + ID + " ^ ";                  
-                    //NEEDS HELP                   
+                    predicate += "tGE(" + e1.getID() + ") = " + ID;
+                    /* -- Source -- */
+                    //if sourceLNACj(e) == v and v : NACjV
+                    Node source = forbiddenVertices.get(e1.getSource());
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += " and\n";
+                    if (source != null)
+                        predicate += "sourceG(" + e1.getID() + ") = " + source.getID();
+                    else{
+                        predicate += "sourceG(" + e1.getID() + ") = mV(" + e1.getSource() + ")";
+                    }
+                     /* ------------ */
+                     /* -- Target -- */
+                    Node target = forbiddenVertices.get(e1.getTarget());
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += " and\n";
+                    if (source != null)
+                        predicate += "targetG(" + e1.getID() + ") = " + target.getID();
+                    else{
+                        predicate += "targetG(" + e1.getID() + ") = mV(" + e1.getTarget() + ")";
+                    }
+                      /* ------------ */
+                }               
+            }            
+            predicate += ") or\n";
+            
+            //Needs testing
+            /* -- Unicidade do match -- */
+            ArrayList<Node> nodeList;
+            nodeList = (ArrayList) forbiddenVertices.values();
+            flag = 0;
+            predicate += "(";
+            for (int i = 0; i < nodeList.size()-1; i++){
+                for (int j = i + 1; j < nodeList.size(); j++){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += " or\n";
+                    predicate += "mV(" + nodeList.get(i).getID() + ") /= mV(" + nodeList.get(j) + ")"; 
                 }
             }
+            predicate += ")";
+             /* ------------------------ */
+             
+             //Needs testing
+            /* -- Unicidade do match -- */
+            ArrayList<Edge> edgeList;
+            edgeList = (ArrayList) forbiddenEdges.values();
+            flag = 0;
+            predicate += "(";
+            for (int i = 0; i < edgeList.size(); i++){
+                for (int j = i + 1; j < edgeList.size(); j++){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        predicate += " or\n";
+                    predicate += "mE(" + edgeList.get(i).getID() + ") /= mE(" + edgeList.get(j) + ")"; 
+                }
+            }
+            predicate += ")";
+             /* ------------------------ */
             
-            predicate += ") or";
         }
         return true;
     }
