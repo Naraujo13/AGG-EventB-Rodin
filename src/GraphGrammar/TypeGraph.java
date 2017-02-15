@@ -26,9 +26,12 @@ public class TypeGraph {
     List <NodeType> allowedNodes;
     //Collection <String> allowedNodes;
     //Mapa associando ID usado nas arestas do grafo ID do tipo (confusão do AGG)
-    Map <String, String> translationNodes;
+    HashMap <String, String> translationNodes;
     //ArrayList de Arestas  contedo obejtos Edges(tipo, source, target)
     List <EdgeType> allowedEdges;
+    
+    //Nodes with Attributes
+    HashMap <String, NodeType> attNodes;
   
     /*Construtor
     */
@@ -37,6 +40,7 @@ public class TypeGraph {
         translationNodes = new HashMap<>();
         allowedNodes = new ArrayList <> ();
         allowedEdges = new ArrayList <> ();
+        attNodes = new HashMap<>();
     }
     
       /**
@@ -66,11 +70,29 @@ public class TypeGraph {
     }
     
     /**
+     * Função para adicionar nodo 
+     * @param node - nodo a ser adicionado
+     */
+    public void addAllowedNode(NodeType node){
+        allowedNodes.add(node);
+        if (!node.attributes.isEmpty())
+            attNodes.put(node.getType(), node);
+    }
+    
+    /**
      * Método de acesso as arestas de um grafo tipo.
      * @return retorna arraylist com arestas do grafo tipo.
      */
     public List<EdgeType> getAllowedEdges(){
         return allowedEdges;
+    }
+    
+    /**
+     * Função para adicionar arestas 
+     * @param edge - aresta a ser adicionada
+     */
+    public void addAllowedEdge(EdgeType edge){
+        allowedEdges.add(edge);
     }
     
       /**
@@ -79,6 +101,23 @@ public class TypeGraph {
      */
     public void addEdge (EdgeType e){
         allowedEdges.add(e);
+    }
+    
+    /**
+     * Função get para hashmap contendo nodos com atributos
+     * @return 
+     */
+    public HashMap<String, NodeType> getAttNodes(){
+        return attNodes;
+    }
+    
+    /**
+     * Função privada para adicionar os nodos com atributos em um hashmap para
+     * cálculos da tradução.
+     * @param attNode 
+     */
+    private void addAttNode(NodeType attNode){
+        attNodes.put(attNode.getType(), attNode);
     }
     
     /**
