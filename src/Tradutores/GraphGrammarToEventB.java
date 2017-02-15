@@ -8,13 +8,13 @@ package Tradutores;
 import GraphGrammar.EdgeType;
 import GraphGrammar.NodeType;
 import EventB.*;
+import GraphGrammar.AttributeType;
 import GraphGrammar.Edge;
 import GraphGrammar.Grammar;
 import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -85,7 +85,7 @@ public class GraphGrammarToEventB {
         /*
          * -- Traduz os tipos de nodos e arestas definidos no grafo tipo --
          */
- /*
+         /*
          * Define constantes para representar tipos de nodos e arestas definidos
          * no grafo tipo
          */
@@ -159,6 +159,44 @@ public class GraphGrammarToEventB {
         predicate += ")";
         context.addAxiom(new Axiom(name, predicate));
         
+        return true;
+    }
+    
+    /**
+     * DEFINITION 33
+     * Função que realiza a tradução dos atributos de um grafo tipo
+     * @param context
+     * @param g
+     * @return 
+     */
+    public boolean attributedTypeGraphTranslation(Context context, Grammar g) {
+        HashMap <String, NodeType> attNodes = g.getTypeGraph().getAttNodes();
+        if (attNodes.isEmpty())
+            return false;
+        
+        /* -- Sets -- */
+        context.addSet(new Set("AttrT"));
+        context.addSet(new Set("DataType"));
+       /* ---------- */
+       
+       /* -- Constants -- */
+       context.addConstant(new Constant("attrvT"));
+       context.addConstant(new Constant("valT"));
+       /* --------------- */
+       
+       /* -- s : S ???? -- */
+       
+       /* -------------------------------------------------------------- *
+        * Needs Set with all elements with atributes.                    *
+        * Most eficient way: previously define the set in  the parser,   *
+        * without adding complexity.                                     *
+        * -------------------------------------------------------------- */
+       for (NodeType nt: attNodes.values()){
+           for (AttributeType at: nt.getAttributes()){
+               context.addConstant(new Constant("at" + at.getID()));
+           }
+       }
+              
         return true;
     }
 
@@ -990,6 +1028,7 @@ public class GraphGrammarToEventB {
     }
 
     /**
+     * Done - Needs Testing
      * Theoretical NACs - segundo definition 20
      *
      * @param r
@@ -1133,6 +1172,9 @@ public class GraphGrammarToEventB {
         return true;
     }
 
+    /* ----- Refinamento ----- */
+    
+    
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
      *
