@@ -90,14 +90,13 @@ public class GraphGrammarToEventB {
          * no grafo tipo
          */
         //Cria uma constante para cada tipo de nodo e adiciona estas constantes ao contexto
-        for (NodeType nodeType : g.getTypeGraph().getAllowedNodes()) {
+        for (NodeType nodeType : g.getTypeGraph().getAllowedNodes())
             context.addConstant(new Constant(nodeType.getType()));
-        }
+     
         //Cria uma constante para cada tipo de aresta e adiciona estas constantes ao contexto
-        for (EdgeType edgeType : g.getTypeGraph().getAllowedEdges()) {
+        for (EdgeType edgeType : g.getTypeGraph().getAllowedEdges())
             context.addConstant(new Constant(edgeType.getType()));
-        }
-
+        
         /*
          * -- Axioms --
          */
@@ -126,8 +125,8 @@ public class GraphGrammarToEventB {
         name = "axm_edgeT";
         predicate = "partition(edgeT";
         
-        for (EdgeType edgeType : g.getTypeGraph().getAllowedEdges()) {
-            predicate = predicate + ", {" + edgeType.getType() + "}";
+        for (EdgeType et : g.getTypeGraph().getAllowedEdges()) {
+            predicate = predicate + ", {" + et.getType() + "}";
         }
         predicate = predicate + ")";
         context.addAxiom(new Axiom(name, predicate));
@@ -137,10 +136,10 @@ public class GraphGrammarToEventB {
         name = "axm_srcTdef";
         predicate = "partition(sourceT";
         //Itera para cada tipo de aresta
-        for (EdgeType edgeType : g.getTypeGraph().getAllowedEdges()) {
+        for (EdgeType et : g.getTypeGraph().getAllowedEdges()) {
             //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
-            for (String source : edgeType.getSource()) {
-                predicate += ", {" + edgeType.getType() + "|->" + source + "}";
+            for (String source : et.getSource()) {
+                predicate += ", {" + et.getType() + "|->" + source + "}";
             }
         }
         predicate += ")";
@@ -182,7 +181,6 @@ public class GraphGrammarToEventB {
        /* -- Constants -- */
        context.addConstant(new Constant("attrvT"));
        context.addConstant(new Constant("valT"));
-       /* --------------- */
        
        /* -- s : S ???? -- */
        
@@ -196,7 +194,36 @@ public class GraphGrammarToEventB {
                context.addConstant(new Constant("at" + at.getID()));
            }
        }
-              
+       /* --------------- */
+       
+        /* --- Axioms --- */
+        
+        String name, predicate;
+        
+        /* -- Axm_AttrT -- */
+        name = "axm_AttrT";
+        predicate = "partition(AttrT";
+        int flag = 0;
+        for (NodeType n: attNodes.values()){
+            predicate += ", {" + n.getType() + "}";
+        }        
+        predicate += ")";
+        context.addAxiom(new Axiom(name, predicate));
+        /* --------------- */
+        
+        /* --- Unicidade de Id dos Nodos com Atributos --- */
+        ArrayList<NodeType> attNodesList = (ArrayList) attNodes.values();
+        for (int i = 0; i < attNodes.size()-1; i++){
+           for (int j = i + 1; j < attNodes.size(); j++){
+               name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
+               predicate = attNodesList.get(i).getType() + " /= "+ attNodesList.get(j).getType();
+               context.addAxiom(new Axiom(name, predicate));
+           }
+        }
+        /* --------------- */
+        
+    
+        
         return true;
     }
 
