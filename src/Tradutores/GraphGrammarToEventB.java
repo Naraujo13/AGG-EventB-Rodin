@@ -8,6 +8,7 @@ package Tradutores;
 import GraphGrammar.EdgeType;
 import GraphGrammar.NodeType;
 import EventB.*;
+import GraphGrammar.Attribute;
 import GraphGrammar.AttributeType;
 import GraphGrammar.Edge;
 import GraphGrammar.Grammar;
@@ -161,6 +162,7 @@ public class GraphGrammarToEventB {
         return true;
     }
     
+    //Needs revision
     /**
      * DEFINITION 33
      * Função que realiza a tradução dos atributos de um grafo tipo
@@ -222,7 +224,17 @@ public class GraphGrammarToEventB {
         }
         /* --------------- */
         
-    
+        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
+        
+        /* --- axm_attrvT/def --- */
+        name = "axm_attrvTdef";
+        predicate = "partition(attrvT";
+        for (int i = 0; i < attNodes.size(); i++){
+            predicate += ", {" + attNodes.get(i).getType() +"}";
+        }
+        predicate+=")";
+        context.addAxiom(new Axiom(name, predicate));
+        /* ---------------------- */
         
         return true;
     }
@@ -397,6 +409,96 @@ public class GraphGrammarToEventB {
         return true;
     }
 
+    /**
+     * DEFINITION 34
+     * Método que realiza a tradução e criação dos atributos de um grafo estado.
+     * @param m
+     * @param c
+     * @param g
+     * @return 
+     */
+    public boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
+        
+        HashMap <String, Node> attNodes = g.getHost().getAttNodes();
+        
+        
+        /* --- Variables --- */
+        m.addVariable(new Variable("AttrG"));
+        m.addVariable(new Variable("attrvG"));
+        m.addVariable(new Variable("tGA"));        
+        for (Node n: attNodes.values()){
+            for (AttributeType at: n.getAttributes()){
+                m.addVariable(new Variable("valG" + at.getName()));
+            }
+        }
+        /* ----------------- */
+        
+        /* --- Invariants --- */
+        String name;
+        String predicate;
+        
+        name = "inv_AttrG";
+        predicate = "AttrG : POW(NAT)";
+        m.addInvariant(name, new Invariant(name, predicate));
+        
+        name = "inv_attrvG";
+        predicate = "attrvG : AttrG --> VertG";
+        m.addInvariant(name, new Invariant(name, predicate));
+        
+        name = "inv_tgA";
+        predicate = "tgA : AttrG --> AttrT";
+        m.addInvariant(name, new Invariant(name, predicate));
+        
+        /* -- Cada atributo possue apenas 1 valor associado -- */
+        ArrayList<Attribute> atts = new ArrayList();
+        for (Node n: attNodes.values()){
+            for (AttributeType at: n.getAttributes()){
+                if (at instanceof Attribute){
+                    atts.add((Attribute) at);
+                }
+            }
+        }
+        for (Attribute at1: atts){
+            for (Attribute at2: atts){
+                if (at1 != at2){
+                    name = "inv_Diff" + at1.getID() + at2.getID;
+                    predicate = "dom(valG" + at1.getID() + ") INTER dom(valG" + at2.getID() + ") = {}";
+                    m.addInvariant(name, new Invariant(name, predicate));
+                }
+            }
+        }
+        /* --------------------------------------------------- */
+        for (Attribute a: atts){
+            name = "inv_type" + a.getID();
+            predicate =  "!a . a : AttrG & a : dom(tgA |> {" + a.getID() + "}) => a : dom(valG" + a.getID() + ")";
+            m.addInvariant(name, new Invariant(name, predicate));
+        }
+        
+        /* ----------------- */
+        
+        /* --- Events --- */
+        Event initialisation = new Event("INITIALISATION");
+        
+        name = "actAttrG";
+        predicate = "AttrG := {";
+        for (Attribute a: atts){
+            predicate += a.getID();
+        }
+        predicate += "}";
+        initialisation.addAct(name, predicate);
+        
+        name = "act_attrvG";
+        predicate = "attrvG := {";
+        for (Attribute a: atts){
+            predicate += a.getID();
+        }
+        predicate += "}";
+        initialisation.addAct(name, predicate);
+        /* -------------- */
+        
+        return true;
+    }
+    
     //Revisado
     /**
      * DEFINITION 17,

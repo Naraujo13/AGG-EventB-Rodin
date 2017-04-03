@@ -28,6 +28,9 @@ public class Graph {
     HashSet <Node> graphNodes;
     Map <String, String> morphism;  
     
+    //Nodes with Attributes
+    HashMap <String, Node> attNodes;
+    
     /**
      * Construtor da classe grafo. Cria novo grafo baseado no tipo passado como
      * parâmetro.
@@ -38,6 +41,7 @@ public class Graph {
         graphEdges = new HashSet <> ();
         graphNodes = new HashSet <> ();
         morphism = new HashMap <> ();
+        attNodes = new HashMap<>();
     }
      
     /**
@@ -62,6 +66,8 @@ public class Graph {
      */
     public void addNode(Node newNode){
         graphNodes.add(newNode);
+        if (!newNode.attributes.isEmpty())
+            attNodes.put(newNode.getType(), newNode);
     }
     
     /**
@@ -80,6 +86,23 @@ public class Graph {
         return morphism;
     }
 
+    /**
+     * Função get para hashmap contendo nodos com atributos
+     * @return 
+     */
+    public HashMap<String, Node> getAttNodes(){
+        return attNodes;
+    }
+    
+     /**
+     * Função privada para adicionar os nodos com atributos em um hashmap para
+     * cálculos da tradução.
+     * @param attNode 
+     */
+    private void addAttNode(Node attNode){
+        attNodes.put(attNode.getType(), attNode);
+    }
+    
     
     
 

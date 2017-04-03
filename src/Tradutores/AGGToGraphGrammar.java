@@ -136,7 +136,7 @@ public class AGGToGraphGrammar {
             newEdgeType.addTarget(grammar.getTypeGraph().translate(auxiliar2[1]));
             
             //Adiciona Aresta no ArrayList do Grafo Tipo
-            grammar.getTypeGraph().getAllowedEdges().add(newEdgeType);
+            grammar.getTypeGraph().addAllowedEdge(newEdgeType);
             
             //Descarta opções de Layout
             while(!tokenAtual.contains("/Edge")){
