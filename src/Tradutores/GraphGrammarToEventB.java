@@ -20,15 +20,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- *
  * @author Nícolas Oreques de Araujo
  */
 public class GraphGrammarToEventB {
     
-    HashMap<String, Node> forbiddenVertices = new HashMap<>();
-    HashMap<String, Edge> forbiddenEdges = new HashMap<>();
-    
-    public boolean translator(Project p, Grammar g) {
+    private HashMap<String, Node> forbiddenVertices = new HashMap<>();
+    private HashMap<String, Edge> forbiddenEdges = new HashMap<>();
+    private StringBuilder stringBuilder = new StringBuilder(1024);
+
+    /**
+     * Função que realiza a tradução de uma gramática de grafos para um projeto em notação event-B
+     * @param p - projeto a ser criado
+     * @param g - gramática a ser traduzida
+     * @return - sucesso ou fracasso
+     */
+    private boolean translator(Project p, Grammar g) {
 
         //Cria contexto
         Context c = new Context(g.getName() + "ctx");
@@ -67,11 +73,11 @@ public class GraphGrammarToEventB {
      * Função que realiza a tradução do grafo tipo.
      *
      * @param context - contexto ao qual serão inseridos os elementos eventB
-     * @param g       - gramática que está sendo traduzida
+     * @param g - gramática que está sendo traduzida
      * @return - retorna true ou false indicando se a operação foi bem sucedida
      *         ou não
      */
-    public boolean typeGraphTranslation(Context context, Grammar g) {
+    private boolean typeGraphTranslation(Context context, Grammar g) {
 
         /*
          * -- Instanciações e adições ao contexto --
@@ -114,50 +120,54 @@ public class GraphGrammarToEventB {
         //Define axiomas para representar os tipos de vertT e edgeT
         //vertT
         name = "axm_vertT";
-        predicate = "partition(vertT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(vertT");
         
         for (NodeType nodeType : g.getTypeGraph().getAllowedNodes()) {
-            predicate = predicate + ", {" + nodeType.getType() + "}";
+            stringBuilder.append(", {" + nodeType.getType() + "}");
         }
-        predicate = predicate + ")";
-        context.addAxiom(new Axiom(name, predicate));
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         //edgeT
         name = "axm_edgeT";
-        predicate = "partition(edgeT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(edgeT");
         
         for (EdgeType et : g.getTypeGraph().getAllowedEdges()) {
-            predicate = predicate + ", {" + et.getType() + "}";
+            stringBuilder.append(", {").append(et.getType()).append("}");
         }
-        predicate = predicate + ")";
-        context.addAxiom(new Axiom(name, predicate));
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         //Define axiomas para representar funções source e target
         //source
         name = "axm_srcTdef";
-        predicate = "partition(sourceT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(sourceT");
         //Itera para cada tipo de aresta
         for (EdgeType et : g.getTypeGraph().getAllowedEdges()) {
             //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
             for (String source : et.getSource()) {
-                predicate += ", {" + et.getType() + "|->" + source + "}";
+               stringBuilder.append(", {").append(et.getType()).append("|->").append(source).append("}");
             }
         }
-        predicate += ")";
-        context.addAxiom(new Axiom(name, predicate));
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         //target
         name = "axm_tgtTdef";
-        predicate = "partition(targetT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(targetT");
         //Itera para cada tipo de aresta
         for (EdgeType edgeType : g.getTypeGraph().getAllowedEdges()) {
             //Itera para cada tipo de nodo possível daquela aresta, concatenando o mapeamento de cada uma
             for (String target : edgeType.getTarget()) {
-                predicate += ", {" + edgeType.getType() + "|->" + target + "}";
+               stringBuilder.append(", {").append(edgeType.getType()).append("|->").append(target).append("}");
             }
         }
-        predicate += ")";
-        context.addAxiom(new Axiom(name, predicate));
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
         
         return true;
     }
@@ -166,9 +176,9 @@ public class GraphGrammarToEventB {
     /**
      * DEFINITION 33
      * Função que realiza a tradução dos atributos de um grafo tipo
-     * @param context
-     * @param g
-     * @return 
+     * @param context - contexto sendo criado
+     * @param g - gramática sendo traduzida
+     * @return sucesso ou fracasso
      */
     public boolean attributedTypeGraphTranslation(Context context, Grammar g) {
         HashMap <String, NodeType> attNodes = g.getTypeGraph().getAttNodes();
@@ -204,38 +214,45 @@ public class GraphGrammarToEventB {
         
         /* -- Axm_AttrT -- */
         name = "axm_AttrT";
-        predicate = "partition(AttrT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(AttrT");
         int flag = 0;
         for (NodeType n: attNodes.values()){
-            predicate += ", {" + n.getType() + "}";
-        }        
-        predicate += ")";
-        context.addAxiom(new Axiom(name, predicate));
+            stringBuilder.append(", {").append(n.getType()).append("}");
+        }
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
         /* --------------- */
         
         /* --- Unicidade de Id dos Nodos com Atributos --- */
-        ArrayList<NodeType> attNodesList = (ArrayList) attNodes.values();
+        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
         for (int i = 0; i < attNodes.size()-1; i++){
            for (int j = i + 1; j < attNodes.size(); j++){
                name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
-               predicate = attNodesList.get(i).getType() + " /= "+ attNodesList.get(j).getType();
-               context.addAxiom(new Axiom(name, predicate));
+               context.addAxiom(
+                       new Axiom(name,
+                       (new StringBuilder())
+                               .append(attNodesList.get(i).getType())
+                               .append(" /= ")
+                               .append(attNodesList.get(j).getType())
+                               .substring(0)));
            }
         }
         /* --------------- */
         
         context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
-        
+
         /* --- axm_attrvT/def --- */
         name = "axm_attrvTdef";
-        predicate = "partition(attrvT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(attrvT");
         for (int i = 0; i < attNodes.size(); i++){
-            predicate += ", {" + attNodes.get(i).getType() +"}";
+            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
         }
-        predicate+=")";
-        context.addAxiom(new Axiom(name, predicate));
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
         /* ---------------------- */
-        
+
         return true;
     }
 
@@ -244,14 +261,12 @@ public class GraphGrammarToEventB {
      * DEFINITION 16
      * Método que realiza a tradução e criação do grafo estado e o insere em uma
      * máquina.
-     *
-     * @param m
-     * @param c
-     * @param g
-     * @return
+     * @param m - máquina a ser criada
+     * @param c - contexto a ser criada
+     * @param g - gramática a ser traduzida
+     * @return - sucesso ou fracasso da tradução
      */
-    public boolean stateGraphTranslation(Machine m, Context c, Grammar g) {
-
+    private boolean stateGraphTranslation(Machine m, Context c, Grammar g) {
         /*
          * -- Adiciona variáveis do grafo estado --
          */
@@ -314,95 +329,101 @@ public class GraphGrammarToEventB {
 
         //Act para inicialização de nodos
         name = "act_vertG";
-        predicate = "vertG = {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("vertG = {");
         flag = 0;
         for (Node n : g.getHost().getNodes()) {            
             aux = n.getID().split("I");
             if (flag == 0) {
-                predicate = predicate + aux[1];
+                stringBuilder.append(aux[1]);
             }
             else {
-                predicate = predicate + ", " + aux[1];
+                stringBuilder.append(", ").append(aux[1]);
             }
             flag = 1;
         }
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para inicialização das arestas
         name = "act_edgeG";
-        predicate = "edgeG = {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("edgeG = {");
         flag = 0;
         for (Edge e : g.getHost().getEdges()) {            
             aux = e.getID().split("I");
             if (flag != 0) {
-                predicate = predicate + ", ";
+                stringBuilder.append(", ");
             }
-            predicate = predicate + aux[1];
+            stringBuilder.append(aux[1]);
             flag = 1;
         }
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para definir função source
-        name = "act_srcG";
-        predicate = "sourceG = {";
+        name = "apublicct_srcG";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("sourceG = {");
         flag = 0;
         for (Edge e : g.getHost().getEdges()) {
             aux = e.getID().split("I");
             if (flag != 0) {
-                predicate = predicate + ", ";
+                stringBuilder.append(", ");
             }
-            predicate = predicate + aux[1] + "|->" + e.getSource();
+            stringBuilder.append(aux[1]).append("|->").append(e.getSource());
             flag = 1;
         }        
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para definir função target
         name = "act_tgtG";
-        predicate = "targetG = {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("targetG = {");
         flag = 0;
         for (Edge e : g.getHost().getEdges()) {
             aux = e.getID().split("I");
             if (flag != 0) {
-                predicate = predicate + ", ";
+                stringBuilder.append(", ");
             }
-            predicate += aux[1] + "|->" + e.getTarget();
+            stringBuilder.append(aux[1]).append("|->").append(e.getTarget());
             flag = 1;
         }        
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para tipagem dos nodos
-        name = "act_tG_V";
-        predicate = "tG_V = {";
+        name = "apublicct_tG_V";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("tG_V = {");
         flag = 0;
         for (Node n : g.getHost().getNodes()) {
             aux = n.getID().split("I");
             if (flag != 0) {
-                predicate += ", ";
+                stringBuilder.append(", ");
             }
-            predicate += aux[1] + "|->" + n.getType();
+            stringBuilder.append(aux[1]).append("|->").append(n.getType());
             flag = 1;
         }        
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para tipagem das arestas
         name = "act_tG_E";
-        predicate = "tG_E = {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("tG_E = {");
         flag = 0;
         for (Edge e : g.getHost().getEdges()) {
             aux = e.getID().split("I");
             if (flag != 0) {
-                predicate += ", ";
+                stringBuilder.append(", ");
             }
-            predicate += aux[1] + "|->" + e.getType();
+            stringBuilder.append(aux[1]).append("|->").append(e.getType());
             flag = 1;
         }        
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
 
         //Adiciona evento
         m.addEvent(initialisation);
@@ -412,12 +433,12 @@ public class GraphGrammarToEventB {
     /**
      * DEFINITION 34
      * Método que realiza a tradução e criação dos atributos de um grafo estado.
-     * @param m
-     * @param c
-     * @param g
-     * @return 
+     * @param m - máquina a ser máquina
+     * @param c - contexto a ser criado
+     * @param g - gramática a ser traduzida
+     * @return - sucesso ou fracasse
      */
-    public boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
+    private boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
         
         HashMap <String, Node> attNodes = g.getHost().getAttNodes();
         
@@ -450,7 +471,7 @@ public class GraphGrammarToEventB {
         m.addInvariant(name, new Invariant(name, predicate));
         
         /* -- Cada atributo possue apenas 1 valor associado -- */
-        ArrayList<Attribute> atts = new ArrayList();
+        ArrayList<Attribute> atts = new ArrayList<>();
         for (Node n: attNodes.values()){
             for (AttributeType at: n.getAttributes()){
                 if (at instanceof Attribute){
@@ -461,7 +482,7 @@ public class GraphGrammarToEventB {
         for (Attribute at1: atts){
             for (Attribute at2: atts){
                 if (at1 != at2){
-                    name = "inv_Diff" + at1.getID() + at2.getID;
+                    name = "inv_Diff" + at1.getID() + at2.getID();
                     predicate = "dom(valG" + at1.getID() + ") INTER dom(valG" + at2.getID() + ") = {}";
                     m.addInvariant(name, new Invariant(name, predicate));
                 }
@@ -473,27 +494,28 @@ public class GraphGrammarToEventB {
             predicate =  "!a . a : AttrG & a : dom(tgA |> {" + a.getID() + "}) => a : dom(valG" + a.getID() + ")";
             m.addInvariant(name, new Invariant(name, predicate));
         }
-        
         /* ----------------- */
         
         /* --- Events --- */
         Event initialisation = new Event("INITIALISATION");
         
         name = "actAttrG";
-        predicate = "AttrG := {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("AttrG := {");
         for (Attribute a: atts){
-            predicate += a.getID();
+            stringBuilder.append(a.getID());
         }
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
         
         name = "act_attrvG";
-        predicate = "attrvG := {";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("attrvG := {");
         for (Attribute a: atts){
-            predicate += a.getID();
+            stringBuilder.append(a.getID());
         }
-        predicate += "}";
-        initialisation.addAct(name, predicate);
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
         /* -------------- */
         
         return true;
@@ -509,7 +531,7 @@ public class GraphGrammarToEventB {
      * @param g       - gramática cujas regras serão traduzidas (fonte)
      * @return - retorna true ou false, indicando sucesso ou falha na tradução
      */
-    public boolean rulePatternTranslation(Context context, Grammar g) {
+    private boolean rulePatternTranslation(Context context, Grammar g) {
 
         /*
          * ----------------------------------------------------------------*
@@ -573,26 +595,27 @@ public class GraphGrammarToEventB {
             //Define axiomas para definição das funções de tipagem
             //Nodos
             name = "axm_t" + r.getName() + "V_def";
-            predicate = "partition(t" + r.getName() + "V";
-            for (Node n : r.getLHS().getNodes()) {                
-                predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(t").append(r.getName()).append("V");
+            for (Node n : r.getLHS().getNodes()) {
+                stringBuilder.append(", {").append(n.getID()).append(" |-> ").append(n.getType()).append("}");
             }
-            predicate = predicate + ")";
-            context.addAxiom(new Axiom(name, predicate));
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //Arestas
             name = "axm_t" + r.getName() + "E_def";
-            predicate = "partition(t" + r.getName() + "E";            
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(t").append(r.getName()).append("E");
             for (Edge e : r.getLHS().getEdges()) {                
-                predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
+                stringBuilder.append(", {").append(e.getID()).append(" |-> ").append(e.getType()).append("}");
             }
-            predicate = predicate + ")";            
-            context.addAxiom(new Axiom(name, predicate));
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //Define NACs da regra
-            if (!NACTranslation(context, g, r)) {
+            if (!NACTranslation(context, g, r))
                 return false;
-            }
         }
         return true;
     }
@@ -607,7 +630,7 @@ public class GraphGrammarToEventB {
      * @param r - regra da qual serão traduzidas as NACs
      * @return - retorna true ou false, indicando sucesso ou falha do método
      */
-    public boolean NACTranslation(Context c, Grammar g, Rule r) {
+    private boolean NACTranslation(Context c, Grammar g, Rule r) {
 
         //Montar conjunto NAC (proibidos)
         //Vertices
@@ -696,15 +719,15 @@ public class GraphGrammarToEventB {
 
             //axm_ljV_def
             name = "axm_" + r.getName() + cont + "V_def";
-            predicate = "partition(" + r.getName() + cont + "V";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(").append(r.getName()).append(cont).append("V");
             for (Node n : NAC.getNodes()) {
                 String temp = NAC.getMorphism().get(n.getID());
-                if (temp != null) {
-                    predicate = predicate + ", {" + n.getID() + " |-> " + n.getType() + "}";
-                }                
+                if (temp != null)
+                    stringBuilder.append(", {").append(n.getID()).append(" |-> ").append(n.getType()).append("}");
             }
-            predicate = predicate + ")";
-            c.addAxiom(new Axiom(name, predicate));
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //axm_ljE
             name = "axm_" + r.getName() + cont + "E";
@@ -713,15 +736,15 @@ public class GraphGrammarToEventB {
 
             //axm_ljE_def
             name = "axm_" + r.getName() + cont + "E_def";
-            predicate = "partition(" + r.getName() + cont + "E";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(").append(r.getName()).append(cont).append("E");
             for (Edge e : NAC.getEdges()) {
                 String temp = NAC.getMorphism().get(e.getID());
-                if (temp != null) {
-                    predicate = predicate + ", {" + e.getID() + " |-> " + e.getType() + "}";
-                }                
+                if (temp != null)
+                    stringBuilder.append(", {").append(e.getID()).append(" |-> ").append(e.getType()).append("}");
             }
-            predicate = predicate + ")";
-            c.addAxiom(new Axiom(name, predicate));
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
             
             cont++;            
         }        
@@ -739,7 +762,7 @@ public class GraphGrammarToEventB {
      * @param g - gramática fonte
      * @return - true/false indicando sucesso/falha na operação de tradução
      */
-    public boolean DPOApplication(Context c, Machine m, Grammar g) {
+    private boolean DPOApplication(Context c, Machine m, Grammar g) {
         
         Event ruleEvent;
         String name, predicate;
@@ -810,7 +833,7 @@ public class GraphGrammarToEventB {
              * -- Passo 1: ANY ---*
              * -------------------
              */
- /*
+            /*
              * -- Parâmetros --
              */
             ruleEvent.addParameter("mV");
@@ -837,7 +860,7 @@ public class GraphGrammarToEventB {
              * -------------------
              */
 
- /*
+             /*
              * -------------------*
              * -- Passo 2: WHERE -*
              * -------------------
@@ -863,26 +886,27 @@ public class GraphGrammarToEventB {
 
             //Define guarda
             name = "grd_DelV";
-            predicate = "DelV := mV[";
             String[] aux;
             int flag = 0;
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("DelV := mV[");
             for (String n : deletedNodes) {
                 aux = n.split("I");
                 if (flag != 0) {
-                    predicate += ", ";
+                    stringBuilder.append(", ");
                 }
                 else {
                     flag = 1;
                 }
-                predicate = predicate + "{" + aux[1] + "}";
+                stringBuilder.append("{").append(aux[1]).append("}");
             }
-            predicate += "]";
-            ruleEvent.addGuard(name, predicate);
+            stringBuilder.append("]");
+            ruleEvent.addGuard(name, stringBuilder.substring(0));
             /*
              * -- Fim Vértices Excluídos --
              */
 
- /*
+            /*
              * -- Vértices Preservados --
              */
             //Define conjunto de vértices preservados
@@ -893,7 +917,7 @@ public class GraphGrammarToEventB {
              * -- Fim Vértices Preservados --
              */
 
- /*
+            /*
              * -- Arestas Excluídas --
              */
             //Define o set de arestas excluídas
@@ -901,27 +925,27 @@ public class GraphGrammarToEventB {
                 deletedEdges.add(e.getID());
             }
             deletedEdges.removeAll(r.getRHS().getMorphism().values());
-            
+            stringBuilder.delete(0, stringBuilder.length());
             name = "grd_DelE";
-            predicate = "DelE := mE[";
+            stringBuilder.append("DelE := mE[");
             flag = 0;
             for (String e : deletedEdges) {
                 aux = e.split("I");
                 if (flag != 0) {
-                    predicate += ", ";
+                    stringBuilder.append(", ");
                 }
                 else {
                     flag = 1;
                 }
-                predicate += "{" + aux[1] + "}";
+                stringBuilder.append("{").append(aux[1]).append("}");
             }
-            predicate += "]";
-            ruleEvent.addGuard(name, predicate);
+            stringBuilder.append("]");
+            ruleEvent.addGuard(name, stringBuilder.substring(0));
             /*
              * -- Fim Arestas Excluídas --
              */
 
- /*
+            /*
              * -- Arestas Pendentes --
              */
             //grd_Dang
@@ -933,11 +957,11 @@ public class GraphGrammarToEventB {
              * -- Fim Arestas Pendentes --
              */
 
- /*
+            /*
              * -- Novos Vértices --
              */
             //grd_new_v
-            //Guarda para novos vertices pertencerem ao dominio 
+            //Guarda para novos vertices pertencerem ao dominio
             for (String n : createdNodes) {
                 name = "grd_new_v" + n;
                 predicate = "new_v" + n + ": NAT \\ VertG";
@@ -947,7 +971,7 @@ public class GraphGrammarToEventB {
              * -- Fim Novos Vértices --
              */
 
- /*
+            /*
              * -- Novas Arestas --
              */
             //grd_new_e
@@ -961,7 +985,7 @@ public class GraphGrammarToEventB {
              * -- Fim Novos Vértices --
              */
 
- /*
+            /*
              * -- Unicidade dos IDs de Novos Vértices --
              */
             //grd_diffvivj
@@ -978,7 +1002,7 @@ public class GraphGrammarToEventB {
              * -- Fim Unicidade dos IDs de Novos Vértices --
              */
 
- /*
+            /*
              * -- Unicidade dos IDs de Novas Arestas --
              */
             //grd_diffeiej
@@ -995,7 +1019,7 @@ public class GraphGrammarToEventB {
              * -- Fim Unicidade dos IDs de Novas Arestas --
              */
 
- /*
+            /*
              * -- Compatibilidade de tipos de arestas, vértice e das funçoes
              * source e target --
              */
@@ -1015,14 +1039,14 @@ public class GraphGrammarToEventB {
             ruleEvent.addGuard(name, predicate);
             /*
              * -- Fim Compatibilidade de tipos de arestas, vértice e das funçoes
-             * source e target --
+             * -- source e target --
              */
 
             /* ---------------------- *
              * -- Theoretical NACs -- *
              * ---------------------- */
             //Definir conjunto NAC e NACid
-            if (!setTheoreticalNACs(r)) {
+            if (!setTheoreticalNACs(ruleEvent, r)) {
                 return false;
             }
 
@@ -1033,37 +1057,40 @@ public class GraphGrammarToEventB {
             /* --- Act_V --- */
             flag = 0;
             name = "act_V";
-            predicate = "VertG := (VertG\\DelV)\\/{";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("VertG := (VertG\\DelV)\\/{");
             for (String n : createdNodes) {
                 if (flag == 0)
                     flag = 1;
                 else
-                    predicate += ", ";
-                predicate += "new_" + n;
+                    stringBuilder.append(", ");
+                stringBuilder.append("new_").append(n);
             }
-            predicate += "}";
-            ruleEvent.addAct(name, predicate);
+            stringBuilder.append("}");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
-             /* --- Act_E --- */
+            /* --- Act_E --- */
             flag = 0;
             name = "act_E";
-            predicate = "EdgeG := (EdgeG\\DelE)\\/{";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("EdgeG := (EdgeG\\DelE)\\/{");
             for (String e : createdEdges) {
                 if (flag == 0)
                     flag = 1;
                 else
-                    predicate += ", ";
-                predicate += "new_" + e;
+                    stringBuilder.append(", ");
+                stringBuilder.append("new_").append(e);
             }
-            predicate += "}";
-            ruleEvent.addAct(name, predicate);
-             /* ------------- */
+            stringBuilder.append("}");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
+            /* ------------- */
 
             //Needs further testing
             /* --- Act_src --- */
             name = "act_src";
-            predicate = "sourceG := (DelE <<| sourceG) \\/ \n{\n";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("sourceG := (DelE <<| sourceG) \\/ \n{\n");
             flag = 0;
             for (Edge e : createdEdgesRef) {               
                 //Testa se nodo fonte da aresta criada é também um nodo criado
@@ -1071,8 +1098,8 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += ", ";
-                    predicate = predicate + "new_" + e.getID() + " |-> " + e.getSource();
+                        stringBuilder.append(", ");
+                    stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getSource());
                 }
                 //Testa se nodo fonte é um preservado
                 else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getSource()))) 
@@ -1080,18 +1107,19 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += ", ";
-                    predicate = predicate + "new_" + e.getID() + " |-> " + r.getRHS().getMorphism().get(e.getSource());
-                }                
+                        stringBuilder.append(", ");
+                    stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(r.getRHS().getMorphism().get(e.getSource()));
+                }
             }
-            predicate += "\n}\n";
-            ruleEvent.addAct(name, predicate);
+            stringBuilder.append("\n}\n");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
-               //Needs further testing
+            //Needs further testing
             /* --- Act_tgt --- */
             name = "act_tgt";
-            predicate = "targetG := (DelE <<| targetG) \\/ \n{\n";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("targetG := (DelE <<| targetG) \\/ \n{\n");
             flag = 0;
             for (Edge e : createdEdgesRef) {
                 //Testa se nodo destino da nova aresta é um novo nodo
@@ -1099,8 +1127,8 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += ", ";
-                    predicate = predicate + "new_" + e.getID() + " |-> " + e.getTarget();
+                        stringBuilder.append(", ");
+                   stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getTarget());
                 }
                 //Testa se nodo destino é um preservado
                 else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getTarget())))
@@ -1108,46 +1136,48 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += ", ";
-                    predicate = predicate + "new_" + e.getID() + " |-> " + r.getRHS().getMorphism().get(e.getTarget());
+                        stringBuilder.append(", ");
+                   stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(r.getRHS().getMorphism().get(e.getTarget()));
                 }                
             }
-            predicate += "\n}";
-            ruleEvent.addAct(name, predicate);
+            stringBuilder.append("\n}");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
             //Needs further testing
             /* --- Act_tV --- */
             name = "act_tV";
-            predicate = "tGV := (DelV <<| tGV \\/ \n{\n";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("tGV := (DelV <<| tGV \\/ \n{\n");
             flag = 0;
             for (Node n : createdNodesRef) {
                 if (flag == 0) 
                     flag = 1;
-                else 
-                    predicate += ", ";
-                predicate = "new_" + n.getID() + " |-> " + n.getType();
+                else
+                    stringBuilder.append(", ");
+                stringBuilder.append("new_").append(n.getID()).append(" |-> ").append(n.getType());
             }
-            predicate += "\n}";                                                                                                                                                                                                                                                                                                                                                                                                
-            ruleEvent.addAct(name, predicate);
+            stringBuilder.append("\n}");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
-              //Needs further testing
+            //Needs further testing
             /* --- Act_tE --- */
             name = "act_tE";
-            predicate = "tGE := (DelE <<| tGE \\/ \n{\n";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("tGE := (DelE <<| tGE \\/ \n{\n");
             flag = 0;
             for (Edge e : createdEdgesRef) {
                 if (flag == 0) {
                     flag = 1;
                 }
                 else {
-                    predicate += ", ";
+                    stringBuilder.append(", ");
                 }
-                predicate = "new_" + e.getID() + " |-> " + e.getType();
+                stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getType());
             }
-            predicate += "\n}";
-            ruleEvent.addAct(name, predicate);
+            stringBuilder.append("\n}");
+            ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
             
             //Add the event with all the defined guards and acts
@@ -1157,28 +1187,30 @@ public class GraphGrammarToEventB {
     }
 
     /**
-     * Done - Needs Testing
+     * Done
      * Theoretical NACs - segundo definition 20
      *
-     * @param r
+     * @param r - regra para qual serão definidas as theoretical NACs
      * @return true || false de acordo com sucesso || insucesso da definição
      */
-    public boolean setTheoreticalNACs(Rule r) {
-        String name, predicate;
+    private boolean setTheoreticalNACs(Event ruleEvent, Rule r) {
+        String name;
         for (Graph NAC : r.getNACs()) {
             name = "grd_NAC" + r.getName();
-            predicate = "not(#";
-            
-            String nodeSetString = "", edgeSetString = "";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("not(#");
+
+            StringBuilder nodeSetString = new StringBuilder(1024);
+            StringBuilder edgeSetString = new StringBuilder(1024);
             int flag = 0;
             for (Node n : forbiddenVertices.values()) {
                 if (flag == 0) {
                     flag = 1;
                 }
                 else {
-                    nodeSetString += ", ";
+                    nodeSetString.append(", ");
                 }
-                nodeSetString += n.getID();
+                nodeSetString.append(n.getID());
             }
             flag = 0;
             for (Edge e : forbiddenEdges.values()) {
@@ -1186,43 +1218,42 @@ public class GraphGrammarToEventB {
                     flag = 1;
                 }
                 else {
-                    nodeSetString += ", ";
+                    nodeSetString.append(", ");
                 }
-                edgeSetString += e.getID();
+                edgeSetString.append(e.getID());
             }
-            
-            predicate += nodeSetString + ", " + edgeSetString + ".";  
-            predicate += "{" + nodeSetString + "} <: VertG \\ mE [Vert" + r.getName() + "] and\n";
-            predicate += "{" + edgeSetString + "} <: EdgeG \\ mE [Edge" + r.getName() + "] and\n";
-            
+            stringBuilder.append(nodeSetString.substring(0)).append(", ").append(edgeSetString.substring(0)).append(".")
+                    .append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mE [Vert").append(r.getName()).append("] and\n")
+                    .append("{").append(edgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] and\n");
+
             //Guarda que garante unicidade do ID dos vértices
             for (Node n1 : forbiddenVertices.values()) {
                 for (Node n2 : forbiddenVertices.values()) {
                     flag = 1;
-                    predicate += n1.getID() + "/=" + n2.getID() + " and ";
+                    stringBuilder.append(n1.getID()).append("/=").append(n2.getID()).append(" and ");
                 }
             }
-            predicate += "\n";
-                        
+            stringBuilder.append("\n");
+
             //Guarda que garante unicidade do ID das arestas
             for (Edge e1 : forbiddenEdges.values()) {
                 for (Edge e2 : forbiddenEdges.values()) {
-                    predicate += e1.getID() + "/=" + e2.getID() + " and ";
+                    stringBuilder.append(e1.getID()).append("/=").append(e2.getID()).append(" and ");
                 }
             }
-            predicate += "\n";
-           
-             //Needs testing
+            stringBuilder.append("\n");
+
+            //Needs testing
             //Tipagem de vértices proibidos
             for (Node n1 : forbiddenVertices.values()) {
                 String ID = null;
                 ID = NAC.getMorphism().get(n1.getID());
                 if (ID != null) {
-                    predicate += "tGV(" + n1.getID() + ") = " + ID + " and ";
+                    stringBuilder.append("tGV(").append(n1.getID()).append(") = ").append(ID).append(" and ");
                 }
             }
-            predicate += "\n";
-            
+            stringBuilder.append("\n");
+
             //Needs testing
             //Tipagem de arestas proibidas
             Graph LHS = r.getLHS();
@@ -1231,78 +1262,76 @@ public class GraphGrammarToEventB {
                 String ID = null;
                 ID = NAC.getMorphism().get(e1.getID());
                 if (ID != null) {
-                    predicate += "tGE(" + e1.getID() + ") = " + ID;
+                    stringBuilder.append("tGE(").append(e1.getID()).append(") = ").append(ID);
                     /* -- Source -- */
                     //if sourceLNACj(e) == v and v : NACjV
                     Node source = forbiddenVertices.get(e1.getSource());
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += " and\n";
+                        stringBuilder.append(" and\n");
                     if (source != null)
-                        predicate += "sourceG(" + e1.getID() + ") = " + source.getID();
+                        stringBuilder.append("sourceG(").append(e1.getID()).append(") = ").append(source.getID());
                     else{
-                        predicate += "sourceG(" + e1.getID() + ") = mV(" + e1.getSource() + ")";
+                        stringBuilder.append("sourceG(").append(e1.getID()).append(") = mV(").append(e1.getSource()).append(")");
                     }
-                     /* ------------ */
-                     /* -- Target -- */
+                    /* -- Target -- */
                     Node target = forbiddenVertices.get(e1.getTarget());
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += " and\n";
+                        stringBuilder.append(" and\n");
                     if (source != null)
-                        predicate += "targetG(" + e1.getID() + ") = " + target.getID();
+                        stringBuilder.append("targetG(").append(e1.getID()).append(") = ").append(target.getID());
                     else{
-                        predicate += "targetG(" + e1.getID() + ") = mV(" + e1.getTarget() + ")";
+                        stringBuilder.append("targetG(").append(e1.getID()).append(") = mV(").append(e1.getTarget()).append(")");
                     }
-                      /* ------------ */
-                }               
-            }            
-            predicate += ") or\n";
-            
+                }
+            }
+            stringBuilder.append(") or\n");
+
             //Needs testing
             /* -- Unicidade do match -- */
             ArrayList<Node> nodeList;
-            nodeList = (ArrayList) forbiddenVertices.values();
+            nodeList = new ArrayList<>(forbiddenVertices.values());
             flag = 0;
-            predicate += "(";
+            stringBuilder.append("(");
             for (int i = 0; i < nodeList.size()-1; i++){
                 for (int j = i + 1; j < nodeList.size(); j++){
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += " or\n";
-                    predicate += "mV(" + nodeList.get(i).getID() + ") /= mV(" + nodeList.get(j) + ")"; 
+                        stringBuilder.append(" or\n");
+                    stringBuilder.append("mV(").append(nodeList.get(i).getID()).append(") /= mV(").append(nodeList.get(j)).append(")");
                 }
             }
-            predicate += ")";
-             /* ------------------------ */
-             
-             //Needs testing
+            stringBuilder.append(")");
+            /* ------------------------ */
+
+            //Needs testing
             /* -- Unicidade do match -- */
             ArrayList<Edge> edgeList;
-            edgeList = (ArrayList) forbiddenEdges.values();
+            edgeList = new ArrayList<>(forbiddenEdges.values());
             flag = 0;
-            predicate += "(";
+            stringBuilder.append("(");
             for (int i = 0; i < edgeList.size(); i++){
                 for (int j = i + 1; j < edgeList.size(); j++){
                     if (flag == 0)
                         flag = 1;
                     else
-                        predicate += " or\n";
-                    predicate += "mE(" + edgeList.get(i).getID() + ") /= mE(" + edgeList.get(j) + ")"; 
+                        stringBuilder.append(" or\n");
+                    stringBuilder.append("mE(").append(edgeList.get(i).getID()).append(") /= mE(").append(edgeList.get(j)).append(")");
                 }
             }
-            predicate += ")";
-             /* ------------------------ */
-            
+            stringBuilder.append(")");
+            /* ------------------------ */
+            ruleEvent.addAct(name, stringBuilder.substring(0));
         }
         return true;
     }
 
     /* ----- Refinamento ----- */
-    
+
     
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
@@ -1310,18 +1339,14 @@ public class GraphGrammarToEventB {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        /**
-         * -- Step1 - AGG to GG translation --
-         */
+        /* -- Step1 - AGG to GG translation -- */
         String arquivo = "pacman.ggx";
         AGGToGraphGrammar agg = new AGGToGraphGrammar();
         Grammar test = new Grammar("pacman");
         agg.aggReader(arquivo, test);
         test.printGrammar();
 
-        /*
-         * -- Step 2 - GG to EventB translation --
-         */
+        /* -- Step 2 - GG to EventB translation -- */
         GraphGrammarToEventB eventB = new GraphGrammarToEventB();
         Project newProject = new Project("pacman");
         eventB.translator(newProject, test);        
