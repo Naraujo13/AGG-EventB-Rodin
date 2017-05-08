@@ -171,90 +171,6 @@ public class GraphGrammarToEventB {
         
         return true;
     }
-    
-    //Needs revision
-    /**
-     * DEFINITION 33
-     * Função que realiza a tradução dos atributos de um grafo tipo
-     * @param context - contexto sendo criado
-     * @param g - gramática sendo traduzida
-     * @return sucesso ou fracasso
-     */
-    public boolean attributedTypeGraphTranslation(Context context, Grammar g) {
-        HashMap <String, NodeType> attNodes = g.getTypeGraph().getAttNodes();
-        if (attNodes.isEmpty())
-            return false;
-        
-        /* -- Sets -- */
-        context.addSet(new Set("AttrT"));
-        context.addSet(new Set("DataType"));
-       /* ---------- */
-       
-       /* -- Constants -- */
-       context.addConstant(new Constant("attrvT"));
-       context.addConstant(new Constant("valT"));
-       
-       /* -- s : S ???? -- */
-       
-       /* -------------------------------------------------------------- *
-        * Needs Set with all elements with atributes.                    *
-        * Most eficient way: previously define the set in  the parser,   *
-        * without adding complexity.                                     *
-        * -------------------------------------------------------------- */
-       for (NodeType nt: attNodes.values()){
-           for (AttributeType at: nt.getAttributes()){
-               context.addConstant(new Constant("at" + at.getID()));
-           }
-       }
-       /* --------------- */
-       
-        /* --- Axioms --- */
-        
-        String name, predicate;
-        
-        /* -- Axm_AttrT -- */
-        name = "axm_AttrT";
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(AttrT");
-        int flag = 0;
-        for (NodeType n: attNodes.values()){
-            stringBuilder.append(", {").append(n.getType()).append("}");
-        }
-        stringBuilder.append(")");
-        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-        /* --------------- */
-        
-        /* --- Unicidade de Id dos Nodos com Atributos --- */
-        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
-        for (int i = 0; i < attNodes.size()-1; i++){
-           for (int j = i + 1; j < attNodes.size(); j++){
-               name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
-               context.addAxiom(
-                       new Axiom(name,
-                       (new StringBuilder())
-                               .append(attNodesList.get(i).getType())
-                               .append(" /= ")
-                               .append(attNodesList.get(j).getType())
-                               .substring(0)));
-           }
-        }
-        /* --------------- */
-        
-        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
-
-        /* --- axm_attrvT/def --- */
-        name = "axm_attrvTdef";
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(attrvT");
-        for (int i = 0; i < attNodes.size(); i++){
-            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
-        }
-        stringBuilder.append(")");
-        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-        /* ---------------------- */
-
-        return true;
-    }
 
     //Revisado
     /**
@@ -427,97 +343,6 @@ public class GraphGrammarToEventB {
 
         //Adiciona evento
         m.addEvent(initialisation);
-        return true;
-    }
-
-    /**
-     * DEFINITION 34
-     * Método que realiza a tradução e criação dos atributos de um grafo estado.
-     * @param m - máquina a ser máquina
-     * @param c - contexto a ser criado
-     * @param g - gramática a ser traduzida
-     * @return - sucesso ou fracasse
-     */
-    private boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
-        
-        HashMap <String, Node> attNodes = g.getHost().getAttNodes();
-        
-        
-        /* --- Variables --- */
-        m.addVariable(new Variable("AttrG"));
-        m.addVariable(new Variable("attrvG"));
-        m.addVariable(new Variable("tGA"));        
-        for (Node n: attNodes.values()){
-            for (AttributeType at: n.getAttributes()){
-                m.addVariable(new Variable("valG" + at.getName()));
-            }
-        }
-        /* ----------------- */
-        
-        /* --- Invariants --- */
-        String name;
-        String predicate;
-        
-        name = "inv_AttrG";
-        predicate = "AttrG : POW(NAT)";
-        m.addInvariant(name, new Invariant(name, predicate));
-        
-        name = "inv_attrvG";
-        predicate = "attrvG : AttrG --> VertG";
-        m.addInvariant(name, new Invariant(name, predicate));
-        
-        name = "inv_tgA";
-        predicate = "tgA : AttrG --> AttrT";
-        m.addInvariant(name, new Invariant(name, predicate));
-        
-        /* -- Cada atributo possue apenas 1 valor associado -- */
-        ArrayList<Attribute> atts = new ArrayList<>();
-        for (Node n: attNodes.values()){
-            for (AttributeType at: n.getAttributes()){
-                if (at instanceof Attribute){
-                    atts.add((Attribute) at);
-                }
-            }
-        }
-        for (Attribute at1: atts){
-            for (Attribute at2: atts){
-                if (at1 != at2){
-                    name = "inv_Diff" + at1.getID() + at2.getID();
-                    predicate = "dom(valG" + at1.getID() + ") INTER dom(valG" + at2.getID() + ") = {}";
-                    m.addInvariant(name, new Invariant(name, predicate));
-                }
-            }
-        }
-        /* --------------------------------------------------- */
-        for (Attribute a: atts){
-            name = "inv_type" + a.getID();
-            predicate =  "!a . a : AttrG & a : dom(tgA |> {" + a.getID() + "}) => a : dom(valG" + a.getID() + ")";
-            m.addInvariant(name, new Invariant(name, predicate));
-        }
-        /* ----------------- */
-        
-        /* --- Events --- */
-        Event initialisation = new Event("INITIALISATION");
-        
-        name = "actAttrG";
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("AttrG := {");
-        for (Attribute a: atts){
-            stringBuilder.append(a.getID());
-        }
-        stringBuilder.append("}");
-        initialisation.addAct(name, stringBuilder.substring(0));
-        
-        name = "act_attrvG";
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("attrvG := {");
-        for (Attribute a: atts){
-            stringBuilder.append(a.getID());
-        }
-        stringBuilder.append("}");
-        initialisation.addAct(name, stringBuilder.substring(0));
-        /* -------------- */
-        
         return true;
     }
     
@@ -1332,6 +1157,180 @@ public class GraphGrammarToEventB {
 
     /* ----- Refinamento ----- */
 
+    //Needs revision
+    /**
+     * DEFINITION 33
+     * Função que realiza a tradução dos atributos de um grafo tipo
+     * @param context - contexto sendo criado
+     * @param g - gramática sendo traduzida
+     * @return sucesso ou fracasso
+     */
+    public boolean attributedTypeGraphTranslation(Context context, Grammar g) {
+        HashMap <String, NodeType> attNodes = g.getTypeGraph().getAttNodes();
+        if (attNodes.isEmpty())
+            return false;
+
+        /* -- Sets -- */
+        context.addSet(new Set("AttrT"));
+        context.addSet(new Set("DataType"));
+       /* ---------- */
+
+       /* -- Constants -- */
+        context.addConstant(new Constant("attrvT"));
+        context.addConstant(new Constant("valT"));
+
+       /* -- s : S ???? -- */
+
+       /* -------------------------------------------------------------- *
+        * Needs Set with all elements with atributes.                    *
+        * Most eficient way: previously define the set in  the parser,   *
+        * without adding complexity.                                     *
+        * -------------------------------------------------------------- */
+        for (NodeType nt: attNodes.values()){
+            for (AttributeType at: nt.getAttributes()){
+                context.addConstant(new Constant("at" + at.getID()));
+            }
+        }
+       /* --------------- */
+
+        /* --- Axioms --- */
+
+        String name, predicate;
+
+        /* -- Axm_AttrT -- */
+        name = "axm_AttrT";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(AttrT");
+        int flag = 0;
+        for (NodeType n: attNodes.values()){
+            stringBuilder.append(", {").append(n.getType()).append("}");
+        }
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+        /* --------------- */
+
+        /* --- Unicidade de Id dos Nodos com Atributos --- */
+        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
+        for (int i = 0; i < attNodes.size()-1; i++){
+            for (int j = i + 1; j < attNodes.size(); j++){
+                name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
+                context.addAxiom(
+                        new Axiom(name,
+                                (new StringBuilder())
+                                        .append(attNodesList.get(i).getType())
+                                        .append(" /= ")
+                                        .append(attNodesList.get(j).getType())
+                                        .substring(0)));
+            }
+        }
+        /* --------------- */
+
+        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
+
+        /* --- axm_attrvT/def --- */
+        name = "axm_attrvTdef";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(attrvT");
+        for (int i = 0; i < attNodes.size(); i++){
+            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
+        }
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+        /* ---------------------- */
+
+        return true;
+    }
+
+    /**
+     * DEFINITION 34
+     * Método que realiza a tradução e criação dos atributos de um grafo estado.
+     * @param m - máquina a ser máquina
+     * @param c - contexto a ser criado
+     * @param g - gramática a ser traduzida
+     * @return - sucesso ou fracasse
+     */
+    private boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
+
+        HashMap <String, Node> attNodes = g.getHost().getAttNodes();
+
+
+        /* --- Variables --- */
+        m.addVariable(new Variable("AttrG"));
+        m.addVariable(new Variable("attrvG"));
+        m.addVariable(new Variable("tGA"));
+        for (Node n: attNodes.values()){
+            for (AttributeType at: n.getAttributes()){
+                m.addVariable(new Variable("valG" + at.getName()));
+            }
+        }
+        /* ----------------- */
+
+        /* --- Invariants --- */
+        String name;
+        String predicate;
+
+        name = "inv_AttrG";
+        predicate = "AttrG : POW(NAT)";
+        m.addInvariant(name, new Invariant(name, predicate));
+
+        name = "inv_attrvG";
+        predicate = "attrvG : AttrG --> VertG";
+        m.addInvariant(name, new Invariant(name, predicate));
+
+        name = "inv_tgA";
+        predicate = "tgA : AttrG --> AttrT";
+        m.addInvariant(name, new Invariant(name, predicate));
+
+        /* -- Cada atributo possue apenas 1 valor associado -- */
+        ArrayList<Attribute> atts = new ArrayList<>();
+        for (Node n: attNodes.values()){
+            for (AttributeType at: n.getAttributes()){
+                if (at instanceof Attribute){
+                    atts.add((Attribute) at);
+                }
+            }
+        }
+        for (Attribute at1: atts){
+            for (Attribute at2: atts){
+                if (at1 != at2){
+                    name = "inv_Diff" + at1.getID() + at2.getID();
+                    predicate = "dom(valG" + at1.getID() + ") INTER dom(valG" + at2.getID() + ") = {}";
+                    m.addInvariant(name, new Invariant(name, predicate));
+                }
+            }
+        }
+        /* --------------------------------------------------- */
+        for (Attribute a: atts){
+            name = "inv_type" + a.getID();
+            predicate =  "!a . a : AttrG & a : dom(tgA |> {" + a.getID() + "}) => a : dom(valG" + a.getID() + ")";
+            m.addInvariant(name, new Invariant(name, predicate));
+        }
+        /* ----------------- */
+
+        /* --- Events --- */
+        Event initialisation = new Event("INITIALISATION");
+
+        name = "actAttrG";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("AttrG := {");
+        for (Attribute a: atts){
+            stringBuilder.append(a.getID());
+        }
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
+
+        name = "act_attrvG";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("attrvG := {");
+        for (Attribute a: atts){
+            stringBuilder.append(a.getID());
+        }
+        stringBuilder.append("}");
+        initialisation.addAct(name, stringBuilder.substring(0));
+        /* -------------- */
+
+        return true;
+    }
     
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
