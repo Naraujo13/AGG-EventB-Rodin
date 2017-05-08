@@ -11,7 +11,7 @@ package GraphGrammar;
  * @author Nícolas Oreques de Araujo
  */
 public class AttributeType {
-    String type;
+    private String type;
     
     public AttributeType(String type){
         this.type = type;

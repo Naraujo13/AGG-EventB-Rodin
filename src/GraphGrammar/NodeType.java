@@ -15,8 +15,8 @@ import java.util.HashSet;
  */
 public class NodeType {
     
-    String type;
-    HashSet <AttributeType> attributes;
+    private String type;
+    private HashSet <AttributeType> attributes;
 
     /* Construtor da classe Node, que recebe nome e ID como parâmetros e cria uma definição de vértice para o grafo
     *  @param name - nome do nodo criado

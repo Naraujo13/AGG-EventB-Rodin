@@ -14,13 +14,13 @@ import java.util.List;
  * @author Nícolas Oreques de Araujo
  */
 public class Machine {
-    String name;
+    private String name;
     
-    List <Context> sees;
-    List <Machine> refinement;
-    List <Variable> variables;
-    HashMap <String, Invariant> invariants;
-    List <Event> events;
+    private ArrayList <Context> sees;
+    private ArrayList <Machine> refinement;
+    private ArrayList <Variable> variables;
+    private HashMap <String, Invariant> invariants;
+    private ArrayList <Event> events;
     
     /**
      * Cria uma máquina com dado nome. Requer um contexto (pesquisar para ter certeza de obrigatoriedade).

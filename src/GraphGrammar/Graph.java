@@ -23,13 +23,13 @@ import java.util.Map;
  */
 public class Graph {
     
-    String type;
-    HashSet <Edge> graphEdges;
-    HashSet <Node> graphNodes;
-    Map <String, String> morphism;  
+    private String type;
+    private HashSet <Edge> graphEdges;
+    private HashSet <Node> graphNodes;
+    private Map <String, String> morphism;
     
     //Nodes with Attributes
-    HashMap <String, Node> attNodes;
+    private HashMap <String, Node> attNodes;
     
     /**
      * Construtor da classe grafo. Cria novo grafo baseado no tipo passado como
@@ -66,7 +66,7 @@ public class Graph {
      */
     public void addNode(Node newNode){
         graphNodes.add(newNode);
-        if (!newNode.attributes.isEmpty())
+        if (!newNode.getAttributes().isEmpty())
             attNodes.put(newNode.getType(), newNode);
     }
     
@@ -88,7 +88,7 @@ public class Graph {
 
     /**
      * Função get para hashmap contendo nodos com atributos
-     * @return 
+     * @return - retorna HashMap com nodos que possue atributos (Nome -> Nodo)
      */
     public HashMap<String, Node> getAttNodes(){
         return attNodes;
@@ -97,7 +97,7 @@ public class Graph {
      /**
      * Função privada para adicionar os nodos com atributos em um hashmap para
      * cálculos da tradução.
-     * @param attNode 
+     * @param attNode - nodo a ser adicionado
      */
     private void addAttNode(Node attNode){
         attNodes.put(attNode.getType(), attNode);
@@ -109,9 +109,9 @@ public class Graph {
     
     /**
      * Função que imprime o grafo. Usado para criaçãod e log.
-     * @return 
+     * @return - função que gera log  para estrutura
      */
-      public boolean printGraph(){
+      boolean printGraph(){
         int i;
         System.out.println("\t\t Grafo:");
         if (this.type == null){

@@ -1244,7 +1244,7 @@ public class GraphGrammarToEventB {
     /**
      * DEFINITION 34
      * Método que realiza a tradução e criação dos atributos de um grafo estado.
-     * @param m - máquina a ser máquina
+     * @param m - máquina a ser criada
      * @param c - contexto a ser criado
      * @param g - gramática a ser traduzida
      * @return - sucesso ou fracasse
@@ -1331,7 +1331,95 @@ public class GraphGrammarToEventB {
 
         return true;
     }
-    
+
+    /**
+     * DEFINITION 35
+     * Método que realiza a tradução de uma regra com atributos
+     * @param m - máquina a ser criada
+     * @param c - contexto a ser criado
+     * @param r - regra a ser traduzida
+     * @return - sucesso ou fracasso
+     */
+    private boolean attributedRuleTranslation(Machine m, Context extendedContext, Rule r, Event ruleEvent){
+
+        boolean attLHS = false, attRHS = false, attNACs = false;
+        HashSet<Graph> attributedNACsSet = new HashSet<>();
+        if (!r.getLHS().getAttNodes().isEmpty())
+            attLHS = true;
+        if (!r.getRHS().getAttNodes().isEmpty())
+            attRHS = true;
+
+        //Tests NACs for attributes
+        for (Graph nac: r.getNACs()) {
+            if (!nac.getAttNodes().isEmpty()){
+                attNACs = true;
+                attributedNACsSet.add(nac);
+            }
+        }
+
+        if (!attLHS && !attRHS && !attNACs) //There is no attribute on this rule
+            return false;
+
+        //There is an attribute on this rule
+
+        /* -- Context -- */
+        String name;
+        // --- Sets
+        extendedContext.addSet(new Set("AttrL"));
+
+        // --- Axioms
+        //Define Attr set for the rule
+        name = "axm_attr" + r.getName();
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(Attr").append(r.getName());
+        if (attLHS){
+            for (Node n: r.getLHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getID());
+        }
+        if (attRHS){
+            for (Node n: r.getRHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getID());
+        }
+        if (attNACs){
+            if (!attributedNACsSet.isEmpty()){
+                for (Graph nac: attributedNACsSet){
+                    for (Node n: nac.getAttNodes().values()){
+                        stringBuilder.append(",").append(n.getID());
+                    }
+                }
+            }
+        }
+        extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+        //Define Attr domain and image
+        name = "axm_attrv" + r.getName();
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder
+                .append("attrv").append(r.getName())
+                .append(" : Attr").append(r.getName())
+                .append(" --> Vert").append(r.getName());
+        extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+        //Define Attr domain and image
+        name = "axm_attrv" + r.getName() + "def";
+        stringBuilder.delete(0, stringBuilder.length());
+
+
+        /* -- Machine -- */
+        // creates event to extend it
+        Event ruleExtendEvent = new Event(r.getName());
+        ruleExtendEvent.setExtendWho(ruleEvent);
+
+
+
+
+
+
+        return true;
+    }
+
+    /* ----------------------- */
+
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
      *

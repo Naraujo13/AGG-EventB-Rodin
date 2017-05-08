@@ -14,10 +14,11 @@ import java.util.HashMap;
  */
 public class Event {
     
-    String name;
-    ArrayList<String> parameters; 
-    HashMap<String,String> acts;
-    HashMap<String,String> guards;
+    private String name; // -- Nome do evento
+    private Event extendWho;    // -- Evento que será extendido, caso exista
+    private ArrayList<String> parameters; // -- Lista de Parâmetros do Evento
+    private HashMap<String,String> acts;    // -- Lista de Acts do Evento (Label -> Act)
+    private HashMap<String,String> guards;  // -- Lista de Guardas do Evento (Label -> Guarda)
     
     
     public Event(String name){
@@ -25,8 +26,17 @@ public class Event {
         parameters = new ArrayList<>();
         acts = new HashMap<>();
         guards = new HashMap<>();
+        extendWho = null;
     }
-    
+
+    /**
+     * Método para quando um evento extende outro
+     * @param event - evento a ser extendido
+     */
+    public void setExtendWho(Event event){
+        extendWho = event;
+    }
+
     /**
      * Método de adição de ações ao evento.
      * @param name - label da ação a ser adicionada
@@ -52,5 +62,41 @@ public class Event {
     public void addGuard(String name, String predicate){
         guards.put(name, predicate);
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Método para acesso de evento que o atual estende
+      * @return - retorna evento estendido
+     */
+    public Event getExtendWho() {
+        return extendWho;
+    }
+
+    /**
+     * Método de acesso aos parâmetros do evento
+     * @return - retorna ArrayList com os parâmetros do evento
+     */
+    public ArrayList<String> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Método de acesso as acts do evento
+     * @return - retorna HashMap contendo os acts do evento (Label -> Act)
+     */
+    public HashMap<String, String> getActs() {
+        return acts;
+    }
+
+    /**
+     * Método de acesso as guardas do evento
+     * @return - retorna HashMap contendo as guardas do evento (Label -> Guarda)
+     */
+    public HashMap<String, String> getGuards() {
+        return guards;
+    }
+
 }

@@ -14,7 +14,7 @@ package GraphGrammar;
  */
 public class Node extends NodeType{
     
-    String ID;      //ID que identifica esta instância de nodo
+    private String ID;      //ID que identifica esta instância de nodo
 
     /*Construtor que recebe como parâmetro o tipo do nodo e sua identificação única*/
     public Node(String type, String ID){
@@ -39,19 +39,19 @@ public class Node extends NodeType{
      */
     public void insertAttribute(String type, String name, String ID, String value){
         Attribute newAtt = new Attribute(type, ID, name, value);
-        attributes.add(newAtt);
+        this.getAttributes().add(newAtt);
     }
     
     /**
      * Método que imprime as informações do nodo corrente.
      * @return - retorna true se conseguiu imprimir as informações corretamete, false caso tenha encontrado algum erro.
      */
-    public boolean printNode(){
-        if (this.type == null){
+    boolean printNode(){
+        if (this.getType() == null){
             System.out.println("\t\t\tErro. O nodo atual não possui tipo.");
             return false;
         }
-        System.out.println("\t\t\tType: " + this.type);
+        System.out.println("\t\t\tType: " + this.getType());
         
         if (this.ID == null){
             System.out.println("\t\t\tErro. O nodo atual não possui ID.");
@@ -59,12 +59,12 @@ public class Node extends NodeType{
         }
         System.out.println("\t\t\tID: " + this.ID);
         
-        if (!this.attributes.isEmpty()){
+        if (!this.getAttributes().isEmpty()){
             //System.out.println("\t\t\tO nodo atual não possui atributos.");
         //else{
             System.out.println("\t\t\tAtributos:");
             int i=0;
-            for (AttributeType att: this.attributes){
+            for (AttributeType att: this.getAttributes()){
                 i++;
                 System.out.println("\t\t\t\tAtributo " + i + ":");
                 System.out.println("\t\t\t\t\tID: " + att.getID());

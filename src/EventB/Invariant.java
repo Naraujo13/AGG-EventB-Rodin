@@ -10,8 +10,8 @@ package EventB;
  * @author Nícolas Oreques de Araujo
  */
 public class Invariant {
-    String name;
-    String predicate;
+    private String name;
+    private String predicate;
     
     public Invariant(String name, String predicate){
         this.name = name;

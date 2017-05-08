@@ -15,9 +15,9 @@ import java.util.List;
  * @author Nícolas Oreques de Araujo
  */
 public class EdgeType {
-    String type;
-    List <String> source; //Lista com IDs que representam os tipos dos nodos fonte
-    List <String> target; //Lista com IDs que representam os tipos dos nodos alvo
+    private String type;
+    private ArrayList <String> source; //Lista com IDs que representam os tipos dos nodos fonte
+    private ArrayList <String> target; //Lista com IDs que representam os tipos dos nodos alvo
     
     /* Construtor da classe Edge, que recebe nome e ID como parâmetros e cria uma definição de aresta para o grafo
     *  @param name - nome da aresta criada

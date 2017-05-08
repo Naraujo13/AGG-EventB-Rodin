@@ -24,10 +24,10 @@ public class Grammar {
     
    
    //Atributos da gramática
-   String name;        //nome associado a gramática
-   HashSet <Rule> rules;   //Arraylist com as regras da gramática
-   Graph host;          //Grafo host
-   TypeGraph typeGraph;     //Grafo tipo
+   private String name;        //nome associado a gramática
+   private HashSet <Rule> rules;   //Arraylist com as regras da gramática
+   private Graph host;          //Grafo host
+   private TypeGraph typeGraph;     //Grafo tipo
        
     public Grammar(String name){
         
@@ -117,7 +117,7 @@ public class Grammar {
             System.out.println("\tGrafo host: ");
             this.host.printGraph();
         }
-        
+
         /*Regras*/
         if (rules == null)
             System.out.println("\tEsta gramática não possui regras.");

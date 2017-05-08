@@ -11,7 +11,7 @@ package EventB;
  */
 public class Constant {
     
-    String name;
+    private String name;
 
     public Constant(String name){
         this.name = name;

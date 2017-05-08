@@ -10,7 +10,7 @@ package EventB;
  * @author Nícolas Oreques de Araujo
  */
 public class Set {
-    String name;
+    private String name;
     
     public Set (String name){
         this.name = name;

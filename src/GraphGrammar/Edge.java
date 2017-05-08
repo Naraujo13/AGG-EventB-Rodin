@@ -12,10 +12,10 @@ package GraphGrammar;
  */
 public class Edge{
     
-    String type;    //TD que identifica o tipo da aresta
-    String ID;      //ID que identifica esta instância de aresta
-    String source;  //ID do nodo fonte
-    String target;  //ID do nodo alvo
+    private String type;    //TD que identifica o tipo da aresta
+    private String ID;      //ID que identifica esta instância de aresta
+    private String source;  //ID do nodo fonte
+    private String target;  //ID do nodo alvo
     
     public Edge (String type, String ID, String source, String target){
         this.type = type;
@@ -60,7 +60,7 @@ public class Edge{
      * Método que imprime as informações da aresta corrente.
      * @return - retorna true se conseguiu imprimir as informações corretamete, false caso tenha encontrado algum erro.
      */
-    public boolean printEdge(){
+    boolean printEdge(){
         if (this.type == null){
             System.out.println("\t\t\tErro. A aresta atual não possui tipo.");
             return false;

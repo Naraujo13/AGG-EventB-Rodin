@@ -377,7 +377,7 @@ public class AGGToGraphGrammar {
      * @param attNames map contendo os nomes dos atributos associado ao seu ID
      * @param attTypes map contendo os tipos dos atributos associados ao seu ID
      */
-    public void defineRules(Grammar grammar, Map <String, String> attNames, Map <String, String> attTypes){
+    private void defineRules(Grammar grammar, Map <String, String> attNames, Map <String, String> attTypes){
         //Definição de uma Regra...
        Graph RHS = null, LHS = null;
        Rule rule = null;

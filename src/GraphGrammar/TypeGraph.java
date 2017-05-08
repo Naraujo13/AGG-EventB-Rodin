@@ -20,15 +20,17 @@ import java.util.Scanner;
 
 
 public class TypeGraph {
+
     String type;
+
     //Collection de Nodos contendo o tipos dos nodos permitidos
-    
-    List <NodeType> allowedNodes;
-    //Collection <String> allowedNodes;
+    ArrayList <NodeType> allowedNodes;
+
     //Mapa associando ID usado nas arestas do grafo ID do tipo (confusão do AGG)
     HashMap <String, String> translationNodes;
+
     //ArrayList de Arestas  contedo obejtos Edges(tipo, source, target)
-    List <EdgeType> allowedEdges;
+    ArrayList <EdgeType> allowedEdges;
     
     //Nodes with Attributes
     HashMap <String, NodeType> attNodes;
@@ -75,7 +77,7 @@ public class TypeGraph {
      */
     public void addAllowedNode(NodeType node){
         allowedNodes.add(node);
-        if (!node.attributes.isEmpty())
+        if (!node.getAttributes().isEmpty())
             attNodes.put(node.getType(), node);
     }
     

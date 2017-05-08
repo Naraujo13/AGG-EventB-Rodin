@@ -12,9 +12,9 @@ import java.util.List;
  * @author Nícolas Oreques de Araujo
  */
 public class EventBProject {
-    String name;
-    List <Context> contexts;
-    List <Machine> machines;
+    private String name;
+    private ArrayList <Context> contexts;
+    private ArrayList <Machine> machines;
     
     /* --- Auxiliares --- */
    

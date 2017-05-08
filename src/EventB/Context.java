@@ -13,15 +13,15 @@ import java.util.HashSet;
  * @author Nícolas Oreques de Araujo
  */
 public class Context {
-    String name;
-    
-    HashSet <Context> extend;
-    HashSet <Set> sets;
-    HashSet <Constant> constants;
-    HashMap <String, Axiom> axioms;
+
+    private String name;
+    private HashSet <Context> extend;
+    private HashSet <Set> sets;
+    private HashSet <Constant> constants;
+    private HashMap <String, Axiom> axioms;
   
     /* -- Auxiliares -- */
-     int axiomLabelCount;
+    private int axiomLabelCount;
     
     /**
      * Função que cria um contexto.

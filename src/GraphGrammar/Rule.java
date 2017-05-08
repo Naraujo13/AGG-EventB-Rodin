@@ -17,10 +17,10 @@ import java.util.List;
  */
 public class Rule {
     
-    String name;
-    Graph RHS;
-    Graph LHS;
-    HashSet <Graph> NAC;
+    private String name;
+    private Graph RHS;
+    private Graph LHS;
+    private HashSet <Graph> NAC;
     
     public Rule (String name, Graph RHS, Graph LHS){
         this.name = name;
@@ -75,7 +75,7 @@ public class Rule {
      * do log.
      * @return retorna true ou false, indicado sucesso ou falha, respectivamente. 
      */
-    public boolean printRule(){
+    boolean printRule(){
         System.out.println("\t\tImprimindo a regra " + this.name + ":");
         if (this.LHS == null){
             System.out.println("\t\t\tErro. A regra possui erros no LHS.");

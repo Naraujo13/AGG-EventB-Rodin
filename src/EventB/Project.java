@@ -13,9 +13,9 @@ import java.util.HashSet;
  * @author Nícolas Oreques de Araujo
  */
 public class Project {
-    String name;
-    HashSet <Context> contexts;
-    HashSet<Machine> machines;
+    private String name;
+    private HashSet <Context> contexts;
+    private HashSet<Machine> machines;
     
     public Project(String name){
         this.name = name;

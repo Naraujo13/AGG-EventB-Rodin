@@ -12,9 +12,9 @@ package GraphGrammar;
  */
 public class Attribute extends AttributeType {
     
-    String name;
-    String ID;
-    String value;
+    private String name;
+    private String ID;
+    private String value;
 
     public Attribute(String type, String ID, String name, String value){
         super(type);
