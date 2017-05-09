@@ -1343,7 +1343,10 @@ public class GraphGrammarToEventB {
     private boolean attributedRuleTranslation(Machine m, Context extendedContext, Rule r, Event ruleEvent){
 
         boolean attLHS = false, attRHS = false, attNACs = false;
+
         HashSet<Graph> attributedNACsSet = new HashSet<>();
+
+
         if (!r.getLHS().getAttNodes().isEmpty())
             attLHS = true;
         if (!r.getRHS().getAttNodes().isEmpty())
@@ -1403,17 +1406,131 @@ public class GraphGrammarToEventB {
         //Define Attr domain and image
         name = "axm_attrv" + r.getName() + "def";
         stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(attrv").append(r.getName());
+        if (attLHS){
+            for (Node n: r.getLHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getID());
+        }
+        if (attRHS){
+            for (Node n: r.getRHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getID());
+        }
+        if (attNACs){
+            if (!attributedNACsSet.isEmpty()){
+                for (Graph nac: attributedNACsSet){
+                    for (Node n: nac.getAttNodes().values()){
+                        stringBuilder.append(",").append(n.getID());
+                    }
+                }
+            }
+        }
+        extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
+        //Define axm_t para tipagem
+        stringBuilder.delete(0, stringBuilder.length());
+        name = "axm_t" + r.getName() + "A";
+        stringBuilder
+                .append("t")
+                .append(r.getName())
+                .append("A : Attr")
+                .append(r.getName())
+                .append(" --> AttrT");
+        extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+        //Define axm_tdef para tipagem
+        name = "axm_t" + r.getName() + "Adef";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder
+                .append("partition(t")
+                .append(r.getName())
+                .append("A");
+        if (attLHS){
+            for (Node n: r.getLHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getType());
+        }
+        if (attRHS){
+            for (Node n: r.getRHS().getAttNodes().values())
+                stringBuilder.append(",").append(n.getType());
+        }
+        if (attNACs){
+            if (!attributedNACsSet.isEmpty()){
+                for (Graph nac: attributedNACsSet){
+                    for (Node n: nac.getAttNodes().values()){
+                        stringBuilder.append(",").append(n.getType());
+                    }
+                }
+            }
+        }
+        extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         /* -- Machine -- */
         // creates event to extend it
         Event ruleExtendEvent = new Event(r.getName());
         ruleExtendEvent.setExtendWho(ruleEvent);
 
+        // --- ANY - Parameters
+        ruleExtendEvent.addParameter("mA");
+        ruleExtendEvent.addParameter("DelA");
+        ruleExtendEvent.addParameter("DanglingA");
 
+        // --- WHERE - Guards
+        //Match Attribute edges - total function mapping attributed edges
+        name = "grd_mA";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder
+                .append("mA : Attr")
+                .append(r.getName())
+                .append(" --> AttrG");
+        ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
 
+        //Set of deleted attributes of G
+        HashSet<Node> RuleDelA = new HashSet<>();
 
+        if (attLHS){
+            RuleDelA.addAll(r.getLHS().getAttNodes().values());
+            RuleDelA.removeAll(r.getRHS().getAttNodes().values());
+        }
+        name = "grd_DelA";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("DelA := mA[");
+        int flag = 0;
+        for (Node n : RuleDelA) {
+            if (flag == 0)
+                flag = 1;
+            else
+                stringBuilder.append(", ");
+            stringBuilder.append(n.getID());
+        }
+        stringBuilder.append("]");
+        ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
 
+        //Dangling Attributes of G
+        name = "grd_DangA";
+        stringBuilder.delete(0, stringBuilder.length());
+        //TODO: Revisar símbolos ASCII do EventB para expressão abaixo
+        stringBuilder.append("DanglingA = dom((attrvG |> DelV) \\ DelA");
+        ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
+
+        //Fresh ids of Attribute Edges
+        ArrayList<Node> RuleNewA = new ArrayList<>();
+        if (attRHS){
+            RuleNewA.addAll(r.getRHS().getAttNodes().values());
+            RuleNewA.removeAll(r.getLHS().getAttNodes().values());
+        }
+        for (Node n : RuleNewA)
+            //TODO: Revisar símbolos ASCII do EventB para expressão abaixo
+            ruleExtendEvent.addGuard("grd_new_a" + n.getID(), "new_a" + n.getID() + " : NAT \\ AttrG");
+
+        //Unicidade de ids para novos atributos
+        for (int i = 0; i < RuleNewA.size() - 1; i++){
+            for (int j = i + 1; j < RuleNewA.size(); j++){
+                //TODO: Revisar símbolos ASCII do EventB para expressão abaixo
+                ruleExtendEvent.addGuard(
+                        "grd_diff_a" + RuleNewA.get(i).getID() + "a" + RuleNewA.get(j).getID(),
+                        "new_a" + RuleNewA.get(i).getID() + " != new_a" + RuleNewA.get(j).getID());
+            }
+        }
+      ;
 
         return true;
     }
