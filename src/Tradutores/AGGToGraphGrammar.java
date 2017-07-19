@@ -30,10 +30,10 @@ import java.util.logging.Logger;
 public class AGGToGraphGrammar {
    
         //Auxiliares
-        String tokenAtual;      //token sendo analisado
-        Scanner entrada;        //scanner usado na leitura do arquivo
+        private String tokenAtual;      //token sendo analisado
+        private Scanner entrada;        //scanner usado na leitura do arquivo
     
-    public void aggReader(String arquivo, Grammar grammar){          
+    void aggReader(String arquivo, Grammar grammar){
         //Hash Maps utilizados para definir nodos do grafo tipo com arestas
         Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
         Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
@@ -180,7 +180,7 @@ public class AGGToGraphGrammar {
        
        //FIM DO ARQUIVO ABAIXO
        
-       //Fecha o Sacnner
+       //Fecha o Scanner
         entrada.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Grammar.class.getName()).log(Level.SEVERE, null, ex);
@@ -192,7 +192,7 @@ public class AGGToGraphGrammar {
      * Função que define nodos do grafo tipo atual, extraindo-os do arquivo corrente.
      * @param tg - grafo tipo que será definido
      */
-    public void defineTypeGraphEdges(TypeGraph tg){
+    private void defineTypeGraphEdges(TypeGraph tg){
         EdgeType newEdgeType;
         while(tokenAtual.contains("Edge")){
             
@@ -231,7 +231,7 @@ public class AGGToGraphGrammar {
      * @param attNames - hashmap com o nome dos atributos de um dado nodo
      * @param attTypes - hashmap com os tipos dos atributos de um dado nodo
     */
-    public void defineGraphNodes(Graph g, Map <String,String> attNames, Map <String, String> attTypes){
+    private void defineGraphNodes(Graph g, Map <String,String> attNames, Map <String, String> attTypes){
          //Vetores de String Auxiliares para quebrar comandos
         String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
         String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
@@ -303,7 +303,7 @@ public class AGGToGraphGrammar {
      * parêmtro
      * @param g - grafo cujas arestas serão definidas
     */
-    public void defineGraphEdges(Graph g){
+    private void defineGraphEdges(Graph g){
          //Vetores de String Auxiliares para quebrar comandos
         String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
         String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
@@ -347,7 +347,7 @@ public class AGGToGraphGrammar {
      * valor -> origem
      * @param g - grafo cujo morfismo será definido
      */
-    public void defineGraphMorphism (Graph g){
+    private void defineGraphMorphism (Graph g){
         
          //Vetores de String Auxiliares para quebrar comandos
         String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
@@ -461,9 +461,10 @@ public class AGGToGraphGrammar {
      * @param attNames - map contendo os nomes dos atributos associados ao seu ID
      * @param attTypes - map contendo os tipos dos atributos associados ao seu ID
      */
-    public void defineApplicationConditions(Rule r, Map <String,String> attNames, Map <String, String> attTypes){
-        
+    private void defineApplicationConditions(Rule r, Map <String,String> attNames, Map <String, String> attTypes){
+
             Graph newNAC;
+            int NACindex = 1;
         
              //Condições de Aplicação
             if (tokenAtual.contains("ApplCondition")){
@@ -473,7 +474,7 @@ public class AGGToGraphGrammar {
                 while (tokenAtual.contains("NAC")){ //cada iteração do while é uma NAC
                     tokenAtual = entrada.next();
                     
-                    newNAC = new Graph("NAC");
+                    newNAC = new Graph("NAC", NACindex);
                     //Itera pós ID-Nome e etc do NAC
                     tokenAtual = entrada.next();
                     //Define Nodos
@@ -493,6 +494,8 @@ public class AGGToGraphGrammar {
                    
                    //Adiciona NAC no ArrayList
                    r.insertNAC(newNAC);
+
+                   NACindex++;
                 }
                 
                 //Itera /ApplCondition
@@ -505,7 +508,6 @@ public class AGGToGraphGrammar {
     * @param args the command line arguments
     */
     public static void main(String[] args) {
-        // TODO code application logic here
        String arquivo =  "PacmanAtributo.ggx";
        AGGToGraphGrammar agg = new AGGToGraphGrammar();
        Grammar test = new Grammar("PacmanAtributo");

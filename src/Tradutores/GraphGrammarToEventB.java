@@ -15,9 +15,13 @@ import GraphGrammar.Grammar;
 import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
+import org.w3c.dom.Attr;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author Nícolas Oreques de Araujo
@@ -1021,7 +1025,7 @@ public class GraphGrammarToEventB {
     private boolean setTheoreticalNACs(Event ruleEvent, Rule r) {
         String name;
         for (Graph NAC : r.getNACs()) {
-            name = "grd_NAC" + r.getName();
+            name = "grd_NAC" + r.getName() + NAC.getNACindex();
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append("not(#");
 
@@ -1081,7 +1085,6 @@ public class GraphGrammarToEventB {
 
             //Needs testing
             //Tipagem de arestas proibidas
-            Graph LHS = r.getLHS();
             flag = 0;
             for (Edge e1 : forbiddenEdges.values()) {
                 String ID = null;
@@ -1336,15 +1339,15 @@ public class GraphGrammarToEventB {
      * DEFINITION 35
      * Método que realiza a tradução de uma regra com atributos
      * @param m - máquina a ser criada
-     * @param c - contexto a ser criado
+     * @param extendedContext - contexto a ser criado
      * @param r - regra a ser traduzida
      * @return - sucesso ou fracasso
      */
-    private boolean attributedRuleTranslation(Machine m, Context extendedContext, Rule r, Event ruleEvent){
+    private boolean attributedRuleTranslation(Machine m, Grammar g, Context extendedContext, Rule r, Event ruleEvent) {
 
         boolean attLHS = false, attRHS = false, attNACs = false;
 
-        HashSet<Graph> attributedNACsSet = new HashSet<>();
+        ArrayList<Graph> attributedNACsSet = new ArrayList<>();
 
 
         if (!r.getLHS().getAttNodes().isEmpty())
@@ -1353,8 +1356,8 @@ public class GraphGrammarToEventB {
             attRHS = true;
 
         //Tests NACs for attributes
-        for (Graph nac: r.getNACs()) {
-            if (!nac.getAttNodes().isEmpty()){
+        for (Graph nac : r.getNACs()) {
+            if (!nac.getAttNodes().isEmpty()) {
                 attNACs = true;
                 attributedNACsSet.add(nac);
             }
@@ -1375,18 +1378,18 @@ public class GraphGrammarToEventB {
         name = "axm_attr" + r.getName();
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("partition(Attr").append(r.getName());
-        if (attLHS){
-            for (Node n: r.getLHS().getAttNodes().values())
+        if (attLHS) {
+            for (Node n : r.getLHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getID());
         }
-        if (attRHS){
-            for (Node n: r.getRHS().getAttNodes().values())
+        if (attRHS) {
+            for (Node n : r.getRHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getID());
         }
-        if (attNACs){
-            if (!attributedNACsSet.isEmpty()){
-                for (Graph nac: attributedNACsSet){
-                    for (Node n: nac.getAttNodes().values()){
+        if (attNACs) {
+            if (!attributedNACsSet.isEmpty()) {
+                for (Graph nac : attributedNACsSet) {
+                    for (Node n : nac.getAttNodes().values()) {
                         stringBuilder.append(",").append(n.getID());
                     }
                 }
@@ -1407,18 +1410,18 @@ public class GraphGrammarToEventB {
         name = "axm_attrv" + r.getName() + "def";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("partition(attrv").append(r.getName());
-        if (attLHS){
-            for (Node n: r.getLHS().getAttNodes().values())
+        if (attLHS) {
+            for (Node n : r.getLHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getID());
         }
-        if (attRHS){
-            for (Node n: r.getRHS().getAttNodes().values())
+        if (attRHS) {
+            for (Node n : r.getRHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getID());
         }
-        if (attNACs){
-            if (!attributedNACsSet.isEmpty()){
-                for (Graph nac: attributedNACsSet){
-                    for (Node n: nac.getAttNodes().values()){
+        if (attNACs) {
+            if (!attributedNACsSet.isEmpty()) {
+                for (Graph nac : attributedNACsSet) {
+                    for (Node n : nac.getAttNodes().values()) {
                         stringBuilder.append(",").append(n.getID());
                     }
                 }
@@ -1444,18 +1447,18 @@ public class GraphGrammarToEventB {
                 .append("partition(t")
                 .append(r.getName())
                 .append("A");
-        if (attLHS){
-            for (Node n: r.getLHS().getAttNodes().values())
+        if (attLHS) {
+            for (Node n : r.getLHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getType());
         }
-        if (attRHS){
-            for (Node n: r.getRHS().getAttNodes().values())
+        if (attRHS) {
+            for (Node n : r.getRHS().getAttNodes().values())
                 stringBuilder.append(",").append(n.getType());
         }
-        if (attNACs){
-            if (!attributedNACsSet.isEmpty()){
-                for (Graph nac: attributedNACsSet){
-                    for (Node n: nac.getAttNodes().values()){
+        if (attNACs) {
+            if (!attributedNACsSet.isEmpty()) {
+                for (Graph nac : attributedNACsSet) {
+                    for (Node n : nac.getAttNodes().values()) {
                         stringBuilder.append(",").append(n.getType());
                     }
                 }
@@ -1464,6 +1467,71 @@ public class GraphGrammarToEventB {
         extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         /* -- Machine -- */
+        // --- Preparation
+        HashMap<String, AttributeType> LHSAttributes = new HashMap<>();
+        HashMap<String, AttributeType> RHSAttributes = new HashMap<>();
+        HashMap<String, AttributeType> NACAttributes = new HashMap<>();
+        HashMap<String, AttributeType> RuleNewA = new HashMap<>();
+        HashMap<String, AttributeType> RuleDelA = new HashMap<>();
+        HashMap<String, AttributeType> forbiddenAttributes = new HashMap<>();
+
+
+        //Constroi conjunto de atributos no lado esquerdo
+        if (attLHS) {
+            for (Node n : r.getLHS().getAttNodes().values())
+                //AddAll Map Equivalent
+                LHSAttributes.putAll(n.getAttributes()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                AttributeType::getID,
+                                Function.identity())
+                        )
+                );
+        }
+
+        //Constroi conjunto de atributos no lado direito
+        if (attRHS) {
+            for (Node n : r.getRHS().getAttNodes().values())
+                RHSAttributes.putAll(n.getAttributes()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                AttributeType::getID,
+                                Function.identity())
+                        )
+                );
+        }
+
+        //Constroi conjunto de atributos de uma NAC
+        for (Graph nac : attributedNACsSet) {
+            for (Node n : nac.getAttNodes().values())
+                NACAttributes.putAll(n.getAttributes()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                AttributeType::getID,
+                                Function.identity())
+                        )
+                );
+        }
+
+        //Constroi conjunto de atributos deletados
+        if (attLHS) {
+            RuleDelA.putAll(LHSAttributes);
+            RuleDelA.entrySet().removeAll(RHSAttributes.entrySet());
+        }
+
+        //Constroi conjunto de novos atributos
+        if (attRHS) {
+            RuleNewA.putAll(RHSAttributes);
+            RuleNewA.entrySet().removeAll(LHSAttributes.entrySet());
+        }
+
+        //Constrói conjuntos de atributos proibidos de serem identificados (NACat - LHSat)
+        if (attNACs) {
+            forbiddenAttributes.putAll(NACAttributes);
+            if (attLHS)
+                forbiddenAttributes.entrySet().removeAll(LHSAttributes.entrySet());
+        }
+
         // creates event to extend it
         Event ruleExtendEvent = new Event(r.getName());
         ruleExtendEvent.setExtendWho(ruleEvent);
@@ -1472,6 +1540,16 @@ public class GraphGrammarToEventB {
         ruleExtendEvent.addParameter("mA");
         ruleExtendEvent.addParameter("DelA");
         ruleExtendEvent.addParameter("DanglingA");
+        for (AttributeType a : LHSAttributes.values()) {
+            ruleExtendEvent.addParameter("new_" + a.getID());
+        }
+        for (AttributeType a : RHSAttributes.values()) {
+            ruleExtendEvent.addParameter("new_" + a.getID());
+        }
+        for (AttributeType a : NACAttributes.values()) {
+            ruleExtendEvent.addParameter("new_" + a.getID());
+        }
+
 
         // --- WHERE - Guards
         //Match Attribute edges - total function mapping attributed edges
@@ -1484,22 +1562,16 @@ public class GraphGrammarToEventB {
         ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
 
         //Set of deleted attributes of G
-        HashSet<Node> RuleDelA = new HashSet<>();
-
-        if (attLHS){
-            RuleDelA.addAll(r.getLHS().getAttNodes().values());
-            RuleDelA.removeAll(r.getRHS().getAttNodes().values());
-        }
         name = "grd_DelA";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("DelA := mA[");
         int flag = 0;
-        for (Node n : RuleDelA) {
+        for (AttributeType a : RuleDelA.values()) {
             if (flag == 0)
                 flag = 1;
             else
                 stringBuilder.append(", ");
-            stringBuilder.append(n.getID());
+            stringBuilder.append(a.getID());
         }
         stringBuilder.append("]");
         ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
@@ -1512,31 +1584,82 @@ public class GraphGrammarToEventB {
         ruleExtendEvent.addGuard(name, stringBuilder.substring(0));
 
         //Fresh ids of Attribute Edges
-        ArrayList<Node> RuleNewA = new ArrayList<>();
-        if (attRHS){
-            RuleNewA.addAll(r.getRHS().getAttNodes().values());
-            RuleNewA.removeAll(r.getLHS().getAttNodes().values());
-        }
-        for (Node n : RuleNewA)
+        for (AttributeType a : RuleNewA.values())
             //TODO: Revisar símbolos ASCII do EventB para expressão abaixo
-            ruleExtendEvent.addGuard("grd_new_a" + n.getID(), "new_a" + n.getID() + " : NAT \\ AttrG");
+            ruleExtendEvent.addGuard("grd_new_a" + a.getID(), "new_a" + a.getID() + " : NAT \\ AttrG");
 
         //Unicidade de ids para novos atributos
-        for (int i = 0; i < RuleNewA.size() - 1; i++){
-            for (int j = i + 1; j < RuleNewA.size(); j++){
+        for (int i = 0; i < RuleNewA.size() - 1; i++) {
+            for (int j = i + 1; j < RuleNewA.size(); j++) {
                 //TODO: Revisar símbolos ASCII do EventB para expressão abaixo
                 ruleExtendEvent.addGuard(
                         "grd_diff_a" + RuleNewA.get(i).getID() + "a" + RuleNewA.get(j).getID(),
                         "new_a" + RuleNewA.get(i).getID() + " != new_a" + RuleNewA.get(j).getID());
             }
         }
-      ;
+
+        for (AttributeType at : LHSAttributes.values()) {
+            //Compatibilidade entre atributos da regra e do grafo estado
+            //TODO: revisar se é com atributos ou com os nodos atrelados
+            ruleExtendEvent.addGuard(
+                    "grd_attrv_" + at.getID(),
+                    "mV(attrv" + r.getName() + "(" + at.getID() + ")) = attrvG(" + at.getID());
+
+            //Compatibilidade de tipo entre atributos das regras e do grafo estado
+            ruleExtendEvent.addGuard(
+                    "grd_tA" + at.getID(),
+                    "t" + r.getName() + "A(" + at.getID() + ") = tGA(mA(" + at.getID() + ")");
+            //Compatibilidade de valores entre grafo tipo e variáveis
+            //TODO: terminar implementação da guarda abaixo
+            //ruleExtendEvent.addGuard("grd_val" + at.getID(), );
+        }
+
+        for (Graph NAC: attributedNACsSet){
+            name = "grd_NAC" + r.getName() + NAC.getNACindex();
+
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("{");
+            flag = 0;
+            for (Node n: NAC.getAttNodes().values()){
+                for (AttributeType at: n.getAttributes()){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        stringBuilder.append(", ");
+                    stringBuilder.append(at.getID());
+                }
+            }
+            stringBuilder.append("} ");
+
+            //TODO: revisar símbolos ASCII do EventB para expressão abaixo
+            stringBuilder
+                    .append("C= AttrG \\ mA[Attr")
+                    .append(r.getName())
+                    .append("] AND\n");
+            for (AttributeType at: forbiddenAttributes.values()){
+                AttributeType ta = NACAttributes.get(at.getID());
+                if (ta != null) {
+
+                    stringBuilder
+                            .append("tGA(").append(at.getID()).append(") = ")
+                            .append(ta.getID()).append(" AND\n");
+
+                    stringBuilder.append("valG").append(ta.getID()).append("(").append(at.getID()).append(") = ")
+                            .append("valLNACjtLANACj").append(" AND\n");    //TODO: REVIEW VAL FUNCTION IN THIS EXPRESSION
+
+                    //TODO: continue translation of attributed rule 
+                }
+
+
+            }
+
+        }
+
+
+
 
         return true;
     }
-
-    /* ----------------------- */
-
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
      *

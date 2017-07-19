@@ -22,7 +22,8 @@ import java.util.Map;
  * @author Nícolas Oreques de Araujo
  */
 public class Graph {
-    
+
+    private int NACindex;
     private String type;
     private HashSet <Edge> graphEdges;
     private HashSet <Node> graphNodes;
@@ -38,12 +39,27 @@ public class Graph {
      */
     public Graph (String type){
         this.type = type;
+        NACindex = 0;
         graphEdges = new HashSet <> ();
         graphNodes = new HashSet <> ();
         morphism = new HashMap <> ();
         attNodes = new HashMap<>();
     }
-     
+
+    public Graph(String type, int index){
+        this.type = type;
+        if (type.equals("NAC")){
+            this.NACindex = index;
+        }
+        else
+            NACindex = 0;
+        graphEdges = new HashSet <> ();
+        graphNodes = new HashSet <> ();
+        morphism = new HashMap <> ();
+        attNodes = new HashMap<>();
+
+    }
+
     /**
      * Método de acesso aos nodos do grafo
      * @return - hashset com nodos do grafo
@@ -102,11 +118,12 @@ public class Graph {
     private void addAttNode(Node attNode){
         attNodes.put(attNode.getType(), attNode);
     }
-    
-    
-    
 
-    
+
+    public int getNACindex() {
+        return NACindex;
+    }
+
     /**
      * Função que imprime o grafo. Usado para criaçãod e log.
      * @return - função que gera log  para estrutura
