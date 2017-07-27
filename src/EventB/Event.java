@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class Event {
     
     private String name; // -- Nome do evento
-    private Event extendWho;    // -- Evento que será extendido, caso exista
+    private Event extend;    // -- Evento que será extendido, caso exista
     private ArrayList<String> parameters; // -- Lista de Parâmetros do Evento
     private HashMap<String,String> acts;    // -- Lista de Acts do Evento (Label -> Act)
     private HashMap<String,String> guards;  // -- Lista de Guardas do Evento (Label -> Guarda)
@@ -26,15 +26,15 @@ public class Event {
         parameters = new ArrayList<>();
         acts = new HashMap<>();
         guards = new HashMap<>();
-        extendWho = null;
+        extend = null;
     }
 
     /**
      * Método para quando um evento extende outro
      * @param event - evento a ser extendido
      */
-    public void setExtendWho(Event event){
-        extendWho = event;
+    public void setExtend(Event event){
+        extend = event;
     }
 
     /**
@@ -71,8 +71,8 @@ public class Event {
      * Método para acesso de evento que o atual estende
       * @return - retorna evento estendido
      */
-    public Event getExtendWho() {
-        return extendWho;
+    public Event getExtend() {
+        return extend;
     }
 
     /**
@@ -98,5 +98,7 @@ public class Event {
     public HashMap<String, String> getGuards() {
         return guards;
     }
+
+
 
 }

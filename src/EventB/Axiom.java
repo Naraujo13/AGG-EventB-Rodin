@@ -10,25 +10,28 @@ package EventB;
  * @author Nícolas Oreques de Araujo
  */
 public class Axiom {
-    private String name;
+    private String label;
     private String predicate;
     
     /**
      * Cria axioma com nome e predicado indicados
-     * @param name - nome do axioma a ser criado.
+     * @param label - nome do axioma a ser criado.
      * @param predicate - predicado do axioma a ser criado.
      */
-    public Axiom(String name, String predicate){
-        this.name = name;
+    public Axiom(String label, String predicate){
+        this.label = label;
         this.predicate = predicate;
     }
     
     /**
-     * Método de acesso ao nome do axioma
-     * @return retorna o nome do axioma
+     * Método de acesso ao label do axioma
+     * @return retorna o label do axioma
      */
-    public String getName(){
-        return name;
+    public String getLabel(){
+        return label;
     }
-    
+
+    public String getPredicate() {
+        return predicate;
+    }
 }

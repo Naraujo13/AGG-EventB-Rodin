@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Document version="1.0">
     <GraphTransformationSystem ID="I1" directed="true"
-        name="Pacman_Teste" parallel="true">
+        label="Pacman_Teste" parallel="true">
         <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
             <TaggedValue Tag="Package" TagValue="java.lang"/>
             <TaggedValue Tag="Package" TagValue="java.util"/>
@@ -25,18 +25,18 @@
         <TaggedValue Tag="waitAfterStep" TagValue="true"/>
         <TaggedValue Tag="TypeGraphLevel" TagValue="ENABLED"/>
         <Types>
-            <NodeType ID="I2" abstract="false" name="Pacman%:CIRCLE:java.awt.Color[r=255,g=200,b=0]:FILLED:pacman.jpg:[NODE]:"/>
-            <NodeType ID="I3" abstract="false" name="Ghost%:CIRCLE:java.awt.Color[r=0,g=0,b=255]:FILLED:[NODE]:"/>
-            <NodeType ID="I4" abstract="false" name="Apple%:CIRCLE:java.awt.Color[r=255,g=0,b=0]:FILLED:[NODE]:"/>
-            <NodeType ID="I5" abstract="false" name="Position%:ROUNDRECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
-            <NodeType ID="I6" abstract="false" name="Score%:RECT:java.awt.Color[r=0,g=0,b=255]:[NODE]:">
+            <NodeType ID="I2" abstract="false" label="Pacman%:CIRCLE:java.awt.Color[r=255,g=200,b=0]:FILLED:pacman.jpg:[NODE]:"/>
+            <NodeType ID="I3" abstract="false" label="Ghost%:CIRCLE:java.awt.Color[r=0,g=0,b=255]:FILLED:[NODE]:"/>
+            <NodeType ID="I4" abstract="false" label="Apple%:CIRCLE:java.awt.Color[r=255,g=0,b=0]:FILLED:[NODE]:"/>
+            <NodeType ID="I5" abstract="false" label="Position%:ROUNDRECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
+            <NodeType ID="I6" abstract="false" label="Score%:RECT:java.awt.Color[r=0,g=0,b=255]:[NODE]:">
                 <AttrType ID="I8" attrname="Score:" typename="int" visible="true"/>
             </NodeType>
-            <EdgeType ID="I9" abstract="false" name="Path%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
-            <EdgeType ID="I10" abstract="false" name="Apple%:SOLID_LINE:java.awt.Color[r=255,g=0,b=0]:[EDGE]:"/>
-            <EdgeType ID="I11" abstract="false" name="Pacman%:SOLID_LINE:java.awt.Color[r=255,g=200,b=0]:[EDGE]:"/>
-            <EdgeType ID="I12" abstract="false" name="Ghost%:SOLID_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
-            <Graph ID="I13" kind="TG" name="TypeGraph">
+            <EdgeType ID="I9" abstract="false" label="Path%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I10" abstract="false" label="Apple%:SOLID_LINE:java.awt.Color[r=255,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I11" abstract="false" label="Pacman%:SOLID_LINE:java.awt.Color[r=255,g=200,b=0]:[EDGE]:"/>
+            <EdgeType ID="I12" abstract="false" label="Ghost%:SOLID_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
+            <Graph ID="I13" kind="TG" label="TypeGraph">
                 <Node ID="I14" type="I5">
                     <NodeLayout X="253" Y="179"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -91,7 +91,7 @@
                 </Edge>
             </Graph>
         </Types>
-        <Graph ID="I24" kind="HOST" name="Graph">
+        <Graph ID="I24" kind="HOST" label="Graph">
             <Node ID="I25" type="I5">
                 <NodeLayout X="367" Y="131"/>
                 <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -242,8 +242,8 @@
                 <additionalLayout aktlength="200" force="10" preflength="200"/>
             </Edge>
         </Graph>
-        <Rule ID="I63" formula="true" name="Kill">
-            <Graph ID="I65" kind="LHS" name="LeftOf_Kill">
+        <Rule ID="I63" formula="true" label="Kill">
+            <Graph ID="I65" kind="LHS" label="LeftOf_Kill">
                 <Node ID="I66" type="I5">
                     <NodeLayout X="175" Y="88"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -265,7 +265,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I71" kind="RHS" name="RightOf_Kill">
+            <Graph ID="I71" kind="RHS" label="RightOf_Kill">
                 <Node ID="I72" type="I5">
                     <NodeLayout X="175" Y="88"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -279,7 +279,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="Kill">
+            <Morphism comment="Formula: true" label="Kill">
                 <Mapping image="I72" orig="I66"/>
                 <Mapping image="I73" orig="I68"/>
                 <Mapping image="I74" orig="I69"/>
@@ -287,9 +287,9 @@
             <TaggedValue Tag="layer" TagValue="0"/>
             <TaggedValue Tag="priority" TagValue="1"/>
         </Rule>
-        <Rule ID="I75" formula="true" name="Eat">
-            <Parameter name="s" type="int"/>
-            <Graph ID="I77" kind="LHS" name="LeftOf_Eat">
+        <Rule ID="I75" formula="true" label="Eat">
+            <Parameter label="s" type="int"/>
+            <Graph ID="I77" kind="LHS" label="LeftOf_Eat">
                 <Node ID="I78" type="I5">
                     <NodeLayout X="243" Y="109"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -320,7 +320,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I86" kind="RHS" name="RightOf_Eat">
+            <Graph ID="I86" kind="RHS" label="RightOf_Eat">
                 <Node ID="I87" type="I2">
                     <NodeLayout X="212" Y="78"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -343,7 +343,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="Eat">
+            <Morphism comment="Formula: true" label="Eat">
                 <Mapping image="I87" orig="I79"/>
                 <Mapping image="I88" orig="I78"/>
                 <Mapping image="I92" orig="I85"/>
@@ -351,8 +351,8 @@
             <TaggedValue Tag="layer" TagValue="0"/>
             <TaggedValue Tag="priority" TagValue="2"/>
         </Rule>
-        <Rule ID="I93" formula="true" name="MoveForwardPacman">
-            <Graph ID="I95" kind="LHS" name="LeftOf_MoveForwardPacman">
+        <Rule ID="I93" formula="true" label="MoveForwardPacman">
+            <Graph ID="I95" kind="LHS" label="LeftOf_MoveForwardPacman">
                 <Node ID="I96" type="I5">
                     <NodeLayout X="109" Y="58"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -378,7 +378,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I102" kind="RHS" name="RightOf_MoveForwardPacman">
+            <Graph ID="I102" kind="RHS" label="RightOf_MoveForwardPacman">
                 <Node ID="I103" type="I5">
                     <NodeLayout X="129" Y="126"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -404,7 +404,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="MoveForwardPacman">
+            <Morphism comment="Formula: true" label="MoveForwardPacman">
                 <Mapping image="I103" orig="I96"/>
                 <Mapping image="I104" orig="I98"/>
                 <Mapping image="I105" orig="I97"/>
@@ -413,7 +413,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I109" kind="NAC" name="Ghost">
+                    <Graph ID="I109" kind="NAC" label="Ghost">
                         <Node ID="I110" type="I5">
                             <NodeLayout X="109" Y="58"/>
                             <additionalLayout age="0" force="10"
@@ -450,7 +450,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="Ghost">
+                    <Morphism label="Ghost">
                         <Mapping image="I110" orig="I96"/>
                         <Mapping image="I111" orig="I98"/>
                         <Mapping image="I112" orig="I97"/>
@@ -459,7 +459,7 @@
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I117" kind="NAC" name="GhostNear">
+                    <Graph ID="I117" kind="NAC" label="GhostNear">
                         <Node ID="I118" type="I5">
                             <NodeLayout X="82" Y="82"/>
                             <additionalLayout age="0" force="10"
@@ -486,12 +486,12 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="GhostNear">
+                    <Morphism label="GhostNear">
                         <Mapping image="I118" orig="I97"/>
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I123" kind="NAC" name="GhostNear2">
+                    <Graph ID="I123" kind="NAC" label="GhostNear2">
                         <Node ID="I124" type="I5">
                             <NodeLayout X="82" Y="82"/>
                             <additionalLayout age="0" force="10"
@@ -518,12 +518,12 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="GhostNear2">
+                    <Morphism label="GhostNear2">
                         <Mapping image="I124" orig="I97"/>
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I129" kind="NAC" name="EatFirst">
+                    <Graph ID="I129" kind="NAC" label="EatFirst">
                         <Node ID="I130" type="I5">
                             <NodeLayout X="170" Y="104"/>
                             <additionalLayout age="0" force="10"
@@ -550,14 +550,14 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="EatFirst"/>
+                    <Morphism label="EatFirst"/>
                 </NAC>
             </ApplCondition>
             <TaggedValue Tag="layer" TagValue="1"/>
             <TaggedValue Tag="priority" TagValue="3"/>
         </Rule>
-        <Rule ID="I135" formula="true" name="MoveForwardGhost">
-            <Graph ID="I137" kind="LHS" name="LeftOf_MoveForwardGhost">
+        <Rule ID="I135" formula="true" label="MoveForwardGhost">
+            <Graph ID="I137" kind="LHS" label="LeftOf_MoveForwardGhost">
                 <Node ID="I138" type="I5">
                     <NodeLayout X="187" Y="109"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -587,7 +587,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I145" kind="RHS" name="RightOf_MoveForwardGhost">
+            <Graph ID="I145" kind="RHS" label="RightOf_MoveForwardGhost">
                 <Node ID="I146" type="I5">
                     <NodeLayout X="159" Y="106"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -617,7 +617,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="MoveForwardGhost">
+            <Morphism comment="Formula: true" label="MoveForwardGhost">
                 <Mapping image="I146" orig="I138"/>
                 <Mapping image="I147" orig="I139"/>
                 <Mapping image="I148" orig="I140"/>
@@ -627,7 +627,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I153" kind="NAC" name="PacmanIsHere">
+                    <Graph ID="I153" kind="NAC" label="PacmanIsHere">
                         <Node ID="I154" type="I3">
                             <NodeLayout X="155" Y="52"/>
                             <additionalLayout age="0" force="10"
@@ -654,7 +654,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="PacmanIsHere">
+                    <Morphism label="PacmanIsHere">
                         <Mapping image="I154" orig="I140"/>
                         <Mapping image="I155" orig="I138"/>
                         <Mapping image="I157" orig="I144"/>
@@ -664,8 +664,8 @@
             <TaggedValue Tag="layer" TagValue="1"/>
             <TaggedValue Tag="priority" TagValue="3"/>
         </Rule>
-        <Rule ID="I159" formula="true" name="MovaBackPacman">
-            <Graph ID="I161" kind="LHS" name="LeftOf_MovaBackPacman">
+        <Rule ID="I159" formula="true" label="MovaBackPacman">
+            <Graph ID="I161" kind="LHS" label="LeftOf_MovaBackPacman">
                 <Node ID="I162" type="I5">
                     <NodeLayout X="129" Y="126"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -691,7 +691,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I168" kind="RHS" name="RightOf_MovaBackPacman">
+            <Graph ID="I168" kind="RHS" label="RightOf_MovaBackPacman">
                 <Node ID="I169" type="I5">
                     <NodeLayout X="109" Y="58"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -717,7 +717,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="MovaBackPacman">
+            <Morphism comment="Formula: true" label="MovaBackPacman">
                 <Mapping image="I169" orig="I162"/>
                 <Mapping image="I171" orig="I163"/>
                 <Mapping image="I170" orig="I164"/>
@@ -726,7 +726,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I175" kind="NAC" name="Ghost">
+                    <Graph ID="I175" kind="NAC" label="Ghost">
                         <Node ID="I176" type="I5">
                             <NodeLayout X="107" Y="113"/>
                             <additionalLayout age="0" force="10"
@@ -763,7 +763,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="Ghost">
+                    <Morphism label="Ghost">
                         <Mapping image="I176" orig="I162"/>
                         <Mapping image="I178" orig="I163"/>
                         <Mapping image="I177" orig="I164"/>
@@ -772,7 +772,7 @@
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I183" kind="NAC" name="GhostNear">
+                    <Graph ID="I183" kind="NAC" label="GhostNear">
                         <Node ID="I184" type="I5">
                             <NodeLayout X="82" Y="83"/>
                             <additionalLayout age="0" force="10"
@@ -799,12 +799,12 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="GhostNear">
+                    <Morphism label="GhostNear">
                         <Mapping image="I184" orig="I162"/>
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I189" kind="NAC" name="GhostNear2">
+                    <Graph ID="I189" kind="NAC" label="GhostNear2">
                         <Node ID="I190" type="I5">
                             <NodeLayout X="82" Y="83"/>
                             <additionalLayout age="0" force="10"
@@ -831,12 +831,12 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="GhostNear2">
+                    <Morphism label="GhostNear2">
                         <Mapping image="I190" orig="I162"/>
                     </Morphism>
                 </NAC>
                 <NAC>
-                    <Graph ID="I195" kind="NAC" name="EatFirst">
+                    <Graph ID="I195" kind="NAC" label="EatFirst">
                         <Node ID="I196" type="I2">
                             <NodeLayout X="173" Y="48"/>
                             <additionalLayout age="0" force="10"
@@ -863,14 +863,14 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="EatFirst"/>
+                    <Morphism label="EatFirst"/>
                 </NAC>
             </ApplCondition>
             <TaggedValue Tag="layer" TagValue="1"/>
             <TaggedValue Tag="priority" TagValue="3"/>
         </Rule>
-        <Rule ID="I201" formula="true" name="MoveBackGhost">
-            <Graph ID="I203" kind="LHS" name="LeftOf_MoveBackGhost">
+        <Rule ID="I201" formula="true" label="MoveBackGhost">
+            <Graph ID="I203" kind="LHS" label="LeftOf_MoveBackGhost">
                 <Node ID="I204" type="I5">
                     <NodeLayout X="161" Y="74"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -900,7 +900,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I211" kind="RHS" name="RightOf_MoveBackGhost">
+            <Graph ID="I211" kind="RHS" label="RightOf_MoveBackGhost">
                 <Node ID="I212" type="I5">
                     <NodeLayout X="161" Y="74"/>
                     <additionalLayout age="0" force="10" frozen="true" zone="50"/>
@@ -930,7 +930,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism comment="Formula: true" name="MoveBackGhost">
+            <Morphism comment="Formula: true" label="MoveBackGhost">
                 <Mapping image="I212" orig="I204"/>
                 <Mapping image="I213" orig="I205"/>
                 <Mapping image="I214" orig="I206"/>
@@ -940,7 +940,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I219" kind="NAC" name="PacmanIsHere">
+                    <Graph ID="I219" kind="NAC" label="PacmanIsHere">
                         <Node ID="I220" type="I5">
                             <NodeLayout X="149" Y="147"/>
                             <additionalLayout age="0" force="10"
@@ -967,7 +967,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="PacmanIsHere">
+                    <Morphism label="PacmanIsHere">
                         <Mapping image="I220" orig="I205"/>
                         <Mapping image="I221" orig="I206"/>
                         <Mapping image="I223" orig="I210"/>

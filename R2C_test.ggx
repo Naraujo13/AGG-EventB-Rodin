@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Document version="1.0">
-    <GraphTransformationSystem ID="I1" directed="true" name="GraGra" parallel="true">
+    <GraphTransformationSystem ID="I1" directed="true" label="GraGra" parallel="true">
         <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
             <TaggedValue Tag="Package" TagValue="java.lang"/>
             <TaggedValue Tag="Package" TagValue="java.util"/>
@@ -23,12 +23,12 @@
         <TaggedValue Tag="waitAfterStep" TagValue="true"/>
         <TaggedValue Tag="TypeGraphLevel" TagValue="ENABLED"/>
         <Types>
-            <NodeType ID="I2" abstract="false" name="Rectangle%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
-            <NodeType ID="I3" abstract="false" name="Circle%:CIRCLE:java.awt.Color[r=0,g=0,b=255]:[NODE]:"/>
-            <EdgeType ID="I4" abstract="false" name="Relation%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
-            <EdgeType ID="I5" abstract="false" name="Dash%:DASH_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
-            <EdgeType ID="I6" abstract="false" name="R2C%:DOT_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
-            <Graph ID="I7" kind="TG" name="TypeGraph">
+            <NodeType ID="I2" abstract="false" label="Rectangle%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
+            <NodeType ID="I3" abstract="false" label="Circle%:CIRCLE:java.awt.Color[r=0,g=0,b=255]:[NODE]:"/>
+            <EdgeType ID="I4" abstract="false" label="Relation%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I5" abstract="false" label="Dash%:DASH_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
+            <EdgeType ID="I6" abstract="false" label="R2C%:DOT_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <Graph ID="I7" kind="TG" label="TypeGraph">
                 <Node ID="I8" type="I3">
                     <NodeLayout X="1053" Y="98"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -63,7 +63,7 @@
                 </Edge>
             </Graph>
         </Types>
-        <Graph ID="I13" kind="HOST" name="Graph">
+        <Graph ID="I13" kind="HOST" label="Graph">
             <Node ID="I14" type="I2">
                 <NodeLayout X="546" Y="103"/>
                 <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -73,14 +73,14 @@
                 <additionalLayout age="0" force="10" frozen="false" zone="50"/>
             </Node>
         </Graph>
-        <Rule ID="I16" formula="true" name="Rule0">
-            <Graph ID="I18" kind="LHS" name="Left">
+        <Rule ID="I16" formula="true" label="Rule0">
+            <Graph ID="I18" kind="LHS" label="Left">
                 <Node ID="I19" type="I2">
                     <NodeLayout X="86" Y="49"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
                 </Node>
             </Graph>
-            <Graph ID="I20" kind="RHS" name="Right">
+            <Graph ID="I20" kind="RHS" label="Right">
                 <Node ID="I21" type="I2">
                     <NodeLayout X="86" Y="50"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -94,12 +94,12 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism name="Rule0">
+            <Morphism label="Rule0">
                 <Mapping image="I21" orig="I19"/>
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I24" kind="NAC" name="Nac">
+                    <Graph ID="I24" kind="NAC" label="Nac">
                         <Node ID="I25" type="I2">
                             <NodeLayout X="150" Y="39"/>
                             <additionalLayout age="0" force="10"
@@ -116,7 +116,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="Nac">
+                    <Morphism label="Nac">
                         <Mapping image="I25" orig="I19"/>
                     </Morphism>
                 </NAC>
@@ -124,8 +124,8 @@
             <TaggedValue Tag="layer" TagValue="1"/>
             <TaggedValue Tag="priority" TagValue="0"/>
         </Rule>
-        <Rule ID="I28" formula="true" name="Rule1">
-            <Graph ID="I30" kind="LHS" name="Left">
+        <Rule ID="I28" formula="true" label="Rule1">
+            <Graph ID="I30" kind="LHS" label="Left">
                 <Node ID="I31" type="I2">
                     <NodeLayout X="125" Y="38"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -151,7 +151,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I37" kind="RHS" name="Right">
+            <Graph ID="I37" kind="RHS" label="Right">
                 <Node ID="I38" type="I2">
                     <NodeLayout X="125" Y="38"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -181,7 +181,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism name="Rule1">
+            <Morphism label="Rule1">
                 <Mapping image="I38" orig="I31"/>
                 <Mapping image="I39" orig="I32"/>
                 <Mapping image="I40" orig="I33"/>
@@ -191,7 +191,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I45" kind="NAC" name="Nac">
+                    <Graph ID="I45" kind="NAC" label="Nac">
                         <Node ID="I46" type="I2">
                             <NodeLayout X="93" Y="33"/>
                             <additionalLayout age="0" force="10"
@@ -228,7 +228,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="Nac">
+                    <Morphism label="Nac">
                         <Mapping image="I47" orig="I33"/>
                         <Mapping image="I46" orig="I31"/>
                         <Mapping image="I50" orig="I35"/>
@@ -241,8 +241,8 @@
             <TaggedValue Tag="layer" TagValue="2"/>
             <TaggedValue Tag="priority" TagValue="0"/>
         </Rule>
-        <Rule ID="I53" formula="true" name="Rule2">
-            <Graph ID="I55" kind="LHS" name="Left">
+        <Rule ID="I53" formula="true" label="Rule2">
+            <Graph ID="I55" kind="LHS" label="Left">
                 <Node ID="I56" type="I2">
                     <NodeLayout X="240" Y="43"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -268,7 +268,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Graph ID="I62" kind="RHS" name="Right">
+            <Graph ID="I62" kind="RHS" label="Right">
                 <Node ID="I63" type="I2">
                     <NodeLayout X="96" Y="46"/>
                     <additionalLayout age="0" force="10" frozen="false" zone="50"/>
@@ -298,7 +298,7 @@
                     <additionalLayout aktlength="200" force="10" preflength="200"/>
                 </Edge>
             </Graph>
-            <Morphism name="Rule2">
+            <Morphism label="Rule2">
                 <Mapping image="I63" orig="I56"/>
                 <Mapping image="I64" orig="I57"/>
                 <Mapping image="I65" orig="I58"/>
@@ -308,7 +308,7 @@
             </Morphism>
             <ApplCondition>
                 <NAC>
-                    <Graph ID="I70" kind="NAC" name="Nac">
+                    <Graph ID="I70" kind="NAC" label="Nac">
                         <Node ID="I71" type="I2">
                             <NodeLayout X="385" Y="42"/>
                             <additionalLayout age="0" force="10"
@@ -345,7 +345,7 @@
                             <additionalLayout aktlength="200" force="10" preflength="200"/>
                         </Edge>
                     </Graph>
-                    <Morphism name="Nac">
+                    <Morphism label="Nac">
                         <Mapping image="I71" orig="I58"/>
                         <Mapping image="I72" orig="I59"/>
                         <Mapping image="I73" orig="I57"/>

@@ -15,8 +15,8 @@ import GraphGrammar.Grammar;
 import GraphGrammar.Graph;
 import GraphGrammar.Node;
 import GraphGrammar.Rule;
-import org.w3c.dom.Attr;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1534,7 +1534,7 @@ public class GraphGrammarToEventB {
 
         // creates event to extend it
         Event ruleExtendEvent = new Event(r.getName());
-        ruleExtendEvent.setExtendWho(ruleEvent);
+        ruleExtendEvent.setExtend(ruleEvent);
 
         // --- ANY - Parameters
         ruleExtendEvent.addParameter("mA");
@@ -1647,7 +1647,7 @@ public class GraphGrammarToEventB {
                     stringBuilder.append("valG").append(ta.getID()).append("(").append(at.getID()).append(") = ")
                             .append("valLNACjtLANACj").append(" AND\n");    //TODO: REVIEW VAL FUNCTION IN THIS EXPRESSION
 
-                    //TODO: continue translation of attributed rule 
+                    //TODO: continue translation of attributed rule
                 }
 
 
@@ -1666,17 +1666,42 @@ public class GraphGrammarToEventB {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
+        String fileName = "R2C_test";
+
+        /* -- Creates Directories -- */
+        //Base
+        File baseDir = new File(fileName);
+        baseDir.mkdirs();
+        //Log
+        File logDir = new File(fileName + "/log");
+        logDir.mkdirs();
+        //Step 1
+        File aggDir = new File(fileName + "/step1");
+        aggDir.mkdirs();
+        //Step2
+        File rodinDir = new File(fileName + "/step2");
+        rodinDir.mkdirs();
+
+
         /* -- Step1 - AGG to GG translation -- */
-        String arquivo = "pacman.ggx";
+        //Creates Translator and Grammar
         AGGToGraphGrammar agg = new AGGToGraphGrammar();
-        Grammar test = new Grammar("pacman");
-        agg.aggReader(arquivo, test);
-        test.printGrammar();
+        Grammar test = new Grammar(fileName);
+        //Translates
+        agg.aggReader(fileName + ".ggx", test);
+        //Logs
+        test.printGrammar(logDir.getPath());
 
         /* -- Step 2 - GG to EventB translation -- */
+        //Creates Translator and project
         GraphGrammarToEventB eventB = new GraphGrammarToEventB();
-        Project newProject = new Project("pacman");
-        eventB.translator(newProject, test);        
+        Project newProject = new Project(fileName);
+        //Translates
+        eventB.translator(newProject, test);
+        //Logs
+        newProject.logProject(logDir.getPath(), rodinDir.getPath());
+
         System.out.println("Finished!");
     }
 }

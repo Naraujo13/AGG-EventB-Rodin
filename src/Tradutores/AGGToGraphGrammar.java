@@ -504,16 +504,16 @@ public class AGGToGraphGrammar {
             }
     }
     
-    /** Main para testes de conversão do AGG
-    * @param args the command line arguments
-    */
-    public static void main(String[] args) {
-       String arquivo =  "PacmanAtributo.ggx";
-       AGGToGraphGrammar agg = new AGGToGraphGrammar();
-       Grammar test = new Grammar("PacmanAtributo");
-       agg.aggReader(arquivo, test);
-       test.printGrammar();
-       System.out.println("Finished!");
-    }
+//    /** Main para testes de conversão do AGG
+//    * @param args the command line arguments
+//    */
+//    public static void main(String[] args) {
+//       String arquivo =  "PacmanAtributo.ggx";
+//       AGGToGraphGrammar agg = new AGGToGraphGrammar();
+//       Grammar test = new Grammar("PacmanAtributo");
+//       agg.aggReader(arquivo, test);
+//       test.printGrammar();
+//       System.out.println("Finished!");
+//    }
     
 }

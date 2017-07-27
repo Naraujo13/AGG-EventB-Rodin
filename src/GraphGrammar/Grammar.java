@@ -85,11 +85,11 @@ public class Grammar {
         rules.add(r);
     }
  
-    public boolean printGrammar(){
+    public boolean printGrammar(String path){
         /* Testing */
         PrintStream realSystemOut = System.out; //salva systemOut original
         File file;
-        file = new File("Grammar_" + this.name + ".log");
+        file = new File(path + "/Grammar_" + this.name + ".log");
         try {           //Seta output para o arquivo
             PrintStream printStream = new PrintStream(new FileOutputStream(file));
             System.setOut(printStream);
