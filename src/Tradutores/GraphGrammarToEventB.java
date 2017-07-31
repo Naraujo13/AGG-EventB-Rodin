@@ -747,14 +747,11 @@ public class GraphGrammarToEventB {
                 }
             }
 
-            /*
-             * -------------------*
+            /* -------------------*
              * -- Passo 1: ANY ---*
-             * -------------------
-             */
-            /*
-             * -- Parâmetros --
-             */
+             * -------------------*/
+
+            /* -- Parâmetros  -- */
             ruleEvent.addParameter("mV");
             ruleEvent.addParameter("mE");
             ruleEvent.addParameter("DelV");
@@ -762,9 +759,6 @@ public class GraphGrammarToEventB {
             ruleEvent.addParameter("DelE");
             ruleEvent.addParameter("Dangling");
 
-            /*
-             * -- Listas Pre-Fixadas --
-             */
             //Nodos
             for (String n : createdNodes) {
                 ruleEvent.addParameter("newV_" + n);
@@ -773,17 +767,14 @@ public class GraphGrammarToEventB {
             for (String e : createdEdges) {
                 ruleEvent.addParameter("newE_" + e);
             }
-            /*
-             * -------------------*
-             * --- FIM PASSO 1 ---*
-             * -------------------
-             */
 
-             /*
-             * -------------------*
+            /* -------------------*
+             * --- FIM PASSO 1 ---*
+             * -------------------*/
+
+             /* -------------------*
              * -- Passo 2: WHERE -*
-             * -------------------
-             */
+             * -------------------*/
             //Função total mapeando os vértices
             name = "grd_mV";
             predicate = "mV : Vert" + r.getName() + " --> VertG";
@@ -794,51 +785,38 @@ public class GraphGrammarToEventB {
             predicate = "mE : Edge" + r.getName() + " --> EdgeG";
             ruleEvent.addGuard(name, predicate);
 
-            /*
-             * -- Vértices Excluídos --
-             */
+            /* -- Vértices Excluídos -- */
             //Define o set de vértices excluídos
             for (Node n : r.getLHS().getNodes()) {
                 deletedNodes.add(n.getID());
             }
             deletedNodes.removeAll(r.getRHS().getMorphism().values());
 
-            //Define guarda
             name = "grd_DelV";
             String[] aux;
             int flag = 0;
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("DelV := mV[");
+            stringBuilder.append("DelV = {");
             for (String n : deletedNodes) {
                 aux = n.split("I");
-                if (flag != 0) {
+                if (flag != 0)
                     stringBuilder.append(", ");
-                }
-                else {
+                else
                     flag = 1;
-                }
                 stringBuilder.append("{").append(aux[1]).append("}");
             }
-            stringBuilder.append("]");
+            stringBuilder.append("}");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
-            /*
-             * -- Fim Vértices Excluídos --
-             */
 
-            /*
-             * -- Vértices Preservados --
-             */
+
+            /* -- Vértices Preservados -- */
             //Define conjunto de vértices preservados
             name = "grd_PreV";
-            predicate = "PreservV := VertG \\ DelV";
+            predicate = "PreservV = VertG \\ DelV";
             ruleEvent.addGuard(name, predicate);
-            /*
-             * -- Fim Vértices Preservados --
-             */
 
-            /*
-             * -- Arestas Excluídas --
-             */
+
+            /* -- Arestas Excluídas -- */
             //Define o set de arestas excluídas
             for (Edge e : r.getLHS().getEdges()) {
                 deletedEdges.add(e.getID());
@@ -846,128 +824,98 @@ public class GraphGrammarToEventB {
             deletedEdges.removeAll(r.getRHS().getMorphism().values());
             stringBuilder.delete(0, stringBuilder.length());
             name = "grd_DelE";
-            stringBuilder.append("DelE := mE[");
+            stringBuilder.append("DelE = {");
             flag = 0;
             for (String e : deletedEdges) {
                 aux = e.split("I");
-                if (flag != 0) {
+                if (flag != 0)
                     stringBuilder.append(", ");
-                }
-                else {
+                else
                     flag = 1;
-                }
                 stringBuilder.append("{").append(aux[1]).append("}");
             }
-            stringBuilder.append("]");
+            stringBuilder.append("}");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
-            /*
-             * -- Fim Arestas Excluídas --
-             */
 
-            /*
-             * -- Arestas Pendentes --
-             */
+
+            /* -- Arestas Penduradas -- */
             //grd_Dang
             //Arestas pendentes
             name = "grd_Dang";
-            predicate = "Dangling = dom((Source |> DelV) \\/ (TargetG |> DelV))\\DelE";
+            predicate = "Dangling = dom((SourceG |> DelV) \\/ (TargetG |> DelV))\\DelE";
             ruleEvent.addGuard(name, predicate);
-            /*
-             * -- Fim Arestas Pendentes --
-             */
 
-            /*
-             * -- Novos Vértices --
-             */
+
+            //* -- Novos Vértices -- */
             //grd_new_v
             //Guarda para novos Vertices pertencerem ao dominio
             for (String n : createdNodes) {
-                name = "grd_new_v" + n;
-                predicate = "new_v" + n + ": NAT \\ VertG";
+                name = "grd_newV_" + n;
+                predicate = "newV_" + n + " : NAT \\ VertG";
                 ruleEvent.addGuard(name, predicate);
             }
-            /*
-             * -- Fim Novos Vértices --
-             */
 
-            /*
-             * -- Novas Arestas --
-             */
+
+            /* -- Novas Arestas -- */
             //grd_new_e
             //Guarda para novas arestas pertencerem ao dominio
             for (String e : createdEdges) {
-                name = "grd_new_e" + e;
-                predicate = "new_e" + e + ": NAT \\ EdgeG";
+                name = "grd_newE_" + e;
+                predicate = "newE_" + e + " : NAT \\ EdgeG";
                 ruleEvent.addGuard(name, predicate);
             }
-            /*
-             * -- Fim Novos Vértices --
-             */
 
-            /*
-             * -- Unicidade dos IDs de Novos Vértices --
-             */
+
+            /* -- Unicidade de ID em Novos Vértices -- */
             //grd_diffvivj
             for (String vi : createdNodes) {
                 for (String vj : createdNodes) {
                     if (!vi.equals(vj)) {
                         name = "grd_diff" + vi + vj;
-                        predicate = "new_" + vi + " /= " + "new_" + vj;
+                        predicate = "newV_" + vi + " /= " + "new_" + vj;
                         ruleEvent.addGuard(name, predicate);
                     }                    
                 }
             }
-            /*
-             * -- Fim Unicidade dos IDs de Novos Vértices --
-             */
 
-            /*
-             * -- Unicidade dos IDs de Novas Arestas --
-             */
+           /* -- Unicidade de ID Arestas -- */
             //grd_diffeiej
             for (String ei : createdEdges) {
                 for (String ej : createdEdges) {
                     if (!ei.equals(ej)) {
                         name = "grd_diff" + ei + ej;
-                        predicate = "new_" + ei + " /= " + "new_" + ej;
+                        predicate = "newE_" + ei + " /= " + "new_" + ej;
                         ruleEvent.addGuard(name, predicate);
                     }                    
                 }
             }
-            /*
-             * -- Fim Unicidade dos IDs de Novas Arestas --
-             */
 
-            /*
-             * -- Compatibilidade de tipos de arestas, vértice e das funçoes
-             * Source e Target --
-             */
+
+            /* -- Tipagem Vértices -- */
             //grd_tV
             name = "grd_tV";
-            predicate = "!v.v : Vert" + r.getName() + "=> t" + r.getName() + "V(v) = tGV(mv(v))";
+            predicate = "!v.v : Vert" + r.getName() + "=> t" + r.getName() + "V(v) = tGV(mV(v))";
             ruleEvent.addGuard(name, predicate);
 
+            /* -- Tipagem Arestas -- */
             //grd_tE
             name = "grd_tE";
             predicate = "!e.e : Edge" + r.getName() + "=> t" + r.getName() + "E(e) = tGE(mE(e))";
             ruleEvent.addGuard(name, predicate);
 
+            /* -- Tipagem Source e Target -- */
             //grd_srctgt
             name = "grd_srctgt";
-            predicate = "!e.e : Edge" + r.getName() + "=> mV(Source" + r.getName() + "(e)) = SourceG(mE(e)) and mV(Target" + r.getName() + "(e)) = TargetG(mE(e))";
+            predicate = "!e.e : Edge" + r.getName() + "=> mV(Source" + r.getName() + "(e)) = SourceG(mE(e)) & mV(Target" + r.getName() + "(e)) = TargetG(mE(e))";
             ruleEvent.addGuard(name, predicate);
-            /*
-             * -- Fim Compatibilidade de tipos de arestas, vértice e das funçoes
-             * -- Source e Target --
-             */
 
             /* ---------------------- *
              * -- Theoretical NACs -- *
              * ---------------------- */
             //Definir conjunto NAC e NACid
-            if (!setTheoreticalNACs(ruleEvent, r)) {
-                return false;
-            }
+//            if (!setTheoreticalNACs(ruleEvent, r)) {
+//                return false;
+//            }
 
             /* ------------------- *
              * -- Passo 3: THEN -- *
@@ -977,39 +925,37 @@ public class GraphGrammarToEventB {
             flag = 0;
             name = "act_V";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("VertG := (VertG\\DelV)\\/{");
+            stringBuilder.append("VertG := (VertG\\DelV)\\/ {");
             for (String n : createdNodes) {
                 if (flag == 0)
                     flag = 1;
                 else
                     stringBuilder.append(", ");
-                stringBuilder.append("new_").append(n);
+                stringBuilder.append("newV_").append(n);
             }
             stringBuilder.append("}");
             ruleEvent.addAct(name, stringBuilder.substring(0));
-            /* ------------- */
 
             /* --- Act_E --- */
             flag = 0;
             name = "act_E";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("EdgeG := (EdgeG\\DelE)\\/{");
+            stringBuilder.append("EdgeG := (EdgeG\\DelE)\\/ {");
             for (String e : createdEdges) {
                 if (flag == 0)
                     flag = 1;
                 else
                     stringBuilder.append(", ");
-                stringBuilder.append("new_").append(e);
+                stringBuilder.append("newE_").append(e);
             }
-            stringBuilder.append("}");
+            stringBuilder.append("} ");
             ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
-            //Needs further testing
             /* --- Act_src --- */
             name = "act_src";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("SourceG := (DelE <<| SourceG) \\/ \n{\n");
+            stringBuilder.append("SourceG := (DelE <<| SourceG) \\/ {");
             flag = 0;
             for (Edge e : createdEdgesRef) {               
                 //Testa se nodo fonte da aresta criada é também um nodo criado
@@ -1018,7 +964,7 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                    stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getSource());
+                    stringBuilder.append("newE_").append(e.getID()).append(" |-> newV_").append(e.getSource());
                 }
                 //Testa se nodo fonte é um preservado
                 else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getSource()))) 
@@ -1027,18 +973,18 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                    stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(r.getRHS().getMorphism().get(e.getSource()));
+                    stringBuilder.append("newE_").append(e.getID()).append(" |-> ")
+                            .append(r.getName()).append(r.getRHS().getMorphism().get(e.getSource()));
                 }
             }
-            stringBuilder.append("\n}\n");
+            stringBuilder.append("} ");
             ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
-            //Needs further testing
             /* --- Act_tgt --- */
             name = "act_tgt";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("TargetG := (DelE <<| TargetG) \\/ \n{\n");
+            stringBuilder.append("TargetG := (DelE <<| TargetG) \\/ {");
             flag = 0;
             for (Edge e : createdEdgesRef) {
                 //Testa se nodo destino da nova aresta é um novo nodo
@@ -1047,7 +993,7 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                   stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getTarget());
+                   stringBuilder.append("newE_").append(e.getID()).append(" |-> newV_").append(e.getTarget());
                 }
                 //Testa se nodo destino é um preservado
                 else if (preservedNodes.contains(r.getRHS().getMorphism().get(e.getTarget())))
@@ -1056,10 +1002,11 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                   stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(r.getRHS().getMorphism().get(e.getTarget()));
+                   stringBuilder.append("newE_").append(e.getID()).append(" |-> ")
+                           .append(r.getName()).append(r.getRHS().getMorphism().get(e.getTarget()));
                 }                
             }
-            stringBuilder.append("\n}");
+            stringBuilder.append("} ");
             ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
@@ -1067,16 +1014,16 @@ public class GraphGrammarToEventB {
             /* --- Act_tV --- */
             name = "act_tV";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("tGV := (DelV <<| tGV \\/ \n{\n");
+            stringBuilder.append("tGV := (DelV <<| tGV) \\/ {");
             flag = 0;
             for (Node n : createdNodesRef) {
                 if (flag == 0) 
                     flag = 1;
                 else
                     stringBuilder.append(", ");
-                stringBuilder.append("new_").append(n.getID()).append(" |-> ").append(n.getType());
+                stringBuilder.append("newV_").append(n.getID()).append(" |-> ").append(n.getType());
             }
-            stringBuilder.append("\n}");
+            stringBuilder.append("} ");
             ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
 
@@ -1084,7 +1031,7 @@ public class GraphGrammarToEventB {
             /* --- Act_tE --- */
             name = "act_tE";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("tGE := (DelE <<| tGE \\/ \n{\n");
+            stringBuilder.append("tGE := (DelE <<| tGE) \\/ {");
             flag = 0;
             for (Edge e : createdEdgesRef) {
                 if (flag == 0) {
@@ -1093,9 +1040,9 @@ public class GraphGrammarToEventB {
                 else {
                     stringBuilder.append(", ");
                 }
-                stringBuilder.append("new_").append(e.getID()).append(" |-> ").append(e.getType());
+                stringBuilder.append("newE_").append(e.getID()).append(" |-> ").append(e.getType());
             }
-            stringBuilder.append("\n}");
+            stringBuilder.append("} ");
             ruleEvent.addAct(name, stringBuilder.substring(0));
             /* ------------- */
             
@@ -1142,25 +1089,25 @@ public class GraphGrammarToEventB {
                 EdgeSetString.append(e.getID());
             }
             stringBuilder.append(nodeSetString.substring(0)).append(", ").append(EdgeSetString.substring(0)).append(".")
-                    .append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mE [Vert").append(r.getName()).append("] and\n")
-                    .append("{").append(EdgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] and\n");
+                    .append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mE [Vert").append(r.getName()).append("] &  ")
+                    .append("{").append(EdgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] &  ");
 
             //Guarda que garante unicidade do ID dos vértices
             for (Node n1 : forbiddenVertices.values()) {
                 for (Node n2 : forbiddenVertices.values()) {
                     flag = 1;
-                    stringBuilder.append(n1.getID()).append("/=").append(n2.getID()).append(" and ");
+                    stringBuilder.append(n1.getID()).append("/=").append(n2.getID()).append(" & ");
                 }
             }
-            stringBuilder.append("\n");
+            stringBuilder.append("  ");
 
             //Guarda que garante unicidade do ID das arestas
             for (Edge e1 : forbiddenEdges.values()) {
                 for (Edge e2 : forbiddenEdges.values()) {
-                    stringBuilder.append(e1.getID()).append("/=").append(e2.getID()).append(" and ");
+                    stringBuilder.append(e1.getID()).append("/=").append(e2.getID()).append(" & ");
                 }
             }
-            stringBuilder.append("\n");
+            stringBuilder.append("  ");
 
             //Needs testing
             //Tipagem de vértices proibidos
@@ -1168,10 +1115,10 @@ public class GraphGrammarToEventB {
                 String ID = null;
                 ID = NAC.getMorphism().get(n1.getID());
                 if (ID != null) {
-                    stringBuilder.append("tGV(").append(n1.getID()).append(") = ").append(ID).append(" and ");
+                    stringBuilder.append("tGV(").append(n1.getID()).append(") = ").append(ID).append(" & ");
                 }
             }
-            stringBuilder.append("\n");
+            stringBuilder.append("  ");
 
             //Needs testing
             //Tipagem de arestas proibidas
@@ -1182,12 +1129,12 @@ public class GraphGrammarToEventB {
                 if (ID != null) {
                     stringBuilder.append("tGE(").append(e1.getID()).append(") = ").append(ID);
                     /* -- Source -- */
-                    //if SourceLNACj(e) == v and v : NACjV
+                    //if SourceLNACj(e) == v & v : NACjV
                     Node Source = forbiddenVertices.get(e1.getSource());
                     if (flag == 0)
                         flag = 1;
                     else
-                        stringBuilder.append(" and\n");
+                        stringBuilder.append(" &  ");
                     if (Source != null)
                         stringBuilder.append("SourceG(").append(e1.getID()).append(") = ").append(Source.getID());
                     else{
@@ -1198,7 +1145,7 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        stringBuilder.append(" and\n");
+                        stringBuilder.append(" &  ");
                     if (Source != null)
                         stringBuilder.append("TargetG(").append(e1.getID()).append(") = ").append(Target.getID());
                     else{
@@ -1206,7 +1153,7 @@ public class GraphGrammarToEventB {
                     }
                 }
             }
-            stringBuilder.append(") or\n");
+            stringBuilder.append(") or  ");
 
             //Needs testing
             /* -- Unicidade do match -- */
@@ -1219,7 +1166,7 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        stringBuilder.append(" or\n");
+                        stringBuilder.append(" or ");
                     stringBuilder.append("mV(").append(nodeList.get(i).getID()).append(") /= mV(").append(nodeList.get(j)).append(")");
                 }
             }
@@ -1237,7 +1184,7 @@ public class GraphGrammarToEventB {
                     if (flag == 0)
                         flag = 1;
                     else
-                        stringBuilder.append(" or\n");
+                        stringBuilder.append(" or ");
                     stringBuilder.append("mE(").append(EdgeList.get(i).getID()).append(") /= mE(").append(EdgeList.get(j)).append(")");
                 }
             }
@@ -1487,7 +1434,7 @@ public class GraphGrammarToEventB {
         }
         extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
-        //Define Attr domain and image
+        //Define Attr domain & image
         name = "axm_attrv" + r.getName();
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder
@@ -1496,7 +1443,7 @@ public class GraphGrammarToEventB {
                 .append(" --> Vert").append(r.getName());
         extendedContext.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
-        //Define Attr domain and image
+        //Define Attr domain & image
         name = "axm_attrv" + r.getName() + "def";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("partition(attrv").append(r.getName());
@@ -1725,17 +1672,17 @@ public class GraphGrammarToEventB {
             stringBuilder
                     .append("C= AttrG \\ mA[Attr")
                     .append(r.getName())
-                    .append("] AND\n");
+                    .append("] & ");
             for (AttributeType at: forbiddenAttributes.values()){
                 AttributeType ta = NACAttributes.get(at.getID());
                 if (ta != null) {
 
                     stringBuilder
                             .append("tGA(").append(at.getID()).append(") = ")
-                            .append(ta.getID()).append(" AND\n");
+                            .append(ta.getID()).append(" & ");
 
                     stringBuilder.append("valG").append(ta.getID()).append("(").append(at.getID()).append(") = ")
-                            .append("valLNACjtLANACj").append(" AND\n");    //TODO: REVIEW VAL FUNCTION IN THIS EXPRESSION
+                            .append("valLNACjtLANACj").append(" & ");    //TODO: REVIEW VAL FUNCTION IN THIS EXPRESSION
 
                     //TODO: continue translation of attributed rule (def 35)
                 }

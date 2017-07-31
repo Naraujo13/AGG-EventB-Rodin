@@ -188,6 +188,8 @@ public class Machine {
                     //Extends
                     if (e.getExtend() != null)
                         machineFile.write(" extends " + e.getExtend().getName() + "\n");
+                    else
+                        machineFile.write("\n");
 
                     //Any
                     if (!e.getParameters().isEmpty())
