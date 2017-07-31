@@ -1,11 +1,7 @@
 package GraphGrammar;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,35 +17,35 @@ import java.util.Scanner;
 
 public class TypeGraph {
 
-    String type;
+    private String type;
 
     //Collection de Nodos contendo o tipos dos nodos permitidos
-    ArrayList <NodeType> allowedNodes;
+    private LinkedHashSet<NodeType> allowedNodes;
 
     //Mapa associando ID usado nas arestas do grafo ID do tipo (confusão do AGG)
-    HashMap <String, String> translationNodes;
+    private LinkedHashMap<String, String> translationNodes;
 
     //ArrayList de Arestas  contedo obejtos Edges(tipo, source, target)
-    ArrayList <EdgeType> allowedEdges;
+    private LinkedHashSet<EdgeType> allowedEdges;
     
     //Nodes with Attributes
-    HashMap <String, NodeType> attNodes;
+    private LinkedHashMap<String, NodeType> attNodes;
   
     /*Construtor
     */
     public TypeGraph (){
         type = "TG";
-        translationNodes = new HashMap<>();
-        allowedNodes = new ArrayList <> ();
-        allowedEdges = new ArrayList <> ();
-        attNodes = new HashMap<>();
+        translationNodes = new LinkedHashMap<>();
+        allowedNodes = new LinkedHashSet <> ();
+        allowedEdges = new LinkedHashSet <> ();
+        attNodes = new LinkedHashMap<>();
     }
     
       /**
      * Método de acesso ao hashmap para tradução da confusão do agg.
      * @return hashmap com idConfusao->idRealDoTipo
      */
-    public Map<String,String> getTranslationNodes(){
+    public LinkedHashMap<String, String> getTranslationNodes(){
         return translationNodes;
     }
     
@@ -67,7 +63,7 @@ public class TypeGraph {
      * Método de acesso aos nodos de um grafo tipo.
      * @return - retorna arraylist com nodos do grafo tipo
      */
-    public List<NodeType> getAllowedNodes(){
+    public LinkedHashSet<NodeType> getAllowedNodes(){
         return allowedNodes;
     }
     
@@ -85,7 +81,7 @@ public class TypeGraph {
      * Método de acesso as arestas de um grafo tipo.
      * @return retorna arraylist com arestas do grafo tipo.
      */
-    public List<EdgeType> getAllowedEdges(){
+    public LinkedHashSet<EdgeType> getAllowedEdges(){
         return allowedEdges;
     }
     
@@ -109,7 +105,7 @@ public class TypeGraph {
      * Função get para hashmap contendo nodos com atributos
      * @return 
      */
-    public HashMap<String, NodeType> getAttNodes(){
+    public LinkedHashMap<String, NodeType> getAttNodes(){
         return attNodes;
     }
     

@@ -2,6 +2,7 @@ package GraphGrammar;
 
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /*
@@ -16,8 +17,8 @@ import java.util.List;
  */
 public class EdgeType {
     private String type;
-    private ArrayList <String> source; //Lista com IDs que representam os tipos dos nodos fonte
-    private ArrayList <String> target; //Lista com IDs que representam os tipos dos nodos alvo
+    private LinkedHashSet<String> source; //Lista com IDs que representam os tipos dos nodos fonte
+    private LinkedHashSet<String> target; //Lista com IDs que representam os tipos dos nodos alvo
     
     /* Construtor da classe Edge, que recebe nome e ID como parâmetros e cria uma definição de aresta para o grafo
     *  @param name - nome da aresta criada
@@ -26,8 +27,8 @@ public class EdgeType {
     */
     public EdgeType(String type){
         this.type = type;
-        source = new ArrayList<>();
-        target = new ArrayList<>();
+        source = new LinkedHashSet<>();
+        target = new LinkedHashSet<>();
         
     }
     
@@ -42,7 +43,7 @@ public class EdgeType {
      * Método de acesso a lista de nodos fonte
      * @return - retorna lista com nodos fonte desta aresta
      */
-    public List<String> getSource(){
+    public LinkedHashSet<String> getSource(){
         return source;
     }
     
@@ -50,7 +51,7 @@ public class EdgeType {
      * Método de acesso a lista de nodos destino.
      * @return - retorna lista com nodos destino desta aresta
      */
-    public List<String> getTarget(){
+    public LinkedHashSet<String> getTarget(){
         return target;
     }
     

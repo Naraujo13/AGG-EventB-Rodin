@@ -6,8 +6,6 @@
 package EventB;
 
 import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 

@@ -1,9 +1,7 @@
 package GraphGrammar;
 
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -25,12 +23,12 @@ public class Graph {
 
     private int NACindex;
     private String type;
-    private HashSet <Edge> graphEdges;
-    private HashSet <Node> graphNodes;
-    private Map <String, String> morphism;
+    private LinkedHashSet<Edge> graphEdges;
+    private LinkedHashSet<Node> graphNodes;
+    private LinkedHashMap<String, String> morphism;
     
     //Nodes with Attributes
-    private HashMap <String, Node> attNodes;
+    private LinkedHashMap<String, Node> attNodes;
     
     /**
      * Construtor da classe grafo. Cria novo grafo baseado no tipo passado como
@@ -40,10 +38,10 @@ public class Graph {
     public Graph (String type){
         this.type = type;
         NACindex = 0;
-        graphEdges = new HashSet <> ();
-        graphNodes = new HashSet <> ();
-        morphism = new HashMap <> ();
-        attNodes = new HashMap<>();
+        graphEdges = new LinkedHashSet <> ();
+        graphNodes = new LinkedHashSet <> ();
+        morphism = new LinkedHashMap <> ();
+        attNodes = new LinkedHashMap<>();
     }
 
     public Graph(String type, int index){
@@ -53,10 +51,10 @@ public class Graph {
         }
         else
             NACindex = 0;
-        graphEdges = new HashSet <> ();
-        graphNodes = new HashSet <> ();
-        morphism = new HashMap <> ();
-        attNodes = new HashMap<>();
+        graphEdges = new LinkedHashSet <> ();
+        graphNodes = new LinkedHashSet <> ();
+        morphism = new LinkedHashMap <> ();
+        attNodes = new LinkedHashMap<>();
 
     }
 
@@ -106,7 +104,7 @@ public class Graph {
      * Função get para hashmap contendo nodos com atributos
      * @return - retorna HashMap com nodos que possue atributos (Nome -> Nodo)
      */
-    public HashMap<String, Node> getAttNodes(){
+    public LinkedHashMap<String, Node> getAttNodes(){
         return attNodes;
     }
     

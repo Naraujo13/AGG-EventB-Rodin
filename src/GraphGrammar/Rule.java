@@ -3,6 +3,7 @@ package GraphGrammar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /*
@@ -20,13 +21,13 @@ public class Rule {
     private String name;
     private Graph RHS;
     private Graph LHS;
-    private HashSet <Graph> NAC;
+    private LinkedHashSet<Graph> NAC;
     
     public Rule (String name, Graph RHS, Graph LHS){
         this.name = name;
         this.RHS = RHS;
         this.LHS = LHS;
-        NAC = new HashSet<>();
+        NAC = new LinkedHashSet<>();
     }
    
     /**

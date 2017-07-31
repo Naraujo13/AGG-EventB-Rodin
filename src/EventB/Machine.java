@@ -6,9 +6,9 @@
 package EventB;
 
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+
 
 /**
  * Classe que representa uma máquina na notação eventB.
@@ -17,11 +17,11 @@ import java.util.List;
 public class Machine {
     private String name;
     
-    private ArrayList <Context> sees;
-    private ArrayList <Machine> refinement;
-    private ArrayList <Variable> variables;
-    private HashMap <String, Invariant> invariants;
-    private ArrayList <Event> events;
+    private LinkedHashSet<Context> sees;
+    private LinkedHashSet<Machine> refinement;
+    private LinkedHashSet<Variable> variables;
+    private LinkedHashMap<String, Invariant> invariants;
+    private LinkedHashSet<Event> events;
 
     /**
      * Cria uma máquina com dado nome. Requer um contexto (pesquisar para ter certeza de obrigatoriedade).
@@ -30,35 +30,35 @@ public class Machine {
      */
     public Machine (String name, Context context){
         this.name = name;
-        sees = new ArrayList <>();
+        sees = new LinkedHashSet <>();
         sees.add(context);
-        refinement = new ArrayList <>();
-        variables = new ArrayList <>();
-        invariants = new HashMap <>();
-        events =  new ArrayList <>();
+        refinement = new LinkedHashSet <>();
+        variables = new LinkedHashSet <>();
+        invariants = new LinkedHashMap <>();
+        events =  new LinkedHashSet <>();
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<Context> getSees() {
+    public LinkedHashSet<Context> getSees() {
         return sees;
     }
 
-    public ArrayList<Machine> getRefinement() {
+    public LinkedHashSet<Machine> getRefinement() {
         return refinement;
     }
 
-    public ArrayList<Variable> getVariables() {
+    public LinkedHashSet<Variable> getVariables() {
         return variables;
     }
 
-    public HashMap<String, Invariant> getInvariants() {
+    public LinkedHashMap<String, Invariant> getInvariants() {
         return invariants;
     }
 
-    public ArrayList<Event> getEvents() {
+    public LinkedHashSet<Event> getEvents() {
         return events;
     }
 

@@ -2,6 +2,7 @@ package GraphGrammar;
 
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -16,7 +17,7 @@ import java.util.HashSet;
 public class NodeType {
     
     private String type;
-    private HashSet <AttributeType> attributes;
+    private LinkedHashSet<AttributeType> attributes;
 
     /* Construtor da classe Node, que recebe nome e ID como parâmetros e cria uma definição de vértice para o grafo
     *  @param name - nome do nodo criado
@@ -24,7 +25,7 @@ public class NodeType {
     */
     public NodeType(String type){
         this.type = type;
-        attributes = new HashSet <>();
+        attributes = new LinkedHashSet <>();
     }
     
      /* Método que retorna o tipo do nodo 
@@ -38,7 +39,7 @@ public class NodeType {
      * Método que retorna arrayList com atributos do nodo.
      * @return - ArrayList com atributos do nodo
      */
-    public HashSet<AttributeType> getAttributes(){
+    public LinkedHashSet<AttributeType> getAttributes(){
         return attributes;
     }
     

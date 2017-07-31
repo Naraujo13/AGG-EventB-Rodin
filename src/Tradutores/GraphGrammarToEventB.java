@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,8 @@ import java.util.stream.Collectors;
  */
 public class GraphGrammarToEventB {
     
-    private HashMap<String, Node> forbiddenVertices = new HashMap<>();
-    private HashMap<String, Edge> forbiddenEdges = new HashMap<>();
+    private LinkedHashMap<String, Node> forbiddenVertices = new LinkedHashMap<>();
+    private LinkedHashMap<String, Edge> forbiddenEdges = new LinkedHashMap<>();
     private StringBuilder stringBuilder = new StringBuilder(1024);
 
     /**
@@ -57,7 +58,7 @@ public class GraphGrammarToEventB {
         
         Machine m = new Machine(g.getName() + "mch", c);
         
-        if (!stateGraphTranslation(m, c, g)) {
+        if (!stateGraphTranslation(m, g)) {
             return false;
         }
         
@@ -71,7 +72,6 @@ public class GraphGrammarToEventB {
         
     }
 
-    //Revisado
     /**
      * DEFINITION 15
      * Função que realiza a tradução do grafo tipo.
@@ -176,32 +176,32 @@ public class GraphGrammarToEventB {
         return true;
     }
 
-    //Revisado
+
     /**
      * DEFINITION 16
      * Método que realiza a tradução e criação do grafo estado e o insere em uma
      * máquina.
-     * @param m - máquina a ser criada
-     * @param c - contexto a ser criada
-     * @param g - gramática a ser traduzida
+     * 100% Revised and working
+     * @param machine - máquina a ser criada
+     * @param grammar - gramática a ser traduzida
      * @return - sucesso ou fracasso da tradução
      */
-    private boolean stateGraphTranslation(Machine m, Context c, Grammar g) {
+    private boolean stateGraphTranslation(Machine machine, Grammar grammar) {
         /*
          * -- Adiciona variáveis do grafo estado --
          */
         //Vértices
-        m.addVariable(new Variable("VertG"));
+        machine.addVariable(new Variable("VertG"));
         //Arestas
-        m.addVariable(new Variable("vdgeG"));
+        machine.addVariable(new Variable("EdgeG"));
         //Fonte
-        m.addVariable(new Variable("SourceG"));
+        machine.addVariable(new Variable("SourceG"));
         //Destino
-        m.addVariable(new Variable("TargetG"));
+        machine.addVariable(new Variable("TargetG"));
         //Tipagem de vértices
-        m.addVariable(new Variable("tG_V"));
+        machine.addVariable(new Variable("tGV"));
         //Tipagem de Arestas
-        m.addVariable(new Variable("tG_E"));
+        machine.addVariable(new Variable("tGE"));
 
         /*
          * -- Adiciona invariantes do grafo estado --
@@ -212,32 +212,32 @@ public class GraphGrammarToEventB {
         //Invariante para Vertices pertencerem a partes dos naturais
         name = "inv_VertG";
         predicate = "VertG : POW(NAT)";
-        m.addInvariant(name, new Invariant(name, predicate));
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         //Invariante para arestas pertencerem a partes dos naturais
         name = "inv_EdgeG";
         predicate = "EdgeG : POW(NAT)";
-        m.addInvariant(name, new Invariant(name, predicate));
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         //Invariante para de definir domínio da fonte de aresta para nodo (EdgeG->VertG)
         name = "inv_SourceG";
         predicate = "SourceG : EdgeG --> VertG";
-        m.addInvariant(name, new Invariant(name, predicate));
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         //Invariante para de definir domínio da destino de aresta para nodo (EdgeG->VertG)
         name = "inv_TargetG";
         predicate = "TargetG : EdgeG --> VertG";
-        m.addInvariant(name, new Invariant(name, predicate));
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         //Invariante para de definir tipagem de vértices de Vertice do estado para Vertice do tipo (VertG->VertT)
-        name = "inv_tGv";
-        predicate = "tGv : VertG --> VertT";
-        m.addInvariant(name, new Invariant(name, predicate));
+        name = "inv_tGV";
+        predicate = "tGV : VertG --> VertT";
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         //Invariante para de definir tipagem de arestas de aresta do estado para aresta do tipo (EdgeG->EdgeT)
-        name = "inv_tGe";
-        predicate = "tGe : EdgeG --> EdgeT";
-        m.addInvariant(name, new Invariant(name, predicate));
+        name = "inv_tGE";
+        predicate = "tGE : EdgeG --> EdgeT";
+        machine.addInvariant(name, new Invariant(name, predicate));
 
         /*
          * -- Adiciona eventos --
@@ -250,17 +250,15 @@ public class GraphGrammarToEventB {
         //Act para inicialização de nodos
         name = "act_VertG";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("VertG = {");
+        stringBuilder.append("VertG := {");
         flag = 0;
-        for (Node n : g.getHost().getNodes()) {            
+        for (Node n : grammar.getHost().getNodes()) {
             aux = n.getID().split("I");
-            if (flag == 0) {
-                stringBuilder.append(aux[1]);
-            }
-            else {
-                stringBuilder.append(", ").append(aux[1]);
-            }
-            flag = 1;
+            if (flag != 0)
+                stringBuilder.append(", ");
+            else
+                flag = 1;
+            stringBuilder.append(aux[1]);
         }
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
@@ -268,31 +266,32 @@ public class GraphGrammarToEventB {
         //Act para inicialização das arestas
         name = "act_EdgeG";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("EdgeG = {");
+        stringBuilder.append("EdgeG := {");
         flag = 0;
-        for (Edge e : g.getHost().getEdges()) {            
+        for (Edge e : grammar.getHost().getEdges()) {
             aux = e.getID().split("I");
-            if (flag != 0) {
+            if (flag != 0)
                 stringBuilder.append(", ");
-            }
+            else
+                flag = 1;
             stringBuilder.append(aux[1]);
-            flag = 1;
+
         }
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para definir função Source
-        name = "apublicct_srcG";
+        name = "act_srcG";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("SourceG = {");
+        stringBuilder.append("SourceG := {");
         flag = 0;
-        for (Edge e : g.getHost().getEdges()) {
+        for (Edge e : grammar.getHost().getEdges()) {
             aux = e.getID().split("I");
-            if (flag != 0) {
+            if (flag != 0)
                 stringBuilder.append(", ");
-            }
+            else
+                flag = 1;
             stringBuilder.append(aux[1]).append("|->").append(e.getSource());
-            flag = 1;
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
@@ -300,53 +299,53 @@ public class GraphGrammarToEventB {
         //Act para definir função Target
         name = "act_tgtG";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("TargetG = {");
+        stringBuilder.append("TargetG := {");
         flag = 0;
-        for (Edge e : g.getHost().getEdges()) {
+        for (Edge e : grammar.getHost().getEdges()) {
             aux = e.getID().split("I");
-            if (flag != 0) {
+            if (flag != 0)
                 stringBuilder.append(", ");
-            }
+            else
+                flag = 1;
             stringBuilder.append(aux[1]).append("|->").append(e.getTarget());
-            flag = 1;
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para tipagem dos nodos
-        name = "apublicct_tG_V";
+        name = "act_tGV";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("tG_V = {");
+        stringBuilder.append("tGV := {");
         flag = 0;
-        for (Node n : g.getHost().getNodes()) {
+        for (Node n : grammar.getHost().getNodes()) {
             aux = n.getID().split("I");
-            if (flag != 0) {
+            if (flag != 0)
                 stringBuilder.append(", ");
-            }
+            else
+                flag = 1;
             stringBuilder.append(aux[1]).append("|->").append(n.getType());
-            flag = 1;
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
 
         //Act para tipagem das arestas
-        name = "act_tG_E";
+        name = "act_tGE";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("tG_E = {");
+        stringBuilder.append("tGE := {");
         flag = 0;
-        for (Edge e : g.getHost().getEdges()) {
+        for (Edge e : grammar.getHost().getEdges()) {
             aux = e.getID().split("I");
-            if (flag != 0) {
+            if (flag != 0)
                 stringBuilder.append(", ");
-            }
+            else
+                flag = 1;
             stringBuilder.append(aux[1]).append("|->").append(e.getType());
-            flag = 1;
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
 
         //Adiciona evento
-        m.addEvent(initialisation);
+        machine.addEvent(initialisation);
         return true;
     }
 
@@ -472,23 +471,22 @@ public class GraphGrammarToEventB {
             context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //Define NACs da regra
-            if (!NACTranslation(context, g, r))
+            if (!NACTranslation(context, r))
                 return false;
         }
         return true;
     }
 
-    //Revisado
+
     /**
      * DEFINIÇÃO 18
      * Método que realiza a tradução das NACs de uma regra
-     *
-     * @param c - contexto ao qual serão inseridas NACs
-     * @param g - gramática fonte
+     * 100% Revised and working
+     * @param context - contexto ao qual serão inseridas NACs
      * @param r - regra da qual serão traduzidas as NACs
      * @return - retorna true ou false, indicando sucesso ou falha do método
      */
-    private boolean NACTranslation(Context c, Grammar g, Rule r) {
+    private boolean NACTranslation(Context context, Rule r) {
 
         //Montar conjunto NAC (proibidos)
         //Vertices
@@ -536,39 +534,39 @@ public class GraphGrammarToEventB {
             }
 
             /* -- Sets -- */
-            c.addSet(new Set("Vert" + NACPrefix));
-            c.addSet(new Set("Edge" + NACPrefix));
+            context.addSet(new Set("Vert" + NACPrefix));
+            context.addSet(new Set("Edge" + NACPrefix));
 
            /* -- Constantes -- */
             //VertLNACj
             for (Node n : NAC.getNodes()) {
-                c.addConstant(new Constant(NACPrefix + n.getID()));
+                context.addConstant(new Constant(NACPrefix + n.getID()));
                 
             }
             //EdgeLNACj
             for (Edge e : NAC.getEdges()) {
-                c.addConstant(new Constant(NACPrefix + e.getID()));
+                context.addConstant(new Constant(NACPrefix + e.getID()));
             }
 
             //SourceLNACj
-            c.addConstant(new Constant("Source" + NACPrefix));
+            context.addConstant(new Constant("Source" + NACPrefix));
 
             //TargetLNACj
-            c.addConstant(new Constant("Target" + NACPrefix));
+            context.addConstant(new Constant("Target" + NACPrefix));
 
             //TODO: Revisar ordem NACV ou VNAC
 
             //tLVNACj- tipagem nodos NAC->Tipo
-            c.addConstant(new Constant("t" + NACPrefix + "V"));
+            context.addConstant(new Constant("t" + NACPrefix + "V"));
 
             //tLENACj - tipagem arestas NAC->Tipo
-            c.addConstant(new Constant("t" + NACPrefix + "E"));
+            context.addConstant(new Constant("t" + NACPrefix + "E"));
 
             //ljV - morfismo nodos NAC->LHS
-            c.addConstant(new Constant("l" + NACPrefix + "V"));
+            context.addConstant(new Constant("l" + NACPrefix + "V"));
 
             //ljE - morfismo arestas NAC->LHS
-            c.addConstant(new Constant("l" + NACPrefix + "E"));
+            context.addConstant(new Constant("l" + NACPrefix + "E"));
 
             /* -- Axiomas -- */
             String name, predicate;
@@ -581,7 +579,7 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //Edge
             name = "axm_Edge" + NACPrefix;
@@ -591,22 +589,22 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //Source
             name = "axm_src" + NACPrefix;
             predicate = "Source" + NACPrefix + " : " + "Edge" + NACPrefix + " --> " + "Vert" + NACPrefix;
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //Target
             name = "axm_tgt" + NACPrefix;
             predicate = "Target" + NACPrefix + " : " + "Edge" + NACPrefix + " --> " + "Vert" + NACPrefix;
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //tV
             name = "axm_t" + NACPrefix + "V";
             predicate = "t" + NACPrefix + "V : " + "Vert" + NACPrefix + " --> " + "VertT";
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //tV_def
             name = "axm_t" + NACPrefix + "V_def";
@@ -616,12 +614,12 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append(" |-> ").append(n.getType()).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //tE
             name = "axm_t" + NACPrefix + "E";
             predicate = "t" + NACPrefix + "E : " + "Edge" + NACPrefix + " --> " + "EdgeT";
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //tE_def
             name = "axm_t" + NACPrefix + "E_def";
@@ -631,12 +629,12 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append(" |-> ").append(e.getType()).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //axm_ljV
             name = "axm_l" + NACPrefix + "V";
             predicate = "l" + NACPrefix + "V : Vert" + NACPrefix + " --> Vert" + r.getName();
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //axm_ljV_def
             name = "axm_l" + NACPrefix + "V_def";
@@ -648,12 +646,12 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append(" |-> ").append(r.getName()).append(lID).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //axm_ljE
             name = "axm_l" + NACPrefix + "E";
             predicate = "l" + NACPrefix + "E : Edge" + NACPrefix + " --> Edge" + r.getName();
-            c.addAxiom(new Axiom(name, predicate));
+            context.addAxiom(new Axiom(name, predicate));
 
             //axm_ljE_def
             name = "axm_l" + NACPrefix + "E_def";
@@ -665,14 +663,14 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append(" |-> ").append(r.getName()).append(lID).append("}");
             }
             stringBuilder.append(")");
-            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
             
             cont++;            
         }        
         return true;
     }
 
-    //REVISAR
+
     /**
      * DEFINITIION 22
      * Método que define a aplicação de regras. Cria os eventos e outros ele-

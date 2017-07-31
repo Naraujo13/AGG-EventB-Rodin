@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +25,7 @@ public class Grammar {
    
    //Atributos da gramática
    private String name;        //nome associado a gramática
-   private HashSet <Rule> rules;   //Arraylist com as regras da gramática
+   private LinkedHashSet<Rule> rules;   //Arraylist com as regras da gramática
    private Graph host;          //Grafo host
    private TypeGraph typeGraph;     //Grafo tipo
        
@@ -33,7 +33,7 @@ public class Grammar {
         
         this.name = name;
         typeGraph = new TypeGraph();
-        rules = new HashSet <>();
+        rules = new LinkedHashSet <>();
     }
      
     /**
@@ -48,7 +48,7 @@ public class Grammar {
      * Método de acesso ao conjunto de regras
      * @return - retorna o hashset contendo o conjunto de regras
      */
-    public HashSet<Rule> getRules(){
+    public LinkedHashSet<Rule> getRules(){
         return rules;
     }
     
