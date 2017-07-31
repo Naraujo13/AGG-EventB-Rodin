@@ -894,19 +894,19 @@ public class GraphGrammarToEventB {
             /* -- Tipagem Vértices -- */
             //grd_tV
             name = "grd_tV";
-            predicate = "!v.v : Vert" + r.getName() + "=> t" + r.getName() + "V(v) = tGV(mV(v))";
+            predicate = "!v.v : Vert" + r.getName() + " => t" + r.getName() + "V(v) = tGV(mV(v))";
             ruleEvent.addGuard(name, predicate);
 
             /* -- Tipagem Arestas -- */
             //grd_tE
             name = "grd_tE";
-            predicate = "!e.e : Edge" + r.getName() + "=> t" + r.getName() + "E(e) = tGE(mE(e))";
+            predicate = "!e.e : Edge" + r.getName() + " => t" + r.getName() + "E(e) = tGE(mE(e))";
             ruleEvent.addGuard(name, predicate);
 
             /* -- Tipagem Source e Target -- */
             //grd_srctgt
             name = "grd_srctgt";
-            predicate = "!e.e : Edge" + r.getName() + "=> mV(Source" + r.getName() + "(e)) = SourceG(mE(e)) & mV(Target" + r.getName() + "(e)) = TargetG(mE(e))";
+            predicate = "!e.e : Edge" + r.getName() + " => mV(Source" + r.getName() + "(e)) = SourceG(mE(e)) & mV(Target" + r.getName() + "(e)) = TargetG(mE(e))";
             ruleEvent.addGuard(name, predicate);
 
             /* ---------------------- *
