@@ -38,7 +38,7 @@ public class GraphGrammarToEventB {
      * @param g - gramática a ser traduzida
      * @return - sucesso ou fracasso
      */
-    private boolean translator(Project p, Grammar g) {
+    private boolean translate(Project p, Grammar g) {
 
         //Cria contexto
         Context c = new Context(g.getName() + "ctx");
@@ -411,6 +411,36 @@ public class GraphGrammarToEventB {
             //Auxiliares
             String name, predicate;
 
+            //Vert
+            name = "axm_Vert" + r.getName();
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Vert").append(r.getName());
+            for (Node n : r.getLHS().getNodes()) {
+                stringBuilder.append(", {").append(r.getName()).append(n.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Edge
+            name = "axm_Edge" + r.getName();
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Edge").append(r.getName());
+            for (Edge e : r.getLHS().getEdges()) {
+                stringBuilder.append(", {").append(r.getName()).append(e.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Source
+            name = "axm_src" + r.getName();
+            predicate = "Source" + r.getName() + " : " + "Edge" + r.getName() + " --> " + "Vert" + r.getName();
+            context.addAxiom(new Axiom(name, predicate));
+
+            //Target
+            name = "axm_tgt" + r.getName();
+            predicate = "Target" + r.getName() + " : " + "Edge" + r.getName() + " --> " + "Vert" + r.getName();
+            context.addAxiom(new Axiom(name, predicate));
+
             //Define axiomas que representam a tipagem dos vértices e arestas
             name = "axm_t" + r.getName() + "V";
             predicate = "t" + r.getName() + "V : Vert" + r.getName() + " --> VertT";
@@ -469,6 +499,9 @@ public class GraphGrammarToEventB {
         //Contador de controle das NACs
         int cont = 0;
 
+        //Prefixo
+        String NACPrefix = r.getName() + "NAC" + cont;
+
         //NACV - Forbidden Vertices = NACv - (NACv intersecçao LHS)
         for (Graph NAC : r.getNACs()) {
             //Limpa auxiliares
@@ -503,71 +536,133 @@ public class GraphGrammarToEventB {
             }
 
             /* -- Sets -- */
-            c.addSet(new Set("Vert" + r.getName() + "NAC" + cont));
-            c.addSet(new Set("Edge" + r.getName() + "NAC" + cont));
+            c.addSet(new Set("Vert" + NACPrefix));
+            c.addSet(new Set("Edge" + NACPrefix));
 
            /* -- Constantes -- */
             //VertLNACj
-            for (Node n : forbiddenVertices.values()) {
-                c.addConstant(new Constant(n.getID()));
+            for (Node n : NAC.getNodes()) {
+                c.addConstant(new Constant(NACPrefix + n.getID()));
                 
             }
             //EdgeLNACj
-            for (Edge e : forbiddenEdges.values()) {
-                c.addConstant(new Constant(e.getID()));
+            for (Edge e : NAC.getEdges()) {
+                c.addConstant(new Constant(NACPrefix + e.getID()));
             }
 
             //SourceLNACj
-            c.addConstant(new Constant("Source" + r.getName() + "NAC" + cont));
+            c.addConstant(new Constant("Source" + NACPrefix));
 
             //TargetLNACj
-            c.addConstant(new Constant("Target" + r.getName() + "NAC" + cont));
+            c.addConstant(new Constant("Target" + NACPrefix));
+
+            //TODO: Revisar ordem NACV ou VNAC
 
             //tLVNACj- tipagem nodos NAC->Tipo
-            c.addConstant(new Constant("t" + r.getName() + "VNAC" + cont));
+            c.addConstant(new Constant("t" + NACPrefix + "V"));
 
             //tLENACj - tipagem arestas NAC->Tipo
-            c.addConstant(new Constant("t" + r.getName() + "ENAC" + cont));
+            c.addConstant(new Constant("t" + NACPrefix + "E"));
 
             //ljV - morfismo nodos NAC->LHS
-            c.addConstant(new Constant(r.getName() + cont + "V"));
+            c.addConstant(new Constant("l" + NACPrefix + "V"));
 
             //ljE - morfismo arestas NAC->LHS
-            c.addConstant(new Constant(r.getName() + cont + "E"));
+            c.addConstant(new Constant("l" + NACPrefix + "E"));
 
-            //AXIOMAS
+            /* -- Axiomas -- */
             String name, predicate;
 
+            //Vert
+            name = "axm_Vert" + NACPrefix;
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Vert").append(NACPrefix);
+            for (Node n : NAC.getNodes()) {
+                stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Edge
+            name = "axm_Edge" + NACPrefix;
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Edge").append(NACPrefix);
+            for (Edge e : NAC.getEdges()) {
+                stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Source
+            name = "axm_src" + NACPrefix;
+            predicate = "Source" + NACPrefix + " : " + "Edge" + NACPrefix + " --> " + "Vert" + NACPrefix;
+            c.addAxiom(new Axiom(name, predicate));
+
+            //Target
+            name = "axm_tgt" + NACPrefix;
+            predicate = "Target" + NACPrefix + " : " + "Edge" + NACPrefix + " --> " + "Vert" + NACPrefix;
+            c.addAxiom(new Axiom(name, predicate));
+
+            //tV
+            name = "axm_t" + NACPrefix + "V";
+            predicate = "t" + NACPrefix + "V : " + "Vert" + NACPrefix + " --> " + "VertT";
+            c.addAxiom(new Axiom(name, predicate));
+
+            //tV_def
+            name = "axm_t" + NACPrefix + "V_def";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(").append("t").append(NACPrefix).append("V");
+            for (Node n : NAC.getNodes()) {
+                stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append(" |-> ").append(n.getType()).append("}");
+            }
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //tE
+            name = "axm_t" + NACPrefix + "E";
+            predicate = "t" + NACPrefix + "E : " + "Edge" + NACPrefix + " --> " + "EdgeT";
+            c.addAxiom(new Axiom(name, predicate));
+
+            //tE_def
+            name = "axm_t" + NACPrefix + "E_def";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(").append("t").append(NACPrefix).append("E");
+            for (Edge e : NAC.getEdges()) {
+                stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append(" |-> ").append(e.getType()).append("}");
+            }
+            stringBuilder.append(")");
+            c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
             //axm_ljV
-            name = "axm_" + r.getName() + cont + "V";
-            predicate = r.getName() + cont + "V : Vert" + r.getName() + " --> Vert" + r.getName() + "NAC" + cont;
+            name = "axm_l" + NACPrefix + "V";
+            predicate = "l" + NACPrefix + "V : Vert" + NACPrefix + " --> Vert" + r.getName();
             c.addAxiom(new Axiom(name, predicate));
 
             //axm_ljV_def
-            name = "axm_" + r.getName() + cont + "V_def";
+            name = "axm_l" + NACPrefix + "V_def";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("partition(").append(r.getName()).append(cont).append("V");
+            stringBuilder.append("partition(").append("l").append(NACPrefix).append("V");
             for (Node n : NAC.getNodes()) {
-                String temp = NAC.getMorphism().get(n.getID());
-                if (temp != null)
-                    stringBuilder.append(", {").append(n.getID()).append(" |-> ").append(n.getType()).append("}");
+                String lID = NAC.getMorphism().get(n.getID());
+                if (lID != null)
+                    stringBuilder.append(", {").append(NACPrefix).append(n.getID()).append(" |-> ").append(r.getName()).append(lID).append("}");
             }
             stringBuilder.append(")");
             c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
             //axm_ljE
-            name = "axm_" + r.getName() + cont + "E";
-            predicate = r.getName() + cont + "E : Edge" + r.getName() + " --> Vert" + r.getName() + "NAC" + cont;
+            name = "axm_l" + NACPrefix + "E";
+            predicate = "l" + NACPrefix + "E : Edge" + NACPrefix + " --> Edge" + r.getName();
             c.addAxiom(new Axiom(name, predicate));
 
             //axm_ljE_def
-            name = "axm_" + r.getName() + cont + "E_def";
+            name = "axm_l" + NACPrefix + "E_def";
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("partition(").append(r.getName()).append(cont).append("E");
+            stringBuilder.append("partition(").append("l").append(NACPrefix).append("E");
             for (Edge e : NAC.getEdges()) {
-                String temp = NAC.getMorphism().get(e.getID());
-                if (temp != null)
-                    stringBuilder.append(", {").append(e.getID()).append(" |-> ").append(e.getType()).append("}");
+                String lID = NAC.getMorphism().get(e.getID());
+                if (lID != null)
+                    stringBuilder.append(", {").append(NACPrefix).append(e.getID()).append(" |-> ").append(r.getName()).append(lID).append("}");
             }
             stringBuilder.append(")");
             c.addAxiom(new Axiom(name, stringBuilder.substring(0)));
@@ -1694,7 +1789,7 @@ public class GraphGrammarToEventB {
         GraphGrammarToEventB eventB = new GraphGrammarToEventB();
         Project newProject = new Project(name);
         //Translates
-        eventB.translator(newProject, test);
+        eventB.translate(newProject, test);
         //Logs
         newProject.logProject(logDir.getPath(), rodinDir.getPath());
 

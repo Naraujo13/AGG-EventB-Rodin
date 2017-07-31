@@ -8,6 +8,8 @@ package EventB;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 /**
  * Classe que representa um contexto na notação EventB.
@@ -16,10 +18,10 @@ import java.util.HashSet;
 public class Context {
 
     private String name;
-    private HashSet <Context> extend;
-    private HashSet <Set> sets;
-    private HashSet <Constant> constants;
-    private HashMap <String, Axiom> axioms;
+    private LinkedHashSet<Context> extend;
+    private LinkedHashSet<Set> sets;
+    private LinkedHashSet<Constant> constants;
+    private LinkedHashMap<String, Axiom> axioms;
   
     /* -- Auxiliares -- */
     private int axiomLabelCount;
@@ -31,29 +33,29 @@ public class Context {
     public Context(String name){
         this.name = name;
         axiomLabelCount = 0;
-        extend = new HashSet<>();
-        sets = new HashSet <> ();
-        constants = new HashSet <> ();
-        axioms = new HashMap <> ();
+        extend = new LinkedHashSet<>();
+        sets = new LinkedHashSet <> ();
+        constants = new LinkedHashSet <> ();
+        axioms = new LinkedHashMap <> ();
     }
 
     public String getName() {
         return name;
     }
 
-    public HashSet<Context> getExtend() {
+    public LinkedHashSet<Context> getExtend() {
         return extend;
     }
 
-    public HashSet<Set> getSets() {
+    public LinkedHashSet<Set> getSets() {
         return sets;
     }
 
-    public HashSet<Constant> getConstants() {
+    public LinkedHashSet<Constant> getConstants() {
         return constants;
     }
 
-    public HashMap<String, Axiom> getAxioms() {
+    public LinkedHashMap<String, Axiom> getAxioms() {
         return axioms;
     }
 

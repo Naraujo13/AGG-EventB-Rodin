@@ -5,14 +5,13 @@
  */
 package EventB;
 
-import GraphGrammar.Rule;
 import Tradutores.AGGToGraphGrammar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,13 +22,13 @@ import java.util.logging.Logger;
  */
 public class Project {
     private String name;
-    private HashSet <Context> contexts;
-    private HashSet<Machine> machines;
+    private LinkedHashSet<Context> contexts;
+    private LinkedHashSet<Machine> machines;
     
     public Project(String name){
         this.name = name;
-        contexts = new HashSet<>();
-        machines = new HashSet<>();
+        contexts = new LinkedHashSet<>();
+        machines = new LinkedHashSet<>();
     }
     
     /**
