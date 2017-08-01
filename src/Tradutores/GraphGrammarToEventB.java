@@ -497,11 +497,12 @@ public class GraphGrammarToEventB {
         //Contador de controle das NACs
         int cont = 0;
 
-        //Prefixo
-        String NACPrefix = r.getName() + "NAC" + cont;
-
         //NACV - Forbidden Vertices = NACv - (NACv intersecçao LHS)
         for (Graph NAC : r.getNACs()) {
+
+            //Prefixo para cada NAC
+            String NACPrefix = r.getName() + "NAC" + cont;
+
             //Limpa auxiliares
             forbiddenVertices.clear();
             VertNAC.clear();
@@ -665,7 +666,7 @@ public class GraphGrammarToEventB {
             stringBuilder.append(")");
             context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
             
-            cont++;            
+            cont++;
         }        
         return true;
     }
@@ -1701,7 +1702,7 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
-        String fullPath = "tests/R2C/R2C";
+        String fullPath = "tests/pizza/pizza";
         String name = fullPath.split("/")[fullPath.split("/").length-1];
 
 

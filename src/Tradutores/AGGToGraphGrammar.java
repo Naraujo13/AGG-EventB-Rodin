@@ -109,12 +109,13 @@ public class AGGToGraphGrammar {
                     if (nodeAtt.containsKey(auxiliar3[1])){
                         //Crianova instancia de atributo contendo o tipo
                         newAttType = new AttributeType(attTypes.get(nodeAtt.get(auxiliar3[1])));
+                        System.out.println(auxiliar3[1] + "|" + nodeAtt.get(auxiliar3[1]));
                         //Insere atributo no nodo
                         newNodeType.addAttribute(newAttType);
                     }
                    //Insere nodo no grafo de tadução
                     grammar.getTypeGraph().addTranslNode(auxiliar2[1], auxiliar3[1]); //associa ID ao tipo para tradução (adiconará internamente no grafo tipo a coleção de nodos, pois esta esta associada aos valoresdo hashmap)
-                    grammar.getTypeGraph().getAllowedNodes().add(newNodeType);
+                    grammar.getTypeGraph().addAllowedNode(newNodeType);
                 }
                 tokenAtual = entrada.next();
             }            
@@ -122,18 +123,49 @@ public class AGGToGraphGrammar {
         //Definição de Arestas do Grafo Tipo
         EdgeType newEdgeType;
         while(tokenAtual.contains("Edge")){
-            //Extrai tipo da aresta e salva como ID
-            auxiliar = tokenAtual.split(" ");
-            auxiliar2 = auxiliar[4].split("\"");
-            newEdgeType = new EdgeType(auxiliar2[1]);
-            
-            //Extrai Source
-            auxiliar2 = auxiliar[2].split("\"");
-            newEdgeType.addSource(grammar.getTypeGraph().getTranslationNodes().get((auxiliar2[1])));
-            
-            //Extrai Target
-            auxiliar2 = auxiliar[3].split("\"");
-            newEdgeType.addTarget(grammar.getTypeGraph().translate(auxiliar2[1]));
+//            //Extrai tipo da aresta e salva como ID
+//            auxiliar = tokenAtual.split(" ");
+//            auxiliar2 = auxiliar[4].split("\"");
+
+            //Quebra atributos
+            auxiliar = tokenAtual
+                    .replaceAll("<Edge", "")
+                    .replaceAll(">", "")
+                    .replaceAll("\"", "")
+                    .replaceAll("\n", "")
+                    .split(" ");
+
+            String edgeType = "";
+            String edgeSource = "";
+            String edgeTarget = "";
+
+            for (String att : auxiliar){
+                if (att.contains("source") && !att.contains("max") && !att.contains("min"))
+                    edgeSource = grammar.getTypeGraph().getTranslationNodes().get(att.replaceAll("source=", ""));
+                else if (att.contains("target") && !att.contains("max") && !att.contains("min"))
+                    edgeTarget = grammar.getTypeGraph().getTranslationNodes().get(att.replaceAll("target=", ""));
+                else if (att.contains("type"))
+                    edgeType = att.replaceAll("type=", "");
+            }
+
+            //Cria objeto
+            newEdgeType = new EdgeType(edgeType);
+            //Adiciona fonte
+            if (edgeSource != null && !edgeSource.equals(""))
+                newEdgeType.addSource(edgeSource);
+            //Adiciona destino
+            if (edgeTarget != null && !edgeTarget.equals(""))
+                newEdgeType.addTarget(edgeTarget);
+
+
+
+//            //Extrai Source
+//            auxiliar2 = auxiliar[2].split("\"");
+//            newEdgeType.addSource(grammar.getTypeGraph().getTranslationNodes().get((auxiliar2[1])));
+//
+//            //Extrai Target
+//            auxiliar2 = auxiliar[3].split("\"");
+//            newEdgeType.addTarget(grammar.getTypeGraph().translate(auxiliar2[1]));
             
             //Adiciona Aresta no ArrayList do Grafo Tipo
             grammar.getTypeGraph().addAllowedEdge(newEdgeType);
@@ -157,17 +189,33 @@ public class AGGToGraphGrammar {
         Graph newHost = new Graph("HOST");
         tokenAtual = entrada.next();
         //Nodos do HOST
-        defineGraphNodes(newHost, attNames, attTypes);     //Funcionando até aqui
-        //Está saindo em I68 mais ou menos e indo para definição de arestas.
-        //Scanner não ta atualizando. Altera dentro de nodes e quando retorna volta ao original. Pq?
+        defineGraphNodes(newHost, attNames, attTypes);
         
         //Arestas do HOST
         defineGraphEdges(newHost);
-        
-       tokenAtual = entrada.next(); //Descarta /Graph do HOST
+
+        if (tokenAtual.contains("/Graph") && entrada.hasNext() )
+            tokenAtual = entrada.next(); //Descarta /Graph do HOST
+
        //FIM DO HOST
        grammar.setHost(newHost);
-       
+
+       //Descarta Hosts Extras
+       while (tokenAtual.contains("Graph")){
+           while (!tokenAtual.contains("/Graph") && entrada.hasNext())
+               tokenAtual = entrada.next();
+           if (entrada.hasNext())
+               tokenAtual = entrada.next();
+       }
+
+       //Descarta Constraints
+       while (tokenAtual.contains("Constraints")){
+           while (!tokenAtual.contains("/Constraints") && entrada.hasNext())
+               tokenAtual = entrada.next();
+           if (entrada.hasNext())
+               tokenAtual = entrada.next();
+       }
+
        //REGRAS
        //Mais vantajoso ID LHS -> ID RHS ou ID RHS -> ID LHS ? Até o momento RHS ou NAC -> LHS
        defineRules(grammar, attNames, attTypes);
@@ -241,6 +289,8 @@ public class AGGToGraphGrammar {
         String ID, nodeType, attributeID, atributeValue, atributeType;
         Attribute newAtt;
         //enquanto for nodo...
+        if (tokenAtual.contains("Graph") && entrada.hasNext())
+            tokenAtual = entrada.next();
         while(tokenAtual.contains("Node") || tokenAtual.contains("Layout")){
                 
             //caso não seja layout, atributo ou fechando seção, define o nodo
@@ -387,7 +437,7 @@ public class AGGToGraphGrammar {
         String[] auxiliar; //Declara vector que servirá como auxiliar ao quebrar o comando
         String[] auxiliar2; //Auxiliar 2 Para quebrar substrings;
        
-       while (tokenAtual.contains("Rule")){
+       while (tokenAtual.contains("Rule") && !tokenAtual.contains("RuleSequence")){
            
            //Pega nome da regra.
            auxiliar = tokenAtual.split(" ");
@@ -401,14 +451,16 @@ public class AGGToGraphGrammar {
            
                 //Define LHS
             if (tokenAtual.contains("LHS")){
+                LHS = new Graph("LHS");
+               if (!tokenAtual.contains("/")) {
+                   tokenAtual = entrada.next();
+                   //Define Nodos
+                   defineGraphNodes(LHS, attNames, attTypes);
+                   //Define arestas
+                   defineGraphEdges(LHS);
+               }
+                //Descarta /Graph ou /
                 tokenAtual = entrada.next();
-                LHS = new Graph ("LHS");
-               //Define Nodos
-               defineGraphNodes(LHS, attNames, attTypes);
-               //DEfine arestas
-               defineGraphEdges(LHS);
-               //Descarta /Graph
-               tokenAtual = entrada.next(); 
             }
             
             while (!tokenAtual.contains("Graph")){
@@ -417,13 +469,15 @@ public class AGGToGraphGrammar {
             
            //Define RHS
            if (tokenAtual.contains("RHS")){
-               tokenAtual = entrada.next();
-               RHS = new Graph ("RHS");
-               //Define Nodos
-               defineGraphNodes(RHS, attNames, attTypes);
-               //DEfine arestas
-               defineGraphEdges(RHS);
-               //Descarta /Graph
+               RHS = new Graph("RHS");
+               if (!tokenAtual.contains("/")) {
+                   tokenAtual = entrada.next();
+                   //Define Nodos
+                   defineGraphNodes(RHS, attNames, attTypes);
+                   //DEfine arestas
+                   defineGraphEdges(RHS);
+               }
+               //Descarta /Graph ou /
                tokenAtual = entrada.next(); 
            }
       
@@ -449,8 +503,7 @@ public class AGGToGraphGrammar {
             
             //Adiciona regra no Araylist de regras;
             grammar.addRule(rule);
-            
-             //Funcionando até aqui para 1 regra, testar com mais
+
        }
        //FIM DEFINIÇÂO DE REGRA
     }
@@ -503,7 +556,7 @@ public class AGGToGraphGrammar {
                     tokenAtual = entrada.next();           
             }
     }
-    
+
 //    /** Main para testes de conversão do AGG
 //    * @param args the command line arguments
 //    */
