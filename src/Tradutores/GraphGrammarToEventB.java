@@ -37,12 +37,16 @@ public class GraphGrammarToEventB {
      * Função que realiza a tradução de uma gramática de grafos para um projeto em notação event-B
      * @param p - projeto a ser criado
      * @param g - gramática a ser traduzida
+     * @param DPO
      * @return - sucesso ou fracasso
      */
-    private boolean translate(Project p, Grammar g) {
+    private boolean translate(Project p, Grammar g, boolean DPO) {
 
         //Cria contexto
         Context c = new Context(g.getName() + "ctx");
+
+        //Cria machine
+        Machine m = new Machine(g.getName() + "mch", c);
 
         /*
          * --- Grafo Tipo ---
@@ -51,23 +55,28 @@ public class GraphGrammarToEventB {
         if (!typeGraphTranslation(c, g)) {
             return false;
         }
-        
-        if (!rulePatternTranslation(c, g)) {
+
+        //Define LHS, também define RHS e NACs caso estratégia seja DPO
+       if (!rulePatternTranslation(c, g, DPO))
+           return false;
+
+        //Define Grafo Inicial
+        if (!stateGraphTranslation(m, g))
             return false;
+
+        //Define Aplicação de Regras
+        if (!DPO) {
+            //SPO Approach
+            if (!ruleApplication(c, m, g))
+                return false;
         }
-        
-        Machine m = new Machine(g.getName() + "mch", c);
-        
-        if (!stateGraphTranslation(m, g)) {
-            return false;
+        else{
+            //DPO Approach
+            if (!DPOApplication(m, g))
+                return false;
         }
 
-//        if(!ruleApplication(c, m, g))
-//            return false;
 
-        if (!DPOApplication(m, g)) {
-            return false;
-        }
         
         p.addContext(c);
         p.addMachine(m);
@@ -361,7 +370,7 @@ public class GraphGrammarToEventB {
      * @param g       - gramática cujas regras serão traduzidas (fonte)
      * @return - retorna true ou false, indicando sucesso ou falha na tradução
      */
-    private boolean rulePatternTranslation(Context context, Grammar g) {
+    private boolean rulePatternTranslation(Context context, Grammar g, boolean DPO) {
 
         /*
          * ----------------------------------------------------------------*
@@ -473,109 +482,120 @@ public class GraphGrammarToEventB {
             stringBuilder.append(")");
             context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
-            /* ----------------- *
-             *   Passo 2: RHS    *
-             * ----------------- */
-//
-//            String RHSPrefix = r.getName() + "R";
-//
-//            //Define 2 sets para representar conjunto de vértices e de arestas
-//            Set nodesR, EdgesR;
-//            nodesR = new Set("Vert" + RHSPrefix);
-//            EdgesR = new Set("Edge" + RHSPrefix);
-//            context.addSet(nodesR);
-//            context.addSet(EdgesR);
-//
-//            //Define uma constante para cada nodo no LHS da regra
-//            for (Node n : r.getRHS().getNodes()) {
-//                context.addConstant(new Constant(RHSPrefix + n.getID()));
-//
-//            }
-//
-//            //Define uma constante para cada aresta no LHS da regra
-//            for (Edge e : r.getRHS().getEdges()) {
-//                context.addConstant(new Constant(RHSPrefix + e.getID()));
-//            }
-//
-//            //Define constantes para funções Source e Target
-//            context.addConstant(new Constant("Source" + RHSPrefix));
-//            context.addConstant(new Constant("Target" + RHSPrefix));
-//
-//            //Define duas constantes para represnetar a tipagem de arestas e nodos
-//            //no LHS.
-//            context.addConstant(new Constant("t" + RHSPrefix + "V"));
-//            context.addConstant(new Constant("t" + RHSPrefix + "E"));
-//
-//            /*
-//             * -- Axiomas para vértices e arestas --
-//             */
-//
-//            //Vert
-//            name = "axm_Vert" + RHSPrefix;
-//            stringBuilder.delete(0, stringBuilder.length());
-//            stringBuilder.append("partition(Vert").append(RHSPrefix);
-//            for (Node n : r.getRHS().getNodes()) {
-//                stringBuilder.append(", {").append(RHSPrefix).append(n.getID()).append("}");
-//            }
-//            stringBuilder.append(")");
-//            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//            //Edge
-//            name = "axm_Edge" + RHSPrefix;
-//            stringBuilder.delete(0, stringBuilder.length());
-//            stringBuilder.append("partition(Edge").append(RHSPrefix);
-//            for (Edge e : r.getRHS().getEdges()) {
-//                stringBuilder.append(", {").append(RHSPrefix).append(e.getID()).append("}");
-//            }
-//            stringBuilder.append(")");
-//            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//            //Source
-//            name = "axm_src" + RHSPrefix;
-//            predicate = "Source" + RHSPrefix + " : " + "Edge" + RHSPrefix + " --> " + "Vert" + RHSPrefix;
-//            context.addAxiom(new Axiom(name, predicate));
-//
-//            //Target
-//            name = "axm_tgt" + RHSPrefix;
-//            predicate = "Target" + RHSPrefix + " : " + "Edge" + RHSPrefix + " --> " + "Vert" + RHSPrefix;
-//            context.addAxiom(new Axiom(name, predicate));
-//
-//            //Define axiomas que representam a tipagem dos vértices e arestas
-//            name = "axm_t" + RHSPrefix + "V";
-//            predicate = "t" + RHSPrefix + "V : Vert" + RHSPrefix + " --> VertT";
-//            context.addAxiom(new Axiom(name, predicate));
-//
-//            name = "axm_t" + RHSPrefix + "E";
-//            predicate = "t" + RHSPrefix + "E : Edge" + RHSPrefix + " --> EdgeT";
-//            context.addAxiom(new Axiom(name, predicate));
-//
-//            //Define axiomas para definição das funções de tipagem
-//            //Nodos
-//            name = "axm_t" + RHSPrefix + "V_def";
-//            stringBuilder.delete(0, stringBuilder.length());
-//            stringBuilder.append("partition(t").append(RHSPrefix).append("V");
-//            for (Node n : r.getRHS().getNodes()) {
-//                stringBuilder.append(", {").append(RHSPrefix).append(n.getID()).append(" |-> ").append(n.getType()).append("}");
-//            }
-//            stringBuilder.append(")");
-//            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//            //Arestas
-//            name = "axm_t" + RHSPrefix + "E_def";
-//            stringBuilder.delete(0, stringBuilder.length());
-//            stringBuilder.append("partition(t").append(RHSPrefix).append("E");
-//            for (Edge e : r.getLHS().getEdges()) {
-//                stringBuilder.append(", {").append(RHSPrefix).append(e.getID()).append(" |-> ").append(e.getType()).append("}");
-//            }
-//            stringBuilder.append(")");
-//            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            if (!DPO) {
+                //Define RHS da regra
+                if (!RHSTranslation(context, r))
+                    return false;
 
-            //Define NACs da regra
-            if (!NACTranslation(context, r))
-                return false;
+                //Define NACs da regra
+                if (!NACTranslation(context, r))
+                    return false;
+            }
         }
         return true;
     }
+
+    public boolean RHSTranslation(Context context, Rule r){
+            /* ----------------- *
+             *   Passo 2: RHS    *
+             * ----------------- */
+            String RHSPrefix = r.getName() + "R";
+            String name;
+            String predicate;
+
+            //Define 2 sets para representar conjunto de vértices e de arestas
+            Set nodesR, EdgesR;
+            nodesR = new Set("Vert" + RHSPrefix);
+            EdgesR = new Set("Edge" + RHSPrefix);
+            context.addSet(nodesR);
+            context.addSet(EdgesR);
+
+            //Define uma constante para cada nodo no LHS da regra
+            for (Node n : r.getRHS().getNodes()) {
+                context.addConstant(new Constant(RHSPrefix + n.getID()));
+
+            }
+
+            //Define uma constante para cada aresta no LHS da regra
+            for (Edge e : r.getRHS().getEdges()) {
+                context.addConstant(new Constant(RHSPrefix + e.getID()));
+            }
+
+            //Define constantes para funções Source e Target
+            context.addConstant(new Constant("Source" + RHSPrefix));
+            context.addConstant(new Constant("Target" + RHSPrefix));
+
+            //Define duas constantes para represnetar a tipagem de arestas e nodos
+            //no LHS.
+            context.addConstant(new Constant("t" + RHSPrefix + "V"));
+            context.addConstant(new Constant("t" + RHSPrefix + "E"));
+
+            /*
+             * -- Axiomas para vértices e arestas --
+             */
+
+            //Vert
+            name = "axm_Vert" + RHSPrefix;
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Vert").append(RHSPrefix);
+            for (Node n : r.getRHS().getNodes()) {
+                stringBuilder.append(", {").append(RHSPrefix).append(n.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Edge
+            name = "axm_Edge" + RHSPrefix;
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Edge").append(RHSPrefix);
+            for (Edge e : r.getRHS().getEdges()) {
+                stringBuilder.append(", {").append(RHSPrefix).append(e.getID()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Source
+            name = "axm_src" + RHSPrefix;
+            predicate = "Source" + RHSPrefix + " : " + "Edge" + RHSPrefix + " --> " + "Vert" + RHSPrefix;
+            context.addAxiom(new Axiom(name, predicate));
+
+            //Target
+            name = "axm_tgt" + RHSPrefix;
+            predicate = "Target" + RHSPrefix + " : " + "Edge" + RHSPrefix + " --> " + "Vert" + RHSPrefix;
+            context.addAxiom(new Axiom(name, predicate));
+
+            //Define axiomas que representam a tipagem dos vértices e arestas
+            name = "axm_t" + RHSPrefix + "V";
+            predicate = "t" + RHSPrefix + "V : Vert" + RHSPrefix + " --> VertT";
+            context.addAxiom(new Axiom(name, predicate));
+
+            name = "axm_t" + RHSPrefix + "E";
+            predicate = "t" + RHSPrefix + "E : Edge" + RHSPrefix + " --> EdgeT";
+            context.addAxiom(new Axiom(name, predicate));
+
+            //Define axiomas para definição das funções de tipagem
+            //Nodos
+            name = "axm_t" + RHSPrefix + "V_def";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(t").append(RHSPrefix).append("V");
+            for (Node n : r.getRHS().getNodes()) {
+                stringBuilder.append(", {").append(RHSPrefix).append(n.getID()).append(" |-> ").append(n.getType()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Arestas
+            name = "axm_t" + RHSPrefix + "E_def";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(t").append(RHSPrefix).append("E");
+            for (Edge e : r.getRHS().getEdges()) {
+                stringBuilder.append(", {").append(RHSPrefix).append(e.getID()).append(" |-> ").append(e.getType()).append("}");
+            }
+            stringBuilder.append(")");
+            context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+        return true;
+    }
+
 
 
     /**
@@ -654,8 +674,6 @@ public class GraphGrammarToEventB {
 
             //TargetLNACj
             context.addConstant(new Constant("Target" + NACPrefix));
-
-            //TODO: Revisar ordem NACV ou VNAC
 
             //tLVNACj- tipagem nodos NAC->Tipo
             context.addConstant(new Constant("t" + NACPrefix + "V"));
@@ -860,6 +878,7 @@ public class GraphGrammarToEventB {
              /* -------------------*
              * -- Passo 2: WHERE -*
              * -------------------*/
+            String RHSPrefix = r.getName() + "R";
             //Função total mapeando os vértices
             name = "grd_mV";
             predicate = "mV : Vert" + r.getName() + " --> VertG";
@@ -913,7 +932,7 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append(r.getName()).append(n);
+                stringBuilder.append(RHSPrefix).append(n);
             }
             stringBuilder.append("}");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
@@ -964,10 +983,11 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append(r.getName()).append(e);
+                stringBuilder.append(RHSPrefix).append(e);
             }
-            stringBuilder.append("} | (mV(Source").append(r.getName()).append("(e)) : PreservV or Source")
-                    .append(r.getName()).append("(e) : newV[NewV] & mV(Target").append(r.getName()).append("(e) : newV[NewV])}");
+            stringBuilder.append("} | ")
+                    .append("(mV(Source").append(RHSPrefix).append("(e)) : PreservV or Source").append(RHSPrefix).append("(e) : newV[NewV]) &")
+                    .append("(mV(Target").append(RHSPrefix).append("(e)) : PreservV or Target").append(RHSPrefix).append("(e) : newV[NewV])}");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
 
             /* -- Tipagem Vértices -- */
@@ -995,18 +1015,130 @@ public class GraphGrammarToEventB {
 
                 String NACPrefix = r.getName() + "NAC" + count;
 
+                String forbiddenNodeList, forbiddenEdgeList;
                 name = "grd_NAC" + count;
 
-                predicate = "not(#nV, nE . nV : Vert" + NACPrefix + " --> VertG & ";
-                predicate += "nE : Edge" + NACPrefix + " --> EdgeG & ";
-                predicate += "l" + NACPrefix + "V[Vert" + r.getName() + "] <<| Vert" + NACPrefix + "\\"
-                        + "l" + NACPrefix + "V[Vert" + r.getName() + "] >-> VertG \\ mV[Vert" + r.getName() + "] & ";
-                predicate += "(#v . v : Vert" + NACPrefix + "=> t" + NACPrefix + "V(v) = tGV(nV(v))) & ";
-                predicate += "(#e . e : Edge" + NACPrefix + "=> t" + NACPrefix + "E(e) = tGE(nE(e))) & ";
-                predicate += "(#e . e : Edge" + NACPrefix + "=> nV(Source" + NACPrefix + "(e)) = sourceG(nE(e)) & ";
-                predicate += "nV(Target" + NACPrefix + "(e)) = targetG(nE(e))) & ";
-                predicate += "nV circ l" + NACPrefix + "V = mV & circ l" + NACPrefix + "E = mE)";
+                //Nodelist
+                stringBuilder.delete(0, stringBuilder.length());
+                flag = 0;
+                for (String n : forbiddenVertices.keySet()){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        stringBuilder.append(", ");
+                    stringBuilder.append(r.getName()).append(n);
+                }
+                forbiddenNodeList = stringBuilder.substring(0, stringBuilder.length());
+                stringBuilder.delete(0, stringBuilder.length());
 
+                //EdgeList
+                stringBuilder.delete(0, stringBuilder.length());
+                flag = 0;
+                for (String e : forbiddenEdges.keySet()){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        stringBuilder.append(", ");
+                    stringBuilder.append(r.getName()).append(e);
+                }
+                forbiddenEdgeList = stringBuilder.substring(0, stringBuilder.length());
+                stringBuilder.delete(0, stringBuilder.length());
+
+                //Predicate
+                stringBuilder.delete(0, stringBuilder.length());
+                stringBuilder.append("not(#");
+                if (forbiddenNodeList != null)
+                    stringBuilder.append(forbiddenNodeList);
+                if (forbiddenNodeList != null && forbiddenEdgeList != null)
+                    stringBuilder.append(", ");
+                if (forbiddenEdgeList != null)
+                    stringBuilder.append(forbiddenEdgeList);
+                stringBuilder.append(" . ");
+
+                //Dominio dos nodos
+                stringBuilder.append("{").append(forbiddenNodeList).append("}")
+                        .append(" <: VertG \\ mV[Vert").append(r.getName()).append("] & ");
+                //Dominio das Arestas
+                stringBuilder.append("{").append(forbiddenEdgeList).append("}")
+                        .append(" <: EdgeG \\ mE[Edge").append(r.getName()).append("] & ");
+
+                //Unicidade de identificação dos nodos proibidos
+                flag = 0;
+                for (String node1 : forbiddenVertices.keySet()){
+                    for(String node2 : forbiddenVertices.keySet()) {
+                        if (!node1.equals(node2)) {
+                            if (flag == 0)
+                                flag = 1;
+                            else
+                                stringBuilder.append(" & ");
+                            stringBuilder.append(node1).append(" /= ").append(node2);
+                        }
+                    }
+                }
+
+                //Unicidade de identificação das arestas proibidos
+                flag = 0;
+                for (String edge1 : forbiddenEdges.keySet()){
+                    for(String edge2 : forbiddenEdges.keySet()) {
+                        if (!edge1.equals(edge2)) {
+                            if (flag == 0)
+                                flag = 1;
+                            else
+                                stringBuilder.append(" & ");
+                            stringBuilder.append(edge1).append(" /= ").append(edge2);
+                        }
+                    }
+                }
+                stringBuilder.append(" & ");
+
+                //Tipagem de Vértices Proibidos
+                for (Node n : forbiddenVertices.values()){
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        stringBuilder.append(" & ");
+                    stringBuilder.append("tGV(").append(n.getID()).append(") = ").append(n.getType());
+                }
+
+
+                for (Edge e : forbiddenEdges.values()){
+                    //Tipagem de Arestas Proibidas
+                    if (flag == 0)
+                        flag = 1;
+                    else
+                        stringBuilder.append(" & ");
+                    stringBuilder.append("tGE(").append(e.getID()).append(") = ").append(e.getType());
+
+                    //Tipagem de Source das Arestas Proibidos
+                    boolean containsValue = NAC.getMorphism().containsValue(e.getSource());
+                    if (containsValue) {
+                        stringBuilder.append(" & ");
+                        String source = NAC.getMorphism().get(e.getID());
+                        stringBuilder.append("SourceG(").append(e.getID()).append(") = ").append(source);
+                    }
+
+                    //Tipagem de Target das Arestas Proibidos
+                    containsValue = NAC.getMorphism().containsValue(e.getTarget());
+                    if (containsValue) {
+                        stringBuilder.append(" & ");
+                        String target = NAC.getMorphism().get(e.getTarget());
+                        stringBuilder.append("SourceG(").append(e.getID()).append(") = ").append(target);
+                    }
+                }
+                stringBuilder.append(") or ");
+
+
+
+                //Dominio das arestas
+//                predicate = "not(#nV, nE . nV : Vert" + NACPrefix + " --> VertG & ";
+//                predicate += "nE : Edge" + NACPrefix + " --> EdgeG & ";
+//                predicate += "l" + NACPrefix + "V[Vert" + r.getName() + "] <<| Vert" + NACPrefix + "\\"
+//                        + "l" + NACPrefix + "V[Vert" + r.getName() + "] >-> VertG \\ mV[Vert" + r.getName() + "] & ";
+//                predicate += "(#v . v : Vert" + NACPrefix + "=> t" + NACPrefix + "V(v) = tGV(nV(v))) & ";
+//                predicate += "(#e . e : Edge" + NACPrefix + "=> t" + NACPrefix + "E(e) = tGE(nE(e))) & ";
+//                predicate += "(#e . e : Edge" + NACPrefix + "=> nV(Source" + NACPrefix + "(e)) = sourceG(nE(e)) & ";
+//                predicate += "nV(Target" + NACPrefix + "(e)) = targetG(nE(e))) & ";
+//                predicate += "nV circ l" + NACPrefix + "V = mV & circ l" + NACPrefix + "E = mE)";
                 ruleEvent.addGuard(name, predicate);
 
                 count++;
@@ -1029,26 +1161,26 @@ public class GraphGrammarToEventB {
 
             /* --- Act_src --- */
             name = "act_src";
-            predicate =  "SourceG := ((DelE \\/ Dangling <<| SourceG) \\/ " +
-                    "{ e |-> mv(SourceR" + r.getName() + "(newE(e))) | e : NewE 7 SourceR" +r.getName() + "(newE)) : PreservV} \\/ " +
-                    "{ e |-: SourceR" + r.getName() + "(newE(e)) | e : NewE & SourceR" + r.getName() + "(newE(e)) : newV[NewV]}";
+            predicate =  "SourceG := ((DelE \\/ Dangling) <<| SourceG) \\/ " +
+                    "{ e |-> mV(Source" + RHSPrefix + "(newE(e))) | e : NewE & Source" + RHSPrefix + "(newE)) : PreservV} \\/ " +
+                    "{ e |-> Source" + RHSPrefix + "(newE(e)) | e : NewE & Source" + RHSPrefix + "(newE(e)) : newV[NewV]}";
             ruleEvent.addAct(name, predicate);
 
             /* --- Act_tgt --- */
             name = "act_tgt";
-            predicate =  "TargetG := ((DelE \\/ Dangling <<| TargetG) \\/ " +
-                    "{ e |-> mv(TargetR" + r.getName() + "(newE(e))) | e : NewE 7 TargetR" +r.getName() + "(newE)) : PreservV} \\/ " +
-                    "{ e |-: TargetR" + r.getName() + "(newE(e)) | e : NewE & TargetR" + r.getName() + "(newE(e)) : newV[NewV]}";
+            predicate =  "TargetG := ((DelE \\/ Dangling) <<| TargetG) \\/ " +
+                    "{ e |-> mV(Target" + RHSPrefix + "(newE(e))) | e : NewE & Target" + RHSPrefix + "(newE)) : PreservV} \\/ " +
+                    "{ e |-> Target" + RHSPrefix + "(newE(e)) | e : NewE & Target" + RHSPrefix + "(newE(e)) : newV[NewV]}";
             ruleEvent.addAct(name, predicate);
 
              /* --- Act_tV --- */
             name = "act_tV";
-            predicate =  "tGV := (DelV <<| tGV) \\/ {v |-> tR" + r.getName() + "V(newV[NewV]) | v : NewV}";
+            predicate =  "tGV := (DelV <<| tGV) \\/ {v |-> t" + RHSPrefix + "V(newV[NewV]) | v : NewV}";
             ruleEvent.addAct(name, predicate);
 
             /* --- Act_tE --- */
             name = "act_tE";
-            predicate =  "tGE := (DelE \\/ Dangling) <<| tGE) \\/ {e |-> tR" + r.getName() + "E(newE[NewE]) | e : NewE}";
+            predicate =  "tGE := ((DelE \\/ Dangling) <<| tGE) \\/ {e |-> t" + RHSPrefix + "E(newE[NewE]) | e : NewE}";
             ruleEvent.addAct(name, predicate);
 
             //Add the event with all the defined guards and acts
@@ -1444,6 +1576,27 @@ public class GraphGrammarToEventB {
     private boolean setTheoreticalNACs(Event ruleEvent, Rule r) {
         String name;
         for (Graph NAC : r.getNACs()) {
+
+            forbiddenVertices.clear();
+            forbiddenEdges.clear();
+
+            //Prepara vértices proibidos
+            for (Node n : NAC.getNodes()) {
+                String temp = NAC.getMorphism().get(n.getID());
+                if (temp == null) {
+                    forbiddenVertices.put(n.getID(), n);
+                }
+            }
+
+            //Prepara arestas proibidas
+            for (Edge e : NAC.getEdges()) {
+                String temp = NAC.getMorphism().get(e.getID());
+                if (temp == null) {
+                    forbiddenEdges.put(e.getID(), e);
+                }
+            }
+
+
             name = "grd_NAC" + r.getName() + NAC.getNACindex();
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append("not(#");
@@ -1574,14 +1727,14 @@ public class GraphGrammarToEventB {
             }
             stringBuilder.append(")");
             /* ------------------------ */
-            ruleEvent.addAct(name, stringBuilder.substring(0));
+            ruleEvent.addGuard(name, stringBuilder.substring(0));
         }
         return true;
     }
 
     /* ----- Refinamento ----- */
 
-    //Needs revision
+
     /**
      * DEFINITION 33
      * Função que realiza a tradução dos atributos de um grafo tipo
@@ -1597,7 +1750,6 @@ public class GraphGrammarToEventB {
         /* -- Sets -- */
         context.addSet(new Set("AttrT"));
         context.addSet(new Set("DataType"));
-       /* ---------- */
 
        /* -- Constants -- */
         context.addConstant(new Constant("attrvT"));
@@ -1610,28 +1762,31 @@ public class GraphGrammarToEventB {
         * Most eficient way: previously define the set in  the parser,   *
         * without adding complexity.                                     *
         * -------------------------------------------------------------- */
+
+       /* -- Attribute Type --*/
         for (NodeType nt: attNodes.values()){
             for (AttributeType at: nt.getAttributes()){
                 context.addConstant(new Constant("at" + at.getID()));
             }
         }
-       /* --------------- */
 
         /* --- Axioms --- */
-
         String name, predicate;
 
         /* -- Axm_AttrT -- */
         name = "axm_AttrT";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(AttrT");
+        stringBuilder.append("partition(AttrT, {");
         int flag = 0;
         for (NodeType n: attNodes.values()){
-            stringBuilder.append(", {").append(n.getType()).append("}");
+            if (flag == 0)
+                flag = 1;
+            else
+                stringBuilder.append("}, {");
+            stringBuilder.append(n.getType());
         }
-        stringBuilder.append(")");
+        stringBuilder.append("})");
         context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-        /* --------------- */
 
         /* --- Unicidade de Id dos Nodos com Atributos --- */
         ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
@@ -2088,7 +2243,7 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
-        String fullPath = "tests/pacman/pacman";
+        String fullPath = "tests/R2C/R2C";
         String name = fullPath.split("/")[fullPath.split("/").length-1];
 
 
@@ -2118,7 +2273,7 @@ public class GraphGrammarToEventB {
         GraphGrammarToEventB eventB = new GraphGrammarToEventB();
         Project newProject = new Project(name);
         //Translates
-        eventB.translate(newProject, test);
+        eventB.translate(newProject, test, false);
         //Logs
         newProject.logProject(logDir.getPath(), rodinDir.getPath());
 

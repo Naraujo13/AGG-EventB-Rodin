@@ -94,7 +94,7 @@ public class Machine {
         try{
 
             //Open file
-            final FileWriter machineFile = new FileWriter( path + "/" + name + "_Machine.txt");
+            final FileWriter machineFile = new FileWriter( path + "/Machine_" + name + ".mch");
             copy = machineFile;
             //Log
             System.out.println("\t\tTraduzindo Machine " + name + "...");

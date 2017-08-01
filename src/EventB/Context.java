@@ -99,7 +99,7 @@ public class Context {
         try{
 
             //Open file
-            final FileWriter contextFile = new FileWriter( path + "/" + name + "_Context.txt");
+            final FileWriter contextFile = new FileWriter( path + "/Context_" + name + ".ctx");
             copy = contextFile;
             //Log
             System.out.println("\t\tTraduzindo Contexto " + name + "...");
