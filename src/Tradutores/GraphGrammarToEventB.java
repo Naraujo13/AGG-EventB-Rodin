@@ -291,7 +291,7 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", ");
             else
                 flag = 1;
-            stringBuilder.append(aux[1]).append("|->").append(e.getSource());
+            stringBuilder.append(aux[1]).append("|->").append(e.getSource().replaceAll("I", ""));
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
@@ -307,7 +307,7 @@ public class GraphGrammarToEventB {
                 stringBuilder.append(", ");
             else
                 flag = 1;
-            stringBuilder.append(aux[1]).append("|->").append(e.getTarget());
+            stringBuilder.append(aux[1]).append("|->").append(e.getTarget().replaceAll("I", ""));
         }        
         stringBuilder.append("}");
         initialisation.addAct(name, stringBuilder.substring(0));
@@ -793,17 +793,15 @@ public class GraphGrammarToEventB {
             deletedNodes.removeAll(r.getRHS().getMorphism().values());
 
             name = "grd_DelV";
-            String[] aux;
             int flag = 0;
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append("DelV = mV[{");
             for (String n : deletedNodes) {
-                aux = n.split("I");
                 if (flag != 0)
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append("{").append(aux[1]).append("}");
+                stringBuilder.append("{").append(r.getName()).append(n).append("}");
             }
             stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
@@ -827,12 +825,11 @@ public class GraphGrammarToEventB {
             stringBuilder.append("DelE = mE[{");
             flag = 0;
             for (String e : deletedEdges) {
-                aux = e.split("I");
                 if (flag != 0)
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append("{").append(aux[1]).append("}");
+                stringBuilder.append("{").append(r.getName()).append(e).append("}");
             }
             stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
@@ -1086,7 +1083,9 @@ public class GraphGrammarToEventB {
                 }
                 EdgeSetString.append(e.getID());
             }
-            stringBuilder.append(nodeSetString.substring(0)).append(", ").append(EdgeSetString.substring(0)).append(".")
+            if (nodeSetString.length() > 0)
+                stringBuilder.append(nodeSetString.substring(0)).append(", ");
+            stringBuilder.append(EdgeSetString.substring(0)).append(" . ")
                     .append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mE [Vert").append(r.getName()).append("] &  ")
                     .append("{").append(EdgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] &  ");
 
@@ -1702,7 +1701,7 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
-        String fullPath = "tests/pizza/pizza";
+        String fullPath = "tests/pacman/pacman";
         String name = fullPath.split("/")[fullPath.split("/").length-1];
 
 
