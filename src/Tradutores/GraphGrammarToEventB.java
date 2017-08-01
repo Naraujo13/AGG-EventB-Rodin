@@ -62,7 +62,7 @@ public class GraphGrammarToEventB {
             return false;
         }
         
-        if (!DPOApplication(c, m, g)) {
+        if (!DPOApplication(m, g)) {
             return false;
         }
         
@@ -675,13 +675,12 @@ public class GraphGrammarToEventB {
      * DEFINITIION 22
      * Método que define a aplicação de regras. Cria os eventos e outros ele-
      * mentos necessários para aplicação das regras
-     *
-     * @param c - contexto fonte
-     * @param m - máquina destino
-     * @param g - gramática fonte
+     * TODO: Talvez esteja faltando uma definição no paper
+     * @param machine - máquina destino
+     * @param grammar - gramátic a fonte
      * @return - true/false indicando sucesso/falha na operação de tradução
      */
-    private boolean DPOApplication(Context c, Machine m, Grammar g) {
+    private boolean DPOApplication(Machine machine, Grammar grammar) {
         
         Event ruleEvent;
         String name, predicate;
@@ -706,7 +705,7 @@ public class GraphGrammarToEventB {
         HashSet<String> deletedEdges;
 
         //Itera entre todas as regras
-        for (Rule r : g.getRules()) {
+        for (Rule r : grammar.getRules()) {
             
             ruleEvent = new Event(r.getName());
 
@@ -796,7 +795,7 @@ public class GraphGrammarToEventB {
             String[] aux;
             int flag = 0;
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("DelV = {");
+            stringBuilder.append("DelV = mV[{");
             for (String n : deletedNodes) {
                 aux = n.split("I");
                 if (flag != 0)
@@ -805,7 +804,7 @@ public class GraphGrammarToEventB {
                     flag = 1;
                 stringBuilder.append("{").append(aux[1]).append("}");
             }
-            stringBuilder.append("}");
+            stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
 
 
@@ -824,7 +823,7 @@ public class GraphGrammarToEventB {
             deletedEdges.removeAll(r.getRHS().getMorphism().values());
             stringBuilder.delete(0, stringBuilder.length());
             name = "grd_DelE";
-            stringBuilder.append("DelE = {");
+            stringBuilder.append("DelE = mE[{");
             flag = 0;
             for (String e : deletedEdges) {
                 aux = e.split("I");
@@ -834,7 +833,7 @@ public class GraphGrammarToEventB {
                     flag = 1;
                 stringBuilder.append("{").append(aux[1]).append("}");
             }
-            stringBuilder.append("}");
+            stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
 
 
@@ -1047,15 +1046,13 @@ public class GraphGrammarToEventB {
             /* ------------- */
             
             //Add the event with all the defined guards and acts
-            m.addEvent(ruleEvent);
+            machine.addEvent(ruleEvent);
         }
         return true;
     }
 
     /**
-     * Done
      * Theoretical NACs - segundo definition 20
-     *
      * @param r - regra para qual serão definidas as theoretical NACs
      * @return true || false de acordo com sucesso || insucesso da definição
      */
@@ -1697,9 +1694,9 @@ public class GraphGrammarToEventB {
 
         return true;
     }
+
     /**
      * Main para testes de conversão de Agg para GG e de GG para EventB
-     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
