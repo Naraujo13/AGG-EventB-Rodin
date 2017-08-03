@@ -5,6 +5,7 @@
  */
 package Tradutores;
 
+import EventB.Set;
 import GraphGrammar.EdgeType;
 import GraphGrammar.NodeType;
 import EventB.*;
@@ -17,10 +18,7 @@ import GraphGrammar.Node;
 import GraphGrammar.Rule;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -486,11 +484,10 @@ public class GraphGrammarToEventB {
                 //Define RHS da regra
                 if (!RHSTranslation(context, r))
                     return false;
-
-                //Define NACs da regra
-                if (!NACTranslation(context, r))
-                    return false;
             }
+            //Define NACs da regra
+            if (!NACTranslation(context, r))
+                return false;
         }
         return true;
     }
@@ -615,7 +612,7 @@ public class GraphGrammarToEventB {
         HashSet<String> EdgeNAC = new HashSet<>();
 
         //Contador de controle das NACs
-        int cont = 0;
+        int cont = 1;
 
         //NACV - Forbidden Vertices = NACv - (NACv intersecçao LHS)
         for (Graph NAC : r.getNACs()) {
@@ -1195,7 +1192,6 @@ public class GraphGrammarToEventB {
      * DEFINITIION 22
      * Método que define a aplicação de regras. Cria os eventos e outros ele-
      * mentos necessários para aplicação das regras
-     * TODO: Talvez esteja faltando uma definição no paper
      * @param machine - máquina destino
      * @param grammar - gramátic a fonte
      * @return - true/false indicando sucesso/falha na operação de tradução
@@ -1429,9 +1425,8 @@ public class GraphGrammarToEventB {
              * -- Theoretical NACs -- *
              * ---------------------- */
             //Definir conjunto NAC e NACid
-//            if (!setTheoreticalNACs(ruleEvent, r)) {
-//                return false;
-//            }
+            if (!setTheoreticalNACs(ruleEvent, r))
+                return false;
 
             /* ------------------- *
              * -- Passo 3: THEN -- *
@@ -1489,8 +1484,8 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                    stringBuilder.append("newE_").append(e.getID()).append(" |-> ")
-                            .append(r.getName()).append(r.getRHS().getMorphism().get(e.getSource()));
+                    stringBuilder.append("newE_").append(e.getID()).append(" |-> ").append("mV(")
+                            .append(r.getName()).append(r.getRHS().getMorphism().get(e.getSource())).append(")");
                 }
             }
             stringBuilder.append("} ");
@@ -1518,8 +1513,8 @@ public class GraphGrammarToEventB {
                         flag = 1;
                     else
                         stringBuilder.append(", ");
-                   stringBuilder.append("newE_").append(e.getID()).append(" |-> ")
-                           .append(r.getName()).append(r.getRHS().getMorphism().get(e.getTarget()));
+                   stringBuilder.append("newE_").append(e.getID()).append(" |-> ").append("mV(")
+                           .append(r.getName()).append(r.getRHS().getMorphism().get(e.getTarget())).append(")");
                 }                
             }
             stringBuilder.append("} ");
@@ -1577,32 +1572,81 @@ public class GraphGrammarToEventB {
         String name;
         for (Graph NAC : r.getNACs()) {
 
+            //Prefixo para cada NAC
+            String NACPrefix = r.getName() + "NAC" + NAC.getNACindex();
+
+
+            LinkedHashSet<String> forbiddenIdentificationVertices = new LinkedHashSet<>();
+            LinkedHashSet<String> forbiddenIdentificationEdges = new LinkedHashSet<>();
+
+            LinkedHashMap<String, String> forbiddenIdAux = new LinkedHashMap<>();  //Map de  LHSv -> NACv ou LHSe -> NACe
+
             forbiddenVertices.clear();
             forbiddenEdges.clear();
 
             //Prepara vértices proibidos
-            for (Node n : NAC.getNodes()) {
-                String temp = NAC.getMorphism().get(n.getID());
-                if (temp == null) {
-                    forbiddenVertices.put(n.getID(), n);
+            for (Node NACv : NAC.getNodes()) {
+                String LHSv = NAC.getMorphism().get(NACv.getID());
+                if (LHSv == null)
+                    forbiddenVertices.put(NACv.getID(), NACv);
+                else{
+                    //Prepara Vértices proibidos de identificação
+                    if(forbiddenIdAux.containsKey(LHSv)) {
+                        forbiddenIdAux.forEach((k, v)->{
+                            if (k.equals(LHSv) &&  !v.equals(LHSv))
+                                forbiddenIdentificationVertices.add("{" + v + "," + NACv + "}");
+                        });
+                    }
+                    forbiddenIdAux.put(LHSv, NACv.getID());
                 }
             }
 
+            forbiddenIdAux.clear();
             //Prepara arestas proibidas
-            for (Edge e : NAC.getEdges()) {
-                String temp = NAC.getMorphism().get(e.getID());
-                if (temp == null) {
-                    forbiddenEdges.put(e.getID(), e);
+            for (Edge NACe : NAC.getEdges()) {
+                String LHSe = NAC.getMorphism().get(NACe.getID());
+                if (LHSe == null)
+                    forbiddenEdges.put(NACe.getID(), NACe);
+                else{
+                    //Prepara Arestas proibidas de identificação
+                    if(forbiddenIdAux.containsKey(LHSe)) {
+                        forbiddenIdAux.forEach((k, v)->{
+                            if (k.equals(LHSe) &&  !v.equals(LHSe))
+                                forbiddenIdentificationEdges.add("{" + v + "," + NACe + "}");
+                        });
+                    }
+                    forbiddenIdAux.put(LHSe, NACe.getID());
                 }
             }
 
+            if (forbiddenVertices.isEmpty() && forbiddenEdges.isEmpty())
+                return true;
 
-            name = "grd_NAC" + r.getName() + NAC.getNACindex();
+            //inicio de atualização de definição para utilização de asg
+//            String NACPrefix = r.getName() + "NAC" + NAC.getNACindex();
+//            /* -- Cria NACjV e NACjE -- */
+//            ruleEvent.addParameter("forbidden" + NACPrefix + "V");    //Vertices proibidos
+//            ruleEvent.addParameter("forbidden" + NACPrefix + "E");    //Arestas proibidas
+//
+//            /* -- Define NACjV e NACjE -- */
+//            String predicate;
+//            name = "grdNAC" +  r.getName() + NAC.getNACindex() + "V";
+//            predicate = "Vert" + r.getName() + "NAC" + NAC.getNACindex() + " \\ " + "l" + NACPrefix + "V" ;
+//            ruleEvent.addGuard(name, predicate);
+//
+//            name = "grdNAC" +  r.getName() + NAC.getNACindex() + "V";
+//            predicate = "Vert" + r.getName() + "NAC" + NAC.getNACindex() + " \\ " + "l" + NACPrefix + "V" ;
+//            ruleEvent.addGuard(name, predicate);
+
+
+
+            /* -- grd_NAC -- */
+            name = "grd_" + r.getName() + "NAC" + NAC.getNACindex();
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("not(#");
+            stringBuilder.append("not(# ");
 
             StringBuilder nodeSetString = new StringBuilder(1024);
-            StringBuilder EdgeSetString = new StringBuilder(1024);
+            StringBuilder edgeSetString = new StringBuilder(1024);
             int flag = 0;
             for (Node n : forbiddenVertices.values()) {
                 if (flag == 0) {
@@ -1619,113 +1663,113 @@ public class GraphGrammarToEventB {
                     flag = 1;
                 }
                 else {
-                    nodeSetString.append(", ");
+                    edgeSetString.append(", ");
                 }
-                EdgeSetString.append(e.getID());
+                edgeSetString.append(e.getID());
             }
-            if (nodeSetString.length() > 0)
-                stringBuilder.append(nodeSetString.substring(0)).append(", ");
-            stringBuilder.append(EdgeSetString.substring(0)).append(" . ")
-                    .append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mE [Vert").append(r.getName()).append("] &  ")
-                    .append("{").append(EdgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] &  ");
+
+            if (nodeSetString.length() > 0) {
+                stringBuilder.append(nodeSetString.substring(0));
+                if (edgeSetString.length() > 0)
+                    stringBuilder.append(", ");
+            }
+
+            if (edgeSetString.length() > 0)
+                stringBuilder.append(edgeSetString.substring(0));
+
+            stringBuilder.append(" . ");
+
+            if(nodeSetString.length() > 0)
+                    stringBuilder.append("{").append(nodeSetString.substring(0)).append("} <: VertG \\ mV [Vert").append(r.getName()).append("] & ");
+
+            if (edgeSetString.length() > 0)
+                    stringBuilder.append("{").append(edgeSetString.substring(0)).append("} <: EdgeG \\ mE [Edge").append(r.getName()).append("] & ");
 
             //Guarda que garante unicidade do ID dos vértices
             for (Node n1 : forbiddenVertices.values()) {
                 for (Node n2 : forbiddenVertices.values()) {
-                    flag = 1;
-                    stringBuilder.append(n1.getID()).append("/=").append(n2.getID()).append(" & ");
+                    if (!n1.getID().equals(n2.getID()))
+                        stringBuilder.append(n1.getID()).append("/=").append(n2.getID()).append(" & ");
                 }
             }
-            stringBuilder.append("  ");
 
             //Guarda que garante unicidade do ID das arestas
             for (Edge e1 : forbiddenEdges.values()) {
                 for (Edge e2 : forbiddenEdges.values()) {
-                    stringBuilder.append(e1.getID()).append("/=").append(e2.getID()).append(" & ");
+                    if (!e1.getID().equals(e2.getID()))
+                        stringBuilder.append(e1.getID()).append("/=").append(e2.getID()).append(" & ");
                 }
             }
-            stringBuilder.append("  ");
 
-            //Needs testing
             //Tipagem de vértices proibidos
-            for (Node n1 : forbiddenVertices.values()) {
-                String ID = null;
-                ID = NAC.getMorphism().get(n1.getID());
-                if (ID != null) {
-                    stringBuilder.append("tGV(").append(n1.getID()).append(") = ").append(ID).append(" & ");
-                }
+            for (Node n : forbiddenVertices.values()) {
+                stringBuilder.append("tGV(").append(n.getID()).append(") = ").append(n.getType()).append(" & ");
             }
-            stringBuilder.append("  ");
 
-            //Needs testing
             //Tipagem de arestas proibidas
             flag = 0;
-            for (Edge e1 : forbiddenEdges.values()) {
-                String ID = null;
-                ID = NAC.getMorphism().get(e1.getID());
-                if (ID != null) {
-                    stringBuilder.append("tGE(").append(e1.getID()).append(") = ").append(ID);
-                    /* -- Source -- */
-                    //if SourceLNACj(e) == v & v : NACjV
-                    Node Source = forbiddenVertices.get(e1.getSource());
-                    if (flag == 0)
-                        flag = 1;
-                    else
-                        stringBuilder.append(" &  ");
-                    if (Source != null)
-                        stringBuilder.append("SourceG(").append(e1.getID()).append(") = ").append(Source.getID());
-                    else{
-                        stringBuilder.append("SourceG(").append(e1.getID()).append(") = mV(").append(e1.getSource()).append(")");
-                    }
-                    /* -- Target -- */
-                    Node Target = forbiddenVertices.get(e1.getTarget());
-                    if (flag == 0)
-                        flag = 1;
-                    else
-                        stringBuilder.append(" &  ");
-                    if (Source != null)
-                        stringBuilder.append("TargetG(").append(e1.getID()).append(") = ").append(Target.getID());
-                    else{
-                        stringBuilder.append("TargetG(").append(e1.getID()).append(") = mV(").append(e1.getTarget()).append(")");
-                    }
-                }
-            }
-            stringBuilder.append(") or  ");
+            for (Edge e : forbiddenEdges.values()) {
+                stringBuilder.append("tGE(").append(e.getID()).append(") = ").append(e.getType()).append(" & ");
+                /* -- Source -- */
+                Node Source = forbiddenVertices.get(e.getSource());
 
-            //Needs testing
-            /* -- Unicidade do match -- */
-            ArrayList<Node> nodeList;
-            nodeList = new ArrayList<>(forbiddenVertices.values());
-            flag = 0;
-            stringBuilder.append("(");
-            for (int i = 0; i < nodeList.size()-1; i++){
-                for (int j = i + 1; j < nodeList.size(); j++){
-                    if (flag == 0)
-                        flag = 1;
-                    else
-                        stringBuilder.append(" or ");
-                    stringBuilder.append("mV(").append(nodeList.get(i).getID()).append(") /= mV(").append(nodeList.get(j)).append(")");
-                }
+                if (Source != null) //Se source também é um proibido
+                    stringBuilder.append("SourceG(").append(e.getID()).append(") = ").append(Source.getID()).append(" & ");
+                else //Se source não é um proibido
+                    stringBuilder.append("SourceG(").append(e.getID()).append(") = mV(").append(NACPrefix).append(e.getSource()).append(")").append(" & ");
+
+                /* -- Target -- */
+                Node Target = forbiddenVertices.get(e.getTarget());
+                if (Target != null) //Se target também é um proibido
+                    stringBuilder.append("TargetG(").append(e.getID()).append(") = ").append(Target.getID());
+                else    //Se target não é um proibido
+                    stringBuilder.append("TargetG(").append(e.getID()).append(") = mV(").append(NACPrefix).append(e.getTarget()).append(")");
             }
-            stringBuilder.append(")");
+
+            stringBuilder.append(") ");
+
+
+            /* -- Unicidade do match -- */
+            if (!forbiddenIdentificationVertices.isEmpty()) {
+                flag = 0;
+                stringBuilder.append(" or (");
+                for (String n1 : forbiddenIdentificationVertices) {
+                    for (String n2 : forbiddenIdentificationVertices) {
+                        if (!n1.equals(n2)) {
+                            if (flag == 0)
+                                flag = 1;
+                            else
+                                stringBuilder.append(" or ");
+                            stringBuilder.append("mV(").append(NACPrefix).append(n1)
+                                    .append(") /= mV(")
+                                    .append(NACPrefix).append(n2).append(")");
+                        }
+                    }
+                }
+                stringBuilder.append(")");
+            }
             /* ------------------------ */
 
-            //Needs testing
+
             /* -- Unicidade do match -- */
-            ArrayList<Edge> EdgeList;
-            EdgeList = new ArrayList<>(forbiddenEdges.values());
-            flag = 0;
-            stringBuilder.append("(");
-            for (int i = 0; i < EdgeList.size(); i++){
-                for (int j = i + 1; j < EdgeList.size(); j++){
-                    if (flag == 0)
-                        flag = 1;
-                    else
-                        stringBuilder.append(" or ");
-                    stringBuilder.append("mE(").append(EdgeList.get(i).getID()).append(") /= mE(").append(EdgeList.get(j)).append(")");
+            if (!forbiddenIdentificationEdges.isEmpty()) {
+                flag = 0;
+                stringBuilder.append(" or (");
+                for (String e1 : forbiddenIdentificationEdges) {
+                    for (String e2 : forbiddenIdentificationEdges) {
+                        if (!e1.equals(e2)) {
+                            if (flag == 0)
+                                flag = 1;
+                            else
+                                stringBuilder.append(" or ");
+                            stringBuilder.append("mE(").append(NACPrefix).append(e1)
+                                    .append(") /= mE(")
+                                    .append(NACPrefix).append(e2).append(")");
+                        }
+                    }
                 }
+                stringBuilder.append(")");
             }
-            stringBuilder.append(")");
             /* ------------------------ */
             ruleEvent.addGuard(name, stringBuilder.substring(0));
         }
@@ -2273,7 +2317,7 @@ public class GraphGrammarToEventB {
         GraphGrammarToEventB eventB = new GraphGrammarToEventB();
         Project newProject = new Project(name);
         //Translates
-        eventB.translate(newProject, test, false);
+        eventB.translate(newProject, test, true);
         //Logs
         newProject.logProject(logDir.getPath(), rodinDir.getPath());
 
