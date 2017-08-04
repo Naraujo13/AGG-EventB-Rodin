@@ -46,23 +46,20 @@ public class GraphGrammarToEventB {
         //Cria machine
         Machine m = new Machine(g.getName() + "mch", c);
 
-        /*
-         * --- Grafo Tipo ---
-         */
-        //Cria Sets para representar o conjunto de vértices e conjunto de arestas do grafo tipo
+        /* -- Tradução do Grafo Tipo -- */
         if (!typeGraphTranslation(c, g)) {
             return false;
         }
 
-        //Define LHS, também define RHS e NACs caso estratégia seja DPO
+        /* -- Tradução de LHS e NACs, define também LHS para estratégia SPO -- */
        if (!rulePatternTranslation(c, g, DPO))
            return false;
 
-        //Define Grafo Inicial
+        /* -- Tradução do Grafo Estado -- */
         if (!stateGraphTranslation(m, g))
             return false;
 
-        //Define Aplicação de Regras
+        /* -- Tradução da Aplicação de Regras para abordagem escolhida -- */
         if (!DPO) {
             //SPO Approach
             if (!ruleApplication(c, m, g))
@@ -74,10 +71,21 @@ public class GraphGrammarToEventB {
                 return false;
         }
 
-
-        
+        /* -- Adiciona Elementos Traduzidos ao Projeto -- */
         p.addContext(c);
         p.addMachine(m);
+
+        /* -- Refinamento -- */
+
+        //Cria contexto
+        Context cR = new Context(g.getName() + "Rctx");
+
+        //Cria machine
+        Machine mR = new Machine(g.getName() + "Rmch", c);
+
+        if (!attributedTypeGraphTranslation(cR, g))
+            return false;
+
         return true;
         
     }
@@ -1190,6 +1198,7 @@ public class GraphGrammarToEventB {
 
     /**
      * DEFINITIION 22
+     * 100% Revised and working
      * Método que define a aplicação de regras. Cria os eventos e outros ele-
      * mentos necessários para aplicação das regras
      * @param machine - máquina destino
@@ -1316,7 +1325,7 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append("{").append(r.getName()).append(n).append("}");
+                stringBuilder.append(r.getName()).append(n);
             }
             stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
@@ -1344,7 +1353,7 @@ public class GraphGrammarToEventB {
                     stringBuilder.append(", ");
                 else
                     flag = 1;
-                stringBuilder.append("{").append(r.getName()).append(e).append("}");
+                stringBuilder.append(r.getName()).append(e);
             }
             stringBuilder.append("}]");
             ruleEvent.addGuard(name, stringBuilder.substring(0));
@@ -1565,6 +1574,7 @@ public class GraphGrammarToEventB {
 
     /**
      * Theoretical NACs - segundo definition 20
+     * 100% Revised and working
      * @param r - regra para qual serão definidas as theoretical NACs
      * @return true || false de acordo com sucesso || insucesso da definição
      */
@@ -1703,32 +1713,32 @@ public class GraphGrammarToEventB {
 
             //Tipagem de vértices proibidos
             for (Node n : forbiddenVertices.values()) {
-                stringBuilder.append("tGV(").append(n.getID()).append(") = ").append(n.getType()).append(" & ");
+                stringBuilder.append("(tGV(").append(n.getID()).append(") = ").append(n.getType()).append(") & ");
             }
 
             //Tipagem de arestas proibidas
             for (Edge e : forbiddenEdges.values()) {
-                stringBuilder.append("tGE(").append(e.getID()).append(") = ").append(e.getType()).append(" & ");
+                stringBuilder.append("(tGE(").append(e.getID()).append(") = ").append(e.getType()).append(") & ");
                 /* -- Source -- */
                 Node Source = forbiddenVertices.get(e.getSource());
 
                 if (Source != null) //Se source também é um proibido
-                    stringBuilder.append("SourceG(").append(e.getID()).append(") = ").append(Source.getID()).append(" & ");
+                    stringBuilder.append("(SourceG(").append(e.getID()).append(") = ").append(Source.getID()).append(") & ");
                 else{ //Se source não é um proibido
                     String source = NAC.getMorphism().get(e.getSource());
-                    stringBuilder.append("SourceG(").append(e.getID()).append(") = mV(").append(r.getName()).append(source).append(")").append(" & ");
+                    stringBuilder.append("(SourceG(").append(e.getID()).append(") = mV(").append(r.getName()).append(source).append(")").append(") & ");
 
                 }
                 /* -- Target -- */
                 Node Target = forbiddenVertices.get(e.getTarget());
                 if (Target != null) //Se target também é um proibido
-                    stringBuilder.append("TargetG(").append(e.getID()).append(") = ").append(Target.getID());
+                    stringBuilder.append("(TargetG(").append(e.getID()).append(") = ").append(Target.getID()).append(") & ");
                 else {    //Se target não é um proibido
                     String target = NAC.getMorphism().get(e.getTarget());
-                    stringBuilder.append("TargetG(").append(e.getID()).append(") = mV(").append(r.getName()).append(target).append(")");
+                    stringBuilder.append("(TargetG(").append(e.getID()).append(") = mV(").append(r.getName()).append(target).append(")) & ");
                 }
             }
-
+            stringBuilder.delete(stringBuilder.length()-3, stringBuilder.length());
             stringBuilder.append(") ");
 
 
@@ -1789,13 +1799,20 @@ public class GraphGrammarToEventB {
      * @param g - gramática sendo traduzida
      * @return sucesso ou fracasso
      */
-    public boolean attributedTypeGraphTranslation(Context context, Grammar g) {
-        HashMap <String, NodeType> attNodes = g.getTypeGraph().getAttNodes();
-        if (attNodes.isEmpty())
+    private boolean attributedTypeGraphTranslation(Context context, Grammar g) {
+
+        //Cria LinkedHashMap com atributos
+        LinkedHashMap<String, AttributeType> attTypes = new LinkedHashMap<>();
+        g.getTypeGraph().getAttNodes().values().forEach((nt)->
+                nt.getAttributes().forEach((at)->
+                        attTypes.put(at.getName(), at)));
+
+
+        if (attTypes.isEmpty())
             return false;
 
         /* -- Sets -- */
-        context.addSet(new Set("AttrT"));
+        context.addSet(new Set("AttrT"));   //Conjunto com Tipos de Atributos
         context.addSet(new Set("DataType"));
 
        /* -- Constants -- */
@@ -1804,18 +1821,8 @@ public class GraphGrammarToEventB {
 
        /* -- s : S ???? -- */
 
-       /* -------------------------------------------------------------- *
-        * Needs Set with all elements with atributes.                    *
-        * Most eficient way: previously define the set in  the parser,   *
-        * without adding complexity.                                     *
-        * -------------------------------------------------------------- */
-
-       /* -- Attribute Type --*/
-        for (NodeType nt: attNodes.values()){
-            for (AttributeType at: nt.getAttributes()){
-                context.addConstant(new Constant("at" + at.getID()));
-            }
-        }
+       /* -- Attribute Types --*/
+       attTypes.keySet().forEach((atName) -> context.addConstant(new Constant("at" + atName)));
 
         /* --- Axioms --- */
         String name, predicate;
@@ -1824,45 +1831,41 @@ public class GraphGrammarToEventB {
         name = "axm_AttrT";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("partition(AttrT, {");
-        int flag = 0;
-        for (NodeType n: attNodes.values()){
-            if (flag == 0)
-                flag = 1;
-            else
-                stringBuilder.append("}, {");
-            stringBuilder.append(n.getType());
-        }
-        stringBuilder.append("})");
-        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-
-        /* --- Unicidade de Id dos Nodos com Atributos --- */
-        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
-        for (int i = 0; i < attNodes.size()-1; i++){
-            for (int j = i + 1; j < attNodes.size(); j++){
-                name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
-                context.addAxiom(
-                        new Axiom(name,
-                                (new StringBuilder())
-                                        .append(attNodesList.get(i).getType())
-                                        .append(" /= ")
-                                        .append(attNodesList.get(j).getType())
-                                        .substring(0)));
-            }
-        }
-        /* --------------- */
-
-        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
-
-        /* --- axm_attrvT/def --- */
-        name = "axm_attrvTdef";
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(attrvT");
-        for (int i = 0; i < attNodes.size(); i++){
-            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
-        }
+        attTypes.keySet().forEach((atName)->
+                stringBuilder.append("{").append("at").append(atName).append("}, "));
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
         stringBuilder.append(")");
         context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-        /* ---------------------- */
+
+//
+//        /* --- Unicidade de Tipos de Atributos --- */
+//        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
+//        for (int i = 0; i < attNodes.size()-1; i++){
+//            for (int j = i + 1; j < attNodes.size(); j++){
+//                name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
+//                context.addAxiom(
+//                        new Axiom(name,
+//                                (new StringBuilder())
+//                                        .append(attNodesList.get(i).getType())
+//                                        .append(" /= ")
+//                                        .append(attNodesList.get(j).getType())
+//                                        .substring(0)));
+//            }
+//        }
+//        /* --------------- */
+//
+//        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
+//
+//        /* --- axm_attrvT/def --- */
+//        name = "axm_attrvTdef";
+//        stringBuilder.delete(0, stringBuilder.length());
+//        stringBuilder.append("partition(attrvT");
+//        for (int i = 0; i < attNodes.size(); i++){
+//            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
+//        }
+//        stringBuilder.append(")");
+//        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+//        /* ---------------------- */
 
         return true;
     }
@@ -2290,7 +2293,9 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
+        //String fullPath = "tests/pacmanAtributo/pacmanAtributo";
         String fullPath = "tests/R2C/R2C";
+
         String name = fullPath.split("/")[fullPath.split("/").length-1];
 
 
