@@ -1707,7 +1707,6 @@ public class GraphGrammarToEventB {
             }
 
             //Tipagem de arestas proibidas
-            flag = 0;
             for (Edge e : forbiddenEdges.values()) {
                 stringBuilder.append("tGE(").append(e.getID()).append(") = ").append(e.getType()).append(" & ");
                 /* -- Source -- */
@@ -1715,15 +1714,19 @@ public class GraphGrammarToEventB {
 
                 if (Source != null) //Se source também é um proibido
                     stringBuilder.append("SourceG(").append(e.getID()).append(") = ").append(Source.getID()).append(" & ");
-                else //Se source não é um proibido
-                    stringBuilder.append("SourceG(").append(e.getID()).append(") = mV(").append(NACPrefix).append(e.getSource()).append(")").append(" & ");
+                else{ //Se source não é um proibido
+                    String source = NAC.getMorphism().get(e.getSource());
+                    stringBuilder.append("SourceG(").append(e.getID()).append(") = mV(").append(r.getName()).append(source).append(")").append(" & ");
 
+                }
                 /* -- Target -- */
                 Node Target = forbiddenVertices.get(e.getTarget());
                 if (Target != null) //Se target também é um proibido
                     stringBuilder.append("TargetG(").append(e.getID()).append(") = ").append(Target.getID());
-                else    //Se target não é um proibido
-                    stringBuilder.append("TargetG(").append(e.getID()).append(") = mV(").append(NACPrefix).append(e.getTarget()).append(")");
+                else {    //Se target não é um proibido
+                    String target = NAC.getMorphism().get(e.getTarget());
+                    stringBuilder.append("TargetG(").append(e.getID()).append(") = mV(").append(r.getName()).append(target).append(")");
+                }
             }
 
             stringBuilder.append(") ");
