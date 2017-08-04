@@ -82,13 +82,18 @@ public class GraphGrammarToEventB {
         cR.addExtend(c);
 
         //Cria machine
-        Machine mR = new Machine(g.getName() + Integer.toString(p.getMachines().size() + 1) + "mch", c);
+        Machine mR = new Machine(g.getName() + Integer.toString(p.getMachines().size() + 1) + "mch", cR);
+        mR.addRefinement(m);
 
         if (!attributedTypeGraphTranslation(cR, g))
             return false;
 
+        if (!stateGraphAttributesTranslation(mR, g))
+            return false;
+
         /* -- Adiciona Novos elementos -- */
         p.addContext(cR);
+        p.addMachine(mR);
 
         return true;
         
@@ -1914,89 +1919,109 @@ public class GraphGrammarToEventB {
      * DEFINITION 34
      * Método que realiza a tradução e criação dos atributos de um grafo estado.
      * @param m - máquina a ser criada
-     * @param c - contexto a ser criado
      * @param g - gramática a ser traduzida
-     * @return - sucesso ou fracasse
+     * @return - sucesso ou fracasso
      */
-    private boolean stateGraphAttributesTranslation(Machine m, Context c, Grammar g){
+    private boolean stateGraphAttributesTranslation(Machine m, Grammar g){
 
-        HashMap <String, Node> attNodes = g.getHost().getAttNodes();
+        //Cria LinkedHashMap com atributos
+        LinkedHashMap<String, AttributeType> attG = new LinkedHashMap<>();
+        g.getHost().getAttNodes().values().forEach((nt)->
+                nt.getAttributes().forEach((a)->
+                        attG.put(a.getName(), a)));
+
+        if (attG.isEmpty())
+            return false;
 
 
         /* --- Variables --- */
-        m.addVariable(new Variable("AttrG"));
-        m.addVariable(new Variable("attrvG"));
-        m.addVariable(new Variable("tGA"));
-        for (Node n: attNodes.values()){
-            for (AttributeType at: n.getAttributes()){
-                m.addVariable(new Variable("valG" + at.getName()));
-            }
-        }
-        /* ----------------- */
+        m.addVariable(new Variable("AttrG"));   //Conjunto de instâncias de atributos
+        m.addVariable(new Variable("attrvG"));  //Função mapeando atributos para nodos
+
+        m.addVariable(new Variable("tGA"));     //Tipagem dos Atributos
+
+        //Valor das instâncias de atributos
+        attG.keySet().forEach((aName)-> m.addVariable(new Variable("valGat" + aName)));
 
         /* --- Invariants --- */
         String name;
         String predicate;
 
+        //Domínio dos Atributos
         name = "inv_AttrG";
         predicate = "AttrG : POW(NAT)";
         m.addInvariant(name, new Invariant(name, predicate));
 
+        //Dominio e Imagem da Função de Mapeamento dos Atributos para Nodos
         name = "inv_attrvG";
         predicate = "attrvG : AttrG --> VertG";
         m.addInvariant(name, new Invariant(name, predicate));
 
-        name = "inv_tgA";
-        predicate = "tgA : AttrG --> AttrT";
+        //Domínio e Imagem da função de tipagem
+        name = "inv_tGA";
+        predicate = "tGA : AttrG --> AttrT";
         m.addInvariant(name, new Invariant(name, predicate));
 
-        /* -- Cada atributo possue apenas 1 valor associado -- */
-        ArrayList<Attribute> atts = new ArrayList<>();
-        for (Node n: attNodes.values()){
-            for (AttributeType at: n.getAttributes()){
-                if (at instanceof Attribute){
-                    atts.add((Attribute) at);
-                }
-            }
-        }
-        for (Attribute at1: atts){
-            for (Attribute at2: atts){
-                if (at1 != at2){
-                    name = "inv_Diff" + at1.getID() + at2.getID();
-                    predicate = "dom(valG" + at1.getID() + ") INTER dom(valG" + at2.getID() + ") = {}";
-                    m.addInvariant(name, new Invariant(name, predicate));
-                }
-            }
-        }
-        /* --------------------------------------------------- */
-        for (Attribute a: atts){
-            name = "inv_type" + a.getID();
-            predicate =  "!a . a : AttrG & a : dom(tgA |> {" + a.getID() + "}) => a : dom(valG" + a.getID() + ")";
-            m.addInvariant(name, new Invariant(name, predicate));
-        }
-        /* ----------------- */
+        //Função para domíno dos valores das instâncias de atributos
+        attG.values().forEach((a)->{
+            String invName = "inv_valGat" + a.getName();
+            String invPredicate = "valGat" + a.getName() + " : AttrG +-> ";
+            if (a.getType().equals("int"))
+                invPredicate += "NatSort";
+            else if (a.getType().equals("boolean") || a.getType().equals("bool"))
+                invPredicate += "BoolSort";
+            m.addInvariant(invName, new Invariant (invName, invPredicate));
+        });
 
-        /* --- Events --- */
-        Event initialisation = new Event("INITIALISATION");
+        //Cada atributo possui apenas um valor
+        attG.keySet().forEach((aName1) ->
+                attG.keySet().forEach((aName2) -> {
+                    if (!aName1.equals(aName2)) {
+                        String invName = "inv_Diffat" + aName1 + "at" +  aName2;
+                        String invPredicate = "dom(valGat" + aName1 + ") /\\ dom(valGat" + aName2 + ") = {}";
+                        m.addInvariant(invName, new Invariant(invName, invPredicate));
+                    }
+                }));
 
-        name = "actAttrG";
+        //Todos os atributos possuem um valor
+        attG.values().forEach((a)->{
+            String type;
+            String invName = "inv_typeat" + a.getName();
+            String invPredicate = "#a . a : AttrG & a : dom(tGA |> {at" + a.getName() + "}) => a : dom(valGat" + a.getName() + ")";
+            m.addInvariant(invName, new Invariant(invName, invPredicate));
+        });
+
+        /* -- Event -- */
+        Event initilisation = new Event("INITIALISATION");
+
+        //THEN
+
+        //Conjunto de valores
+        name = "act_AttrG";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("AttrG := {");
-        for (Attribute a: atts){
-            stringBuilder.append(a.getID());
-        }
+        attG.values().forEach((a) -> stringBuilder.append(a.getValue()).append(", "));
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
         stringBuilder.append("}");
-        initialisation.addAct(name, stringBuilder.substring(0));
+        initilisation.addAct(name, stringBuilder.substring(0, stringBuilder.length()));
 
         name = "act_attrvG";
         stringBuilder.delete(0, stringBuilder.length());
         stringBuilder.append("attrvG := {");
-        for (Attribute a: atts){
-            stringBuilder.append(a.getID());
-        }
+        g.getHost().getAttNodes().values().forEach((nt)->
+                nt.getAttributes().forEach((at)->
+                        stringBuilder
+                                .append("at").append(at.getName())
+                                .append(" |-> ")
+                                .append(nt.getID())
+                                .append(", ")
+                )
+        );
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
         stringBuilder.append("}");
-        initialisation.addAct(name, stringBuilder.substring(0));
-        /* -------------- */
+        initilisation.addAct(name, stringBuilder.substring(0, stringBuilder.length()));
+
+        m.addEvent(initilisation);
 
         return true;
     }

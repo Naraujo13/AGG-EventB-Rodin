@@ -62,6 +62,10 @@ public class Machine {
         return events;
     }
 
+    public void addRefinement(Machine m){
+        refinement.add(m);
+    }
+
     /**
      * Método de adição de variáveis
      * @param v - variável a ser adicionada
