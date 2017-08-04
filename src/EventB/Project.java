@@ -47,6 +47,18 @@ public class Project {
         machines.add(m);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public LinkedHashSet<Context> getContexts() {
+        return contexts;
+    }
+
+    public LinkedHashSet<Machine> getMachines() {
+        return machines;
+    }
+
     public boolean logProject(String logPath, String step2Path){
 
          /* Testing */

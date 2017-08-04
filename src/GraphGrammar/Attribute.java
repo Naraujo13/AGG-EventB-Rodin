@@ -11,14 +11,12 @@ package GraphGrammar;
  * @author Nícolas Oreques de Araujo
  */
 public class Attribute extends AttributeType {
-    
-    private String name;
+
     private String ID;
     private String value;
 
     public Attribute(String type, String ID, String name, String value){
-        super(type);
-        this.name = name;
+        super(name, type);
         this.ID = ID;
         this.value = value;
         
@@ -33,16 +31,6 @@ public class Attribute extends AttributeType {
     public String getValue() {
         return value;
     }
-
-    /**
-     * Método de acesso ao nome do atributo.
-     * @return - nome do atributo em forma de string.
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
     /**
      * Método de acesso ao ID do atributo.
      * @return - ID do atributo em forma de string.

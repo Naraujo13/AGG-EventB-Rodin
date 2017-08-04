@@ -85,6 +85,10 @@ public class Context {
         axiomLabelCount++;
     }
 
+    public void addExtend(Context extend) {
+        this.extend.add(extend);
+    }
+
     /**
      * Função de acesso ao contador usado para criação das labels dos axiomas.
      * @return retorna inteiro informando quantos axiomas foram criados.

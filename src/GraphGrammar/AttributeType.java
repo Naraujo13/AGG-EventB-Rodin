@@ -11,20 +11,26 @@ package GraphGrammar;
  * @author Nícolas Oreques de Araujo
  */
 public class AttributeType {
+    private String name;
     private String type;
     
-    public AttributeType(String type){
+    public AttributeType(String name, String type){
+        this.name = name;
         this.type = type;
     }
     
  public String getID(){return "";}
  public String getValue(){return "";}
- public String getName(){return "";}
+ public String getName(){return name;}
     /**
      * Método de acesso ao tipo do atributo.
      * @return - tipo do atributo em forma de string.
      */
     public String getType() {
         return type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -110,7 +110,7 @@ public class AGGToGraphGrammar {
                     //Se nodo possuia atributos no rótulo
                     if (nodeAtt.containsKey(auxiliar3[1])){
                         //Crianova instancia de atributo contendo o tipo
-                        newAttType = new AttributeType(attTypes.get(nodeAtt.get(auxiliar3[1])));
+                        newAttType = new AttributeType(attNames.get(nodeAtt.get(auxiliar3[1])), attTypes.get(nodeAtt.get(auxiliar3[1])));
                         System.out.println(auxiliar3[1] + "|" + nodeAtt.get(auxiliar3[1]));
                         //Insere atributo no nodo
                         newNodeType.addAttribute(newAttType);

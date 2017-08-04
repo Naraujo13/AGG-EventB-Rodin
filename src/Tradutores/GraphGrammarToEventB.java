@@ -41,10 +41,10 @@ public class GraphGrammarToEventB {
     private boolean translate(Project p, Grammar g, boolean DPO) {
 
         //Cria contexto
-        Context c = new Context(g.getName() + "ctx");
+        Context c = new Context(g.getName() + Integer.toString(p.getContexts().size() + 1) + "ctx");
 
         //Cria machine
-        Machine m = new Machine(g.getName() + "mch", c);
+        Machine m = new Machine(g.getName() + Integer.toString(p.getMachines().size() + 1) + "mch", c);
 
         /* -- Tradução do Grafo Tipo -- */
         if (!typeGraphTranslation(c, g)) {
@@ -78,13 +78,17 @@ public class GraphGrammarToEventB {
         /* -- Refinamento -- */
 
         //Cria contexto
-        Context cR = new Context(g.getName() + "Rctx");
+        Context cR = new Context(g.getName() + Integer.toString(p.getContexts().size() + 1) + "ctx");
+        cR.addExtend(c);
 
         //Cria machine
-        Machine mR = new Machine(g.getName() + "Rmch", c);
+        Machine mR = new Machine(g.getName() + Integer.toString(p.getMachines().size() + 1) + "mch", c);
 
         if (!attributedTypeGraphTranslation(cR, g))
             return false;
+
+        /* -- Adiciona Novos elementos -- */
+        p.addContext(cR);
 
         return true;
         
@@ -1795,6 +1799,7 @@ public class GraphGrammarToEventB {
     /**
      * DEFINITION 33
      * Função que realiza a tradução dos atributos de um grafo tipo
+     * 100% Revised and working
      * @param context - contexto sendo criado
      * @param g - gramática sendo traduzida
      * @return sucesso ou fracasso
@@ -1819,7 +1824,10 @@ public class GraphGrammarToEventB {
         context.addConstant(new Constant("attrvT"));
         context.addConstant(new Constant("valT"));
 
-       /* -- s : S ???? -- */
+       //Define Sort para tipos default
+        context.addConstant(new Constant("NatSort"));
+        context.addConstant(new Constant("BoolSort"));
+
 
        /* -- Attribute Types --*/
        attTypes.keySet().forEach((atName) -> context.addConstant(new Constant("at" + atName)));
@@ -1830,42 +1838,74 @@ public class GraphGrammarToEventB {
         /* -- Axm_AttrT -- */
         name = "axm_AttrT";
         stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(AttrT, {");
+        stringBuilder.append("partition(AttrT, ");
         attTypes.keySet().forEach((atName)->
                 stringBuilder.append("{").append("at").append(atName).append("}, "));
         stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
         stringBuilder.append(")");
         context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
-//
-//        /* --- Unicidade de Tipos de Atributos --- */
-//        ArrayList<NodeType> attNodesList = new ArrayList<>(attNodes.values());
-//        for (int i = 0; i < attNodes.size()-1; i++){
-//            for (int j = i + 1; j < attNodes.size(); j++){
-//                name = "axm_attrTDiff" + attNodesList.get(i).getType() + attNodesList.get(j).getType();
-//                context.addAxiom(
-//                        new Axiom(name,
-//                                (new StringBuilder())
-//                                        .append(attNodesList.get(i).getType())
-//                                        .append(" /= ")
-//                                        .append(attNodesList.get(j).getType())
-//                                        .substring(0)));
-//            }
-//        }
-//        /* --------------- */
-//
-//        context.addAxiom(new Axiom("axm_attrvT", "attrvT : AttrT --> VertT"));
-//
-//        /* --- axm_attrvT/def --- */
-//        name = "axm_attrvTdef";
-//        stringBuilder.delete(0, stringBuilder.length());
-//        stringBuilder.append("partition(attrvT");
-//        for (int i = 0; i < attNodes.size(); i++){
-//            stringBuilder.append(", {").append(attNodes.get(i).getType()).append("}");
-//        }
-//        stringBuilder.append(")");
-//        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//        /* ---------------------- */
+
+        /* --- Unicidade de Tipos de Atributos --- */
+        attTypes.keySet().forEach((atName1)->{
+            attTypes.keySet().forEach((atName2)->{
+                if (!atName1.equals(atName2))
+                    context.addAxiom(new Axiom("axm_attrTDiff" + atName1 + atName2, atName1 + " /= " + atName2));
+            });
+        });
+
+        /* -- Tipos de Atributos com Tipos Default -- */
+        name = "axm_data";
+        predicate = "partition(DataType, {NatSort}, {BoolSort})";
+        context.addAxiom(new Axiom(name, predicate));
+
+        name = "axm+dataDiffNatSortBoolSort";
+        predicate = "NatSort /= BoolSort";
+        context.addAxiom(new Axiom(name, predicate));
+
+        /* -- attrvT dominio e definição -- */
+        name = "axm_attrvT";
+        predicate = "attrvT : AttrT --> VertT";
+        context.addAxiom(new Axiom(name, predicate));
+
+        name = "axm_attrvTdef";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(attrvT, ");
+        g.getTypeGraph().getAttNodes().values().forEach((nt)->
+                nt.getAttributes().forEach((at)->
+                        stringBuilder
+                                .append("{").append("at")
+                                .append(at.getName()).append(" |-> ")
+                                .append(nt.getType()).append("}, ")
+                )
+        );
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+        /* -- valT dominio e definição -- */
+        name = "axm_valT";
+        predicate = "valT : AttrT --> DataType";
+        context.addAxiom(new Axiom(name, predicate));
+
+        name = "axm_valTdef";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("partition(valT, ");
+        attTypes.values().forEach((at)->{
+            if (at.getType().equals("int"))
+                stringBuilder
+                        .append("{").append("at")
+                        .append(at.getName()).append(" |-> ")
+                        .append("NatSort").append("}, ");
+            else if (at.getType().equals("boolean") || at.getType().equals("bool"))
+                stringBuilder
+                        .append("{").append("at")
+                        .append(at.getName()).append(" |-> ")
+                        .append("BoolSort").append("}, ");
+        });
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
+        stringBuilder.append(")");
+        context.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
         return true;
     }
@@ -2281,9 +2321,6 @@ public class GraphGrammarToEventB {
 
         }
 
-
-
-
         return true;
     }
 
@@ -2293,8 +2330,8 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
-        //String fullPath = "tests/pacmanAtributo/pacmanAtributo";
-        String fullPath = "tests/R2C/R2C";
+        String fullPath = "tests/pacmanAtributo/pacmanAtributo";
+        //String fullPath = "tests/R2C/R2C";
 
         String name = fullPath.split("/")[fullPath.split("/").length-1];
 
