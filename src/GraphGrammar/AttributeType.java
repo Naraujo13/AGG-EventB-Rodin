@@ -11,15 +11,17 @@ package GraphGrammar;
  * @author Nícolas Oreques de Araujo
  */
 public class AttributeType {
+    private String ID;
     private String name;
     private String type;
     
-    public AttributeType(String name, String type){
+    public AttributeType(String ID, String name, String type){
+        this.ID = ID;
         this.name = name;
         this.type = type;
     }
     
- public String getID(){return "";}
+ public String getID(){return ID;}
  public String getValue(){return "";}
  public String getName(){return name;}
     /**
