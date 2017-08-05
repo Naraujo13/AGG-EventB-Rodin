@@ -91,6 +91,9 @@ public class GraphGrammarToEventB {
         if (!stateGraphAttributesTranslation(mR, g))
             return false;
 
+        if (!attributedRuleTranslation(g, cR, mR))
+            return false;
+
         /* -- Adiciona Novos elementos -- */
         p.addContext(cR);
         p.addMachine(mR);
@@ -2106,11 +2109,10 @@ public class GraphGrammarToEventB {
      * Método que realiza a tradução de uma regra com atributos
      * 100% Revised and working
      * @param m - máquina a ser criada
-     * @param ctx - contexto a ser criado
-     * @param r - regra a ser traduzida
+     * @param ctx - contexto a ser criada
      * @return - sucesso ou fracasso
      */
-    private boolean attributedRuleTranslation(Machine m, Grammar g, Context ctx, Rule r, Event ruleEvent) {
+    private boolean attributedRuleTranslation(Grammar g, Context ctx, Machine m) {
 
         //Cria LinkedHashMap com tipos de atributos
         LinkedHashMap<String, AttributeType> attTypes = new LinkedHashMap<>();
@@ -2118,44 +2120,91 @@ public class GraphGrammarToEventB {
                 nt.getAttributes().forEach((at)->
                         attTypes.put(at.getID(), at)));
 
-        //Cria LinkedHashMap com atributos do LHS
-        LinkedHashMap<String, AttributeType> attLHS = new LinkedHashMap<>();
-        r.getLHS().getAttNodes().values().forEach((nt)->
-                nt.getAttributes().forEach((a)->
-                        attLHS.put(a.getName(), a)));
+        for (Rule r : g.getRules()) {
 
-        String attLHSPrefix = "attL";
+            //Cria LinkedHashMap com atributos do LHS
+            LinkedHashMap<String, AttributeType> attLHS = new LinkedHashMap<>();
+            r.getLHS().getAttNodes().values().forEach((nt) ->
+                    nt.getAttributes().forEach((a) ->
+                            attLHS.put(a.getName(), a)));
+
+            String attLHSPrefix = "att" + r.getName();
 
 
         /* -- Context -- */
-        String name;
+            String name, predicate;
 
-        // --- Sets
+            // --- Sets
 
-        //Conjunto de Atributos no LHS
-        ctx.addSet(new Set("Attr" + r.getName()));
+            //Conjunto de Atributos no LHS
+            ctx.addSet(new Set("Attr" + r.getName()));
 
-        // --- Constants
+            // --- Constants
 
-        //Atributos no LHS
-        attLHS.keySet().forEach((aLHS) -> ctx.addConstant(new Constant(attLHSPrefix + aLHS)));
+            //Atributos no LHS
+            attLHS.keySet().forEach((aLHS) -> ctx.addConstant(new Constant(attLHSPrefix + aLHS)));
 
-        //Função para mapear atributos do LHS para nodos do LHS
-        ctx.addConstant(new Constant("attrv" + r.getName()));
+            //Função para mapear atributos do LHS para nodos do LHS
+            ctx.addConstant(new Constant("attrv" + r.getName()));
 
-        // --- Axioms
+            //Função de Tipagem dos Atributos
+            ctx.addConstant(new Constant("t" + r.getName() + "A"));
 
-        //Definição do Conjunto de Atributos de LHS
+            // --- Axioms
 
-        name = "axm_attrv" + r.getName();
-        stringBuilder.delete(0, stringBuilder.length());
-        stringBuilder.append("partition(Attr").append(r.getName()).append(", ");
-        attLHS.keySet().forEach((aLHS -> stringBuilder.append(attLHSPrefix).append(aLHS).append(", ")));
-        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
-        stringBuilder.append(")");
-        ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+            //Definição do Conjunto de Atributos de LHS
+            name = "axm_Attr" + r.getName();
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(Attr").append(r.getName()).append(", ");
+            attLHS.keySet().forEach((aLHS -> stringBuilder.append("{").append(attLHSPrefix).append(aLHS).append("}").append(", ")));
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+            stringBuilder.append(")");
+            ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
-        //TODO: REVIEW ALL CODE BELOW
+            //Definição do Domínio e Imagem da Função que mapeia atributo para vértice
+            name = "axm_attrv" + r.getName();
+            predicate = "attrv" + r.getName() + " : Attr" + r.getName() + " --> Vert" + r.getName();
+            ctx.addAxiom(new Axiom(name, predicate));
+
+            //Definição do Comportamento da Função que mapeia atributo para vértice
+            name = "axm_attrv" + r.getName() + "def";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(attrv").append(r.getName()).append(", ");
+
+            r.getLHS().getAttNodes().values().forEach((nt) ->
+                    nt.getAttributes().forEach((at) ->
+                            stringBuilder
+                                    .append("{").append(attLHSPrefix)
+                                    .append(at.getName()).append(" |-> ")
+                                    .append(r.getName()).append(nt.getID()).append("}, ")
+                    )
+            );
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+            stringBuilder.append(")");
+
+            ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+            //Definição do Domínio e Imagem de Função de Tipagem dos Atributos
+            name = "axm_t" + r.getName() + "A";
+            predicate = "t" + r.getName() + "A : Attr" + r.getName() + " --> AttrT";
+            ctx.addAxiom(new Axiom(name, predicate));
+
+            //Definição da Função de Tipagem de Atributos
+            name = "axm_t" + r.getName() + "Adef";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("partition(t").append(r.getName()).append("A, ");
+            attLHS.values().forEach((at) ->
+                    stringBuilder.append("{").append(attLHSPrefix).append(at.getName())
+                            .append(" |-> ")
+                            .append("at").append(at.getID()).append("}, ")
+            );
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+            stringBuilder.append(")");
+            ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
+
+
+
+            //TODO: REVIEW ALL CODE BELOW
 
 //        //Define Attr domain & image
 //        name = "axm_attrv" + r.getName();
@@ -2414,7 +2463,7 @@ public class GraphGrammarToEventB {
 //            }
 //
 //        }
-
+        }
         return true;
     }
 
