@@ -14,6 +14,7 @@ public class AttributeType {
     private String ID;
     private String name;
     private String type;
+    private String index;
     
     public AttributeType(String ID, String name, String type){
         this.ID = ID;
@@ -34,5 +35,13 @@ public class AttributeType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
     }
 }

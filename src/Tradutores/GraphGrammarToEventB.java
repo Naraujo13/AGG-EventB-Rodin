@@ -2080,8 +2080,22 @@ public class GraphGrammarToEventB {
         stringBuilder.append("}");
         initilisation.addAct(name, stringBuilder.substring(0, stringBuilder.length()));
 
-        //act_valGta
+        //Tipagem
+        name = "act_tGA";
+        stringBuilder.delete(0, stringBuilder.length());
+        stringBuilder.append("tGA := {");
+        attG.values().forEach((a) ->
+                stringBuilder.append(a.getID().replaceAll("I", ""))
+                        .append(" |-> ")
+                        .append("at").append(a.getID())
+                        .append(", ")
+        );
+        if (!attG.isEmpty())
+            stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
+        stringBuilder.append("}");
+        initilisation.addAct(name, stringBuilder.substring(0, stringBuilder.length()));
 
+        //act_valGta
         attTypes.values().forEach((at) -> {
             stringBuilder.delete(0, stringBuilder.length());
             String actName = "act_valGat" + at.getID();
@@ -2120,7 +2134,20 @@ public class GraphGrammarToEventB {
                 nt.getAttributes().forEach((at)->
                         attTypes.put(at.getID(), at)));
 
+        // -- Concrete Machine Variables
+        //Parâmetros da regra extendida
+        m.addVariable(new Variable("VertG"));
+        m.addVariable(new Variable("EdgeG"));
+        m.addVariable(new Variable("tGV"));
+        m.addVariable(new Variable("tGE"));
+        m.addVariable(new Variable("SourceG"));
+        m.addVariable(new Variable("TargetG"));
+
         for (Rule r : g.getRules()) {
+
+            // --- Auxiliares
+
+            String attLHSPrefix = "att" + r.getName();
 
             //Cria LinkedHashMap com atributos do LHS
             LinkedHashMap<String, AttributeType> attLHS = new LinkedHashMap<>();
@@ -2128,10 +2155,29 @@ public class GraphGrammarToEventB {
                     nt.getAttributes().forEach((a) ->
                             attLHS.put(a.getName(), a)));
 
-            String attLHSPrefix = "att" + r.getName();
+            LinkedHashMap<String, AttributeType> attRHS = new LinkedHashMap<>();
+            r.getRHS().getAttNodes().values().forEach((nt) ->
+                    nt.getAttributes().forEach((a) ->
+                            attLHS.put(a.getName(), a)));
 
+            //LinkedHashMaps para auxilaires
+            LinkedHashMap<String, Node> createdNodesWithAtt = new LinkedHashMap<>();
+            LinkedHashMap<String, Node> preservedNodesWithAtt = new LinkedHashMap<>();
+            LinkedHashMap<String, Node> deletedNodesWithAtt = new LinkedHashMap<>();
 
-        /* -- Context -- */
+            //Preenche auxiliares
+            r.getLHS().getAttNodes().values().forEach((n) -> {
+                if (!r.getLHS().getMorphism().containsKey(n.getID())) //Presente em LHS e não presente em RHS -> Deletado
+                    deletedNodesWithAtt.put(n.getID(), n);
+                else    //Presente em Ambos -> preservado
+                    preservedNodesWithAtt.put(n.getID(), n);
+            });
+            r.getRHS().getAttNodes().values().forEach((n) -> {
+                if (!r.getRHS().getMorphism().containsKey(n.getID())) //Presente em RHS e não está presente em LHS -> Criado
+                    createdNodesWithAtt.put(n.getID(), n);
+            });
+
+            /* -- Context -- */
             String name, predicate;
 
             // --- Sets
@@ -2202,149 +2248,77 @@ public class GraphGrammarToEventB {
             stringBuilder.append(")");
             ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
 
+            /* -- Machine -- */
+            Event ruleEvent = new Event(r.getName() + "2");
+            ruleEvent.setExtend(ruleEvent.getName().replaceAll("2", ""));
 
 
-            //TODO: REVIEW ALL CODE BELOW
+            // --- Parameters
 
-//        //Define Attr domain & image
-//        name = "axm_attrv" + r.getName();
-//        stringBuilder.delete(0, stringBuilder.length());
-//        stringBuilder
-//                .append("attrv").append(r.getName())
-//                .append(" : Attr").append(r.getName())
-//                .append(" --> Vert").append(r.getName());
-//        ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//        //Define Attr domain & image
-//        name = "axm_attrv" + r.getName() + "def";
-//        stringBuilder.delete(0, stringBuilder.length());
-//        stringBuilder.append("partition(attrv").append(r.getName());
-//        if (attLHS) {
-//            for (Node n : r.getLHS().getAttNodes().values())
-//                stringBuilder.append(",").append(n.getID());
-//        }
-//        if (attRHS) {
-//            for (Node n : r.getRHS().getAttNodes().values())
-//                stringBuilder.append(",").append(n.getID());
-//        }
-//        if (attNACs) {
-//            if (!attributedNACsSet.isEmpty()) {
-//                for (Graph nac : attributedNACsSet) {
-//                    for (Node n : nac.getAttNodes().values()) {
-//                        stringBuilder.append(",").append(n.getID());
-//                    }
-//                }
-//            }
-//        }
-//        ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//        //Define axm_t para tipagem
-//        stringBuilder.delete(0, stringBuilder.length());
-//        name = "axm_t" + r.getName() + "A";
-//        stringBuilder
-//                .append("t")
-//                .append(r.getName())
-//                .append("A : Attr")
-//                .append(r.getName())
-//                .append(" --> AttrT");
-//        ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//        //Define axm_tdef para tipagem
-//        name = "axm_t" + r.getName() + "Adef";
-//        stringBuilder.delete(0, stringBuilder.length());
-//        stringBuilder
-//                .append("partition(t")
-//                .append(r.getName())
-//                .append("A");
-//        if (attLHS) {
-//            for (Node n : r.getLHS().getAttNodes().values())
-//                stringBuilder.append(",").append(n.getType());
-//        }
-//        if (attRHS) {
-//            for (Node n : r.getRHS().getAttNodes().values())
-//                stringBuilder.append(",").append(n.getType());
-//        }
-//        if (attNACs) {
-//            if (!attributedNACsSet.isEmpty()) {
-//                for (Graph nac : attributedNACsSet) {
-//                    for (Node n : nac.getAttNodes().values()) {
-//                        stringBuilder.append(",").append(n.getType());
-//                    }
-//                }
-//            }
-//        }
-//        ctx.addAxiom(new Axiom(name, stringBuilder.substring(0)));
-//
-//        /* -- Machine -- */
-//        // --- Preparation
-//        HashMap<String, AttributeType> LHSAttributes = new HashMap<>();
-//        HashMap<String, AttributeType> RHSAttributes = new HashMap<>();
-//        HashMap<String, AttributeType> NACAttributes = new HashMap<>();
-//        HashMap<String, AttributeType> RuleNewA = new HashMap<>();
-//        HashMap<String, AttributeType> RuleDelA = new HashMap<>();
-//        HashMap<String, AttributeType> forbiddenAttributes = new HashMap<>();
-//
-//
-//        //Constroi conjunto de atributos no lado esquerdo
-//        if (attLHS) {
-//            for (Node n : r.getLHS().getAttNodes().values())
-//                //AddAll Map Equivalent
-//                LHSAttributes.putAll(n.getAttributes()
-//                        .stream()
-//                        .collect(Collectors.toMap(
-//                                AttributeType::getID,
-//                                Function.identity())
-//                        )
-//                );
-//        }
-//
-//        //Constroi conjunto de atributos no lado direito
-//        if (attRHS) {
-//            for (Node n : r.getRHS().getAttNodes().values())
-//                RHSAttributes.putAll(n.getAttributes()
-//                        .stream()
-//                        .collect(Collectors.toMap(
-//                                AttributeType::getID,
-//                                Function.identity())
-//                        )
-//                );
-//        }
-//
-//        //Constroi conjunto de atributos de uma NAC
-//        for (Graph nac : attributedNACsSet) {
-//            for (Node n : nac.getAttNodes().values())
-//                NACAttributes.putAll(n.getAttributes()
-//                        .stream()
-//                        .collect(Collectors.toMap(
-//                                AttributeType::getID,
-//                                Function.identity())
-//                        )
-//                );
-//        }
-//
-//        //Constroi conjunto de atributos deletados
-//        if (attLHS) {
-//            RuleDelA.putAll(LHSAttributes);
-//            RuleDelA.entrySet().removeAll(RHSAttributes.entrySet());
-//        }
-//
-//        //Constroi conjunto de novos atributos
-//        if (attRHS) {
-//            RuleNewA.putAll(RHSAttributes);
-//            RuleNewA.entrySet().removeAll(LHSAttributes.entrySet());
-//        }
-//
-//        //Constrói conjuntos de atributos proibidos de serem identificados (NACat - LHSat)
-//        if (attNACs) {
-//            forbiddenAttributes.putAll(NACAttributes);
-//            if (attLHS)
-//                forbiddenAttributes.entrySet().removeAll(LHSAttributes.entrySet());
-//        }
-//
-//        // creates event to extend it
-//        Event ruleExtendEvent = new Event(r.getName());
-//        ruleExtendEvent.setExtend(ruleEvent);
-//
+            //Função par a mapear atributos do LHS para atributos do grafo estado
+            ruleEvent.addParameter("mA");
+
+            //Conjunto para atributos excluídos
+            ruleEvent.addParameter("DelA");
+
+            //Conjunto para arestas pendentes
+            ruleEvent.addParameter("DanglingA");
+
+            createdNodesWithAtt.values().forEach((n) ->
+                    n.getAttributes().forEach(a ->
+                            ruleEvent.addParameter("new_at" + r.getName() + a.getIndex())));
+
+
+            // -- Guard
+
+            //Domínio e Imagem de Mapeamento de LHS para G
+            name = "grd_mA";
+            predicate = "mA : Attr" + r.getName() + " --> AttrG";
+            ruleEvent.addGuard(name, predicate);
+
+            //Atributos Excluídos
+            name = "grd_DelA";
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("DelA = mA[{");
+
+            deletedNodesWithAtt.values().forEach((n) ->
+                n.getAttributes().forEach((a) ->
+                    stringBuilder.append(attLHSPrefix).append(a.getName()).append(", ")
+                )
+            );
+
+            if (!deletedNodesWithAtt.isEmpty())
+                stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
+            stringBuilder.append("}]");
+            ruleEvent.addGuard(name, stringBuilder.substring(0));
+
+            //Arestas Pendentes
+            name = "grd_DangA";
+            predicate = "DanglingA = dom (attrvG |> DelV) \\ DelA";
+            ruleEvent.addGuard(name, predicate);
+
+            //Domínio de Novos atributos
+            createdNodesWithAtt.values().forEach((n) -> n.getAttributes().forEach((a) -> {
+                String grdName = "grd_new_at" + r.getName() + a.getIndex();
+                String grdPredicate = "new_at" + r.getName() + a.getIndex() + " : NAT \\ AttrG";
+                ruleEvent.addGuard(grdName, grdPredicate);
+            }));
+
+            //Unicidade de ID para novos atributos
+            createdNodesWithAtt.values().forEach((n1) -> n1.getAttributes().forEach((a1) -> {
+                createdNodesWithAtt.values().forEach((n2) -> n2.getAttributes().forEach((a2) -> {
+                    if (!a1.equals(a2)){
+                        String grdName = "grd_diffat" + r.getName() + a1.getIndex() + "at" + r.getName() + a2.getIndex();
+                        String grdPredicate = "new_at" + r.getName() + a1.getIndex() + " /= at" + r.getName() + a2.getIndex();
+                        ruleEvent.addGuard(grdName, grdPredicate);
+                    }
+                }));
+            }));
+
+
+
+            m.addEvent(ruleEvent);
+
 //        // --- ANY - Parameters
 //        ruleExtendEvent.addParameter("mA");
 //        ruleExtendEvent.addParameter("DelA");

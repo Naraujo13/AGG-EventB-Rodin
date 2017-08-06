@@ -336,7 +336,7 @@ public class AGGToGraphGrammar {
                     auxiliar3 = tokenAtual.split(">");
                     atributeValue = auxiliar3[1];
                     newAtt = new Attribute(atributeType, attributeID, attNames.get(attributeID),atributeValue);
-                    newNode.getAttributes().add(newAtt);
+                    newNode.addAttribute(newAtt);
                     
                     while (!tokenAtual.contains("/Attribute")){
                     tokenAtual = entrada.next();

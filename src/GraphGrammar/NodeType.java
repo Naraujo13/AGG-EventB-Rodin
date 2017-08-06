@@ -42,6 +42,7 @@ public class NodeType {
     }
     
     public void addAttribute(AttributeType attType){
+        attType.setIndex(Integer.toString(this.attributes.size()));
         attributes.add(attType);
     }
     

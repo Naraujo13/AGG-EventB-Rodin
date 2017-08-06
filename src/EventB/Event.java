@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 public class Event {
     
     private String name; // -- Nome do evento
-    private Event extend;    // -- Evento que será extendido, caso exista
+    private String extend;    // -- Evento que será extendido, caso exista
     private LinkedHashSet<String> parameters; // -- Lista de Parâmetros do Evento
     private LinkedHashMap<String, String> acts;    // -- Lista de Acts do Evento (Label -> Act)
     private LinkedHashMap<String, String> guards;  // -- Lista de Guardas do Evento (Label -> Guarda)
@@ -35,7 +35,7 @@ public class Event {
      * Método para quando um evento extende outro
      * @param event - evento a ser extendido
      */
-    public void setExtend(Event event){
+    public void setExtend(String event){
         extend = event;
     }
 
@@ -73,7 +73,7 @@ public class Event {
      * Método para acesso de evento que o atual estende
       * @return - retorna evento estendido
      */
-    public Event getExtend() {
+    public String getExtend() {
         return extend;
     }
 
