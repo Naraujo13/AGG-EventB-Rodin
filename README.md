@@ -31,13 +31,19 @@ of the other two, allowing the change of parser and tester. This phase is curren
 The translator was defined as the implementation of the translation proposed in (CAVALHEIRO, 2010) as said above.
 
 Phase 3 - Files Creator: This phase uses the generic Event-B structure created in phase 2 to create the files to be used 
-in the semi-automatic prover. In this research the chosen tester was Rodin. This phase is currently during very early 
-developmente stages.
+in the semi-automatic prover. In this research the chosen tester was Rodin. The files are generated in a txt format, with
+the correct Rodin Syntax, being ready to be used alongside Camile plugin.
 This phase can only it needs to be changed to allow the use of different tester.
 
 This was done at Universidade Federal de Pelotas, for the group "Métodos Formais e 
 Fundamentos Matemáticos da Ciência da Computação", more information at: 
 http://dgp.cnpq.br/dgp/espelhogrupo/9814311152255117#
+
+# Dependencies:
+
+- AGG - http://www.user.tu-berlin.de/o.runge/agg/   
+- Rodin - http://www.event-b.org/install.html 
+- Camille Editor plugin - http://wiki.event-b.org/index.php/Camille_Editor
 
 # Usage:
 
@@ -45,6 +51,11 @@ Download the release version, that comes with a JAR artifact and a tests folder.
 Then execute the JAR passing the path to the file as argument like below:
 
 java -jar translator.jar fileRelativePath/fileName.ggx
+
+This will generate two folders. One named "log", containing logs of the parsing of the graph grammar. The second, named
+"out", containing the already translated machines and contexts in txt format. To use them, simply create the file in
+normally in Rodin with the corresponding name and, using Camille plugin, paste the txt content into the created file.
+Simply save it and you're ready to go. Repeat this process for every generated context and machine file.
 
 
 
