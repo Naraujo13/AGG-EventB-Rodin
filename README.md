@@ -5,7 +5,8 @@ infinite states. It's important to make clear that auomatic provers exist, and o
 to make their proofs they expand all the states of this grammar. Consequently it is impossible to use this automatic 
 provers with grammar with infinite states or even with grammars that have a lot of states. This approach allows the use 
 of semiautomatic provers with both of them, making the proofs without the need to expand all the states of the grammar. 
-The formal base of this research is (CAVALHEIRO, 2010) PHD thesis availabe in the following link: 
+The formal base of this research is (CAVALHEIRO, 2010) PHD thesis and further developed in (CAVALHEIRO, 2017), the first
+available in the following link and the second as a paper.pdf in the repository:
 www.lume.ufrgs.br/handle/10183/25516
 
 This project consists of three phases:
