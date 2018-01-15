@@ -1,0 +1,233 @@
+Imprimindo gramática R2C...
+	Grafo tipo: 
+	Grafo host: 
+		 Grafo:
+		  Tipo: HOST
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I14
+		   Nodo 1:
+			Type: I2
+			ID: I15
+		O grafo atual não possui arestas.
+	Imprimindo as regras:
+		Imprimindo a regra First:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I19
+		O grafo atual não possui arestas.
+		 Grafo:
+		  Tipo: RHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I21
+		   Nodo 1:
+			Type: I3
+			ID: I22
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I23
+			Nodo Fonte: I21
+			Nodo Destino: I22
+			Imprimindo NACs...
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I25
+		   Nodo 1:
+			Type: I3
+			ID: I26
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I27
+			Nodo Fonte: I25
+			Nodo Destino: I26
+		Imprimindo a regra Second:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I31
+		   Nodo 1:
+			Type: I2
+			ID: I32
+		   Nodo 2:
+			Type: I3
+			ID: I33
+		   Nodo 3:
+			Type: I3
+			ID: I34
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I35
+			Nodo Fonte: I31
+			Nodo Destino: I33
+		   Aresta 1:
+			Type: I6
+			ID: I36
+			Nodo Fonte: I32
+			Nodo Destino: I34
+		 Grafo:
+		  Tipo: RHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I38
+		   Nodo 1:
+			Type: I2
+			ID: I39
+		   Nodo 2:
+			Type: I3
+			ID: I40
+		   Nodo 3:
+			Type: I3
+			ID: I41
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I42
+			Nodo Fonte: I38
+			Nodo Destino: I40
+		   Aresta 1:
+			Type: I6
+			ID: I43
+			Nodo Fonte: I39
+			Nodo Destino: I41
+		   Aresta 2:
+			Type: I4
+			ID: I44
+			Nodo Fonte: I38
+			Nodo Destino: I39
+			Imprimindo NACs...
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I46
+		   Nodo 1:
+			Type: I3
+			ID: I47
+		   Nodo 2:
+			Type: I2
+			ID: I48
+		   Nodo 3:
+			Type: I3
+			ID: I49
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I50
+			Nodo Fonte: I46
+			Nodo Destino: I47
+		   Aresta 1:
+			Type: I6
+			ID: I51
+			Nodo Fonte: I48
+			Nodo Destino: I49
+		   Aresta 2:
+			Type: I4
+			ID: I52
+			Nodo Fonte: I46
+			Nodo Destino: I48
+		Imprimindo a regra Third:
+		 Grafo:
+		  Tipo: LHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I56
+		   Nodo 1:
+			Type: I3
+			ID: I57
+		   Nodo 2:
+			Type: I2
+			ID: I58
+		   Nodo 3:
+			Type: I3
+			ID: I59
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I60
+			Nodo Fonte: I56
+			Nodo Destino: I57
+		   Aresta 1:
+			Type: I6
+			ID: I61
+			Nodo Fonte: I58
+			Nodo Destino: I59
+		 Grafo:
+		  Tipo: RHS
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I63
+		   Nodo 1:
+			Type: I3
+			ID: I64
+		   Nodo 2:
+			Type: I2
+			ID: I65
+		   Nodo 3:
+			Type: I3
+			ID: I66
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I67
+			Nodo Fonte: I63
+			Nodo Destino: I64
+		   Aresta 1:
+			Type: I6
+			ID: I68
+			Nodo Fonte: I65
+			Nodo Destino: I66
+		   Aresta 2:
+			Type: I5
+			ID: I69
+			Nodo Fonte: I64
+			Nodo Destino: I66
+			Imprimindo NACs...
+		 Grafo:
+		  Tipo: NAC
+		  Nodos:
+		   Nodo 0:
+			Type: I2
+			ID: I71
+		   Nodo 1:
+			Type: I3
+			ID: I72
+		   Nodo 2:
+			Type: I3
+			ID: I73
+		   Nodo 3:
+			Type: I2
+			ID: I74
+		  Arestas:
+		   Aresta 0:
+			Type: I6
+			ID: I75
+			Nodo Fonte: I71
+			Nodo Destino: I72
+		   Aresta 1:
+			Type: I6
+			ID: I76
+			Nodo Fonte: I74
+			Nodo Destino: I73
+		   Aresta 2:
+			Type: I5
+			ID: I77
+			Nodo Fonte: I73
+			Nodo Destino: I72

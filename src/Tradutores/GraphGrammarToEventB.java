@@ -2447,42 +2447,55 @@ public class GraphGrammarToEventB {
      */
     public static void main(String[] args) {
 
-        String fullPath = "tests/pacmanAtributo/pacmanAtributo";
-        //String fullPath = "tests/R2C/R2C";
+        String fullPath;
 
-        String name = fullPath.split("/")[fullPath.split("/").length-1];
+        try {
+            fullPath = args[0].replaceAll(".ggx", "");
+
+            String name = fullPath.split("/")[fullPath.split("/").length-1];
+
+            /* -- Creates Directories -- */
+            //Base
+            File baseDir = new File(fullPath);
+            baseDir.mkdirs();
+            //Log
+            File logDir = new File(fullPath + "/log");
+            logDir.mkdirs();
+            //Step2
+            File rodinDir = new File(fullPath + "/out");
+            rodinDir.mkdirs();
 
 
-        /* -- Creates Directories -- */
-        //Base
-        File baseDir = new File(fullPath);
-        baseDir.mkdirs();
-        //Log
-        File logDir = new File(fullPath + "/log");
-        logDir.mkdirs();
-        //Step2
-        File rodinDir = new File(fullPath + "/out");
-        rodinDir.mkdirs();
+            /* -- Step1 - AGG to GG translation -- */
+            //Creates Translator and Grammar
+            AGGToGraphGrammar agg = new AGGToGraphGrammar();
+            Grammar grammar = new Grammar(name);
+            //Translates
+            if (!agg.aggReader(fullPath + ".ggx", grammar)) {
+                logDir.deleteOnExit();
+                rodinDir.deleteOnExit();
+                return;
+            }
+
+            //Logs
+            grammar.printGrammar(logDir.getPath());
+
+            /* -- Step 2 - GG to EventB translation -- */
+            //Creates Translator and project
+            GraphGrammarToEventB eventB = new GraphGrammarToEventB();
+            Project newProject = new Project(name);
+            //Translates
+            eventB.translate(newProject, grammar, true);
+            //Logs
+            newProject.logProject(logDir.getPath(), rodinDir.getPath());
+
+            System.out.println("Finished!");
+
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("\tError: No arguments. Usage: java -jar translator.jar fileRelativePath/file.ggx");
+        }
 
 
-        /* -- Step1 - AGG to GG translation -- */
-        //Creates Translator and Grammar
-        AGGToGraphGrammar agg = new AGGToGraphGrammar();
-        Grammar test = new Grammar(name);
-        //Translates
-        agg.aggReader(fullPath + ".ggx", test);
-        //Logs
-        test.printGrammar(logDir.getPath());
-
-        /* -- Step 2 - GG to EventB translation -- */
-        //Creates Translator and project
-        GraphGrammarToEventB eventB = new GraphGrammarToEventB();
-        Project newProject = new Project(name);
-        //Translates
-        eventB.translate(newProject, test, true);
-        //Logs
-        newProject.logProject(logDir.getPath(), rodinDir.getPath());
-
-        System.out.println("Finished!");
     }
 }

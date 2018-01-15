@@ -34,7 +34,7 @@ public class AGGToGraphGrammar {
         private Scanner entrada;        //scanner usado na leitura do arquivo
         private boolean existsFlag;
     
-    void aggReader(String arquivo, Grammar grammar){
+    boolean aggReader(String arquivo, Grammar grammar){
         //Hash Maps utilizados para definir nodos do grafo tipo com arestas
         Map <String, String> attNames;  //Associa ID ao nome lendo rótulos
         Map <String, String> attTypes; //Associa ID ao tipo lendo rótulos
@@ -234,8 +234,11 @@ public class AGGToGraphGrammar {
        //Fecha o Scanner
         entrada.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Grammar.class.getName()).log(Level.SEVERE, null, ex);
-        }    
+           System.out.println("\tError: File not found. Usage: java -jar translator.jar fileRelativePath/file.ggx");
+           return false;
+        }
+
+        return true;
         
     }
     

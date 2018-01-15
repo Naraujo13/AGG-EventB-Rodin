@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I1" directed="true" name="GraGra" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+            <TaggedValue Tag="Package" TagValue="automata_impl"/>
+            <TaggedValue Tag="Package" TagValue="automata"/>
+            <TaggedValue Tag="Package" TagValue="automata.impl"/>
+            <TaggedValue Tag="Package" TagValue="org.eclipse.draw2d"/>
+            <TaggedValue Tag="Package" TagValue="org.eclipse.draw2d.geometry"/>
+            <TaggedValue Tag="Package" TagValue="org.eclipse.swt.graphics"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="ruleSequence" TagValue="true"/>
+        <TaggedValue Tag="layeredLoop" TagValue="true"/>
+        <TaggedValue Tag="breakAllLayer" TagValue="true"/>
+        <TaggedValue Tag="showGraphAfterStep" TagValue="true"/>
+        <TaggedValue Tag="waitAfterStep" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="ENABLED_MAX_MIN"/>
+        <Types>
+            <NodeType ID="I2" abstract="false" name="Customer%:OVAL:java.awt.Color[r=0,g=102,b=153]:[NODE]:">
+                <AttrType ID="I4" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I5" attrname="address" typename="String" visible="true"/>
+            </NodeType>
+            <NodeType ID="I6" abstract="false" name="OrderItem%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
+            <NodeType ID="I7" abstract="false" name="Order%:ROUNDRECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:">
+                <AttrType ID="I9" attrname="price" typename="float" visible="true"/>
+                <AttrType ID="I10" attrname="closed" typename="boolean" visible="true"/>
+            </NodeType>
+            <NodeType ID="I11" abstract="false" name="PizzaKind%:ROUNDRECT:java.awt.Color[r=0,g=0,b=255]:[NODE]:">
+                <AttrType ID="I13" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I14" attrname="price" typename="float" visible="true"/>
+            </NodeType>
+            <NodeType ID="I15" abstract="false" name="ToppingKind%:RECT:java.awt.Color[r=0,g=0,b=255]:[NODE]:">
+                <AttrType ID="I17" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I18" attrname="price" typename="float" visible="true"/>
+            </NodeType>
+            <NodeType ID="I19" abstract="false" name="BeverageKind%:ROUNDRECT:java.awt.Color[r=255,g=0,b=0]:[NODE]:">
+                <AttrType ID="I21" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I22" attrname="price" typename="float" visible="true"/>
+            </NodeType>
+            <EdgeType ID="I23" abstract="false" name="places%:SOLID_LINE:java.awt.Color[r=0,g=102,b=102]:[EDGE]:"/>
+            <EdgeType ID="I24" abstract="false" name="contains%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I25" abstract="false" name="refersToP%:SOLID_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
+            <EdgeType ID="I26" abstract="false" name="putOn%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I27" abstract="false" name="refersToT%:SOLID_LINE:java.awt.Color[r=0,g=0,b=255]:[EDGE]:"/>
+            <EdgeType ID="I28" abstract="false" name="refersToB%:SOLID_LINE:java.awt.Color[r=255,g=0,b=0]:[EDGE]:"/>
+            <Graph ID="I29" kind="TG" name="TypeGraph">
+                <Node ID="I30" type="I15">
+                    <NodeLayout X="75" Y="43"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I32" type="I11">
+                    <NodeLayout X="513" Y="40"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I34" type="I7">
+                    <NodeLayout X="100" Y="154"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I36" type="I6">
+                    <NodeLayout X="274" Y="106"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I37" type="I2">
+                    <NodeLayout X="263" Y="232"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I39" type="I19">
+                    <NodeLayout X="430" Y="166"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I41" source="I37" sourcemax="1" sourcemin="1"
+                    target="I34" type="I23">
+                    <EdgeLayout bendX="0" bendY="0"
+                        sourceMultiplicityOffsetX="-11"
+                        sourceMultiplicityOffsetY="27"
+                        targetMultiplicityOffsetX="-21"
+                        targetMultiplicityOffsetY="16" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="89" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I42" source="I34" sourcemax="1" sourcemin="1"
+                    target="I36" type="I24">
+                    <EdgeLayout bendX="0" bendY="0"
+                        sourceMultiplicityOffsetX="-7"
+                        sourceMultiplicityOffsetY="16"
+                        targetMultiplicityOffsetX="-18"
+                        targetMultiplicityOffsetY="8" textOffsetX="-37" textOffsetY="-20"/>
+                    <additionalLayout aktlength="17" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I43" source="I36" sourcemin="0" target="I32"
+                    targetmax="1" targetmin="0" type="I25">
+                    <EdgeLayout bendX="0" bendY="0"
+                        sourceMultiplicityOffsetX="-10"
+                        sourceMultiplicityOffsetY="-2"
+                        targetMultiplicityOffsetX="-18"
+                        targetMultiplicityOffsetY="-16"
+                        textOffsetX="-38" textOffsetY="-20"/>
+                    <additionalLayout aktlength="111" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I44" source="I36" sourcemin="0" target="I30"
+                    targetmin="0" type="I27">
+                    <EdgeLayout bendX="0" bendY="0"
+                        sourceMultiplicityOffsetX="-7"
+                        sourceMultiplicityOffsetY="10"
+                        targetMultiplicityOffsetX="-2"
+                        targetMultiplicityOffsetY="-7" textOffsetX="-9" textOffsetY="-19"/>
+                    <additionalLayout aktlength="106" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I45" source="I36" sourcemin="0" target="I39"
+                    targetmax="1" targetmin="0" type="I28">
+                    <EdgeLayout bendX="0" bendY="0"
+                        sourceMultiplicityOffsetX="-18"
+                        sourceMultiplicityOffsetY="16"
+                        targetMultiplicityOffsetX="-18"
+                        targetMultiplicityOffsetY="23" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="40" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+        </Types>
+        <Graph ID="I46" kind="HOST" name="Host">
+            <Node ID="I47" type="I19">
+                <Attribute constant="true" type="I21">
+                    <Value>
+                        <string>cola</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I22">
+                    <Value>
+                        <float>1.0</float>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="133" Y="58"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+            </Node>
+            <Node ID="I51" type="I11">
+                <Attribute constant="true" type="I13">
+                    <Value>
+                        <string>margherita</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I14">
+                    <Value>
+                        <float>4.0</float>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="125" Y="167"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+            </Node>
+            <Node ID="I55" type="I15">
+                <Attribute constant="true" type="I17">
+                    <Value>
+                        <string>salami</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I18">
+                    <Value>
+                        <float>0.5</float>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="123" Y="248"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+            </Node>
+            <Node ID="I59" type="I19">
+                <Attribute constant="true" type="I21">
+                    <Value>
+                        <string>fanta</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I22">
+                    <Value>
+                        <float>1.0</float>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="303" Y="61"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+            </Node>
+            <Node ID="I63" type="I11">
+                <Attribute constant="true" type="I13">
+                    <Value>
+                        <string>quattro formaggi</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I14">
+                    <Value>
+                        <float>5.0</float>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="322" Y="164"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+            </Node>
+        </Graph>
+        <Constraints>
+            <Graphconstraint_Atomic ID="I67" name="Atomic">
+                <Premise>
+                    <Graph ID="I68" kind="PREMISE" name="Premise of Atomic"/>
+                </Premise>
+                <Conclusion>
+                    <Graph ID="I69" kind="CONCLUSION" name="Conclusion of Atomic">
+                        <Node ID="I70" type="I6">
+                            <NodeLayout X="195" Y="38"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Node ID="I71" type="I15">
+                            <NodeLayout X="81" Y="142"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Edge ID="I73" source="I70" target="I71" type="I27">
+                            <EdgeLayout bendX="112" bendY="77"
+                                textOffsetX="-37" textOffsetY="-22"/>
+                            <additionalLayout aktlength="31" force="10" preflength="200"/>
+                        </Edge>
+                        <Edge ID="I74" source="I70" target="I71" type="I27">
+                            <EdgeLayout bendX="172" bendY="109"
+                                textOffsetX="9" textOffsetY="-9"/>
+                            <additionalLayout aktlength="31" force="10" preflength="200"/>
+                        </Edge>
+                    </Graph>
+                    <Morphism name="doubleToppingRef"/>
+                </Conclusion>
+            </Graphconstraint_Atomic>
+            <Formula ID="I75" comment="" enabled="true" f="(!1)" name="!doubleToppingRef">
+                <Layer Layer="" Size="0"/>
+                <Priority Priority="" Size="0"/>
+            </Formula>
+        </Constraints>
+        <Rule ID="I76" formula="true" name="CreateCustomer">
+            <Parameter PTYPE="input" name="n" type="String"/>
+            <Graph ID="I78" kind="LHS" name="LeftOf_CreateCustomer"/>
+            <Graph ID="I79" kind="RHS" name="RightOf_CreateCustomer">
+                <Node ID="I80" type="I2">
+                    <Attribute type="I4" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I5">
+                        <Value>
+                            <string/>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="63" Y="70"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Morphism comment="Formula: true" name="CreateCustomer"/>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I84" kind="NAC" name="sameName">
+                        <Node ID="I85" type="I2">
+                            <Attribute type="I4" variable="true">
+                                <Value>
+                                    <string>n</string>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="81" Y="68"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                    </Graph>
+                    <Morphism name="sameName"/>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I88" formula="true" name="CreateOrder">
+            <Graph ID="I90" kind="LHS" name="LeftOf_CreateOrder">
+                <Node ID="I91" type="I2">
+                    <NodeLayout X="63" Y="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Graph ID="I93" kind="RHS" name="RightOf_CreateOrder">
+                <Node ID="I94" type="I2">
+                    <NodeLayout X="48" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I96" type="I7">
+                    <Attribute constant="true" type="I9">
+                        <Value>
+                            <float>0.0</float>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="126" Y="123"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I100" source="I94" target="I96" type="I23">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="164" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism comment="Formula: true" name="CreateOrder">
+                <Mapping image="I94" orig="I91"/>
+            </Morphism>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I101" kind="NAC" name="openOrder">
+                        <Node ID="I102" type="I2">
+                            <NodeLayout X="92" Y="45"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Node ID="I104" type="I7">
+                            <Attribute constant="true" type="I10">
+                                <Value>
+                                    <boolean>false</boolean>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="52" Y="130"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Edge ID="I107" source="I102" target="I104" type="I23">
+                            <EdgeLayout bendX="0" bendY="0"
+                                textOffsetX="-36" textOffsetY="-18"/>
+                            <additionalLayout aktlength="97" force="10" preflength="200"/>
+                        </Edge>
+                    </Graph>
+                    <Morphism name="openOrder">
+                        <Mapping image="I102" orig="I91"/>
+                    </Morphism>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I108" formula="true" name="OrderPizza">
+            <Parameter name="p1" type="float"/>
+            <Parameter name="p2" type="float"/>
+            <Parameter PTYPE="input" name="n" type="String"/>
+            <Graph ID="I110" kind="LHS" name="LeftOf_OrderPizza">
+                <Node ID="I111" type="I7">
+                    <Attribute type="I9" variable="true">
+                        <Value>
+                            <string>p1</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="68" Y="125"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I115" type="I11">
+                    <Attribute type="I13" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I14" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="169" Y="51"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Graph ID="I119" kind="RHS" name="RightOf_OrderPizza">
+                <Node ID="I120" type="I11">
+                    <Attribute type="I13" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I14" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="84" Y="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I124" type="I7">
+                    <Attribute type="I9">
+                        <Value>
+                            <string>p1+p2</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="82" Y="133"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I128" type="I6">
+                    <NodeLayout X="260" Y="75"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I129" source="I124" target="I128" type="I24">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-14" textOffsetY="5"/>
+                    <additionalLayout aktlength="109" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I130" source="I128" target="I120" type="I25">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="71" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism comment="Formula: true" name="OrderPizza">
+                <Mapping image="I124" orig="I111"/>
+                <Mapping image="I120" orig="I115"/>
+            </Morphism>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I131" formula="true" name="OrderTopping">
+            <Parameter name="p1" type="float"/>
+            <Parameter name="p2" type="float"/>
+            <Parameter name="n" type="String"/>
+            <Graph ID="I133" kind="LHS" name="LeftOf_OrderTopping">
+                <Node ID="I134" type="I6">
+                    <NodeLayout X="52" Y="135"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I135" type="I15">
+                    <Attribute type="I17" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I18" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="243" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I139" type="I7">
+                    <Attribute type="I9" variable="true">
+                        <Value>
+                            <string>p1</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="245" Y="132"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I143" type="I11">
+                    <NodeLayout X="74" Y="35"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I145" source="I139" target="I134" type="I24">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-25" textOffsetY="-21"/>
+                    <additionalLayout aktlength="85" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I146" source="I134" target="I143" type="I25">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="6" textOffsetY="-11"/>
+                    <additionalLayout aktlength="55" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Graph ID="I147" kind="RHS" name="RightOf_OrderTopping">
+                <Node ID="I148" type="I15">
+                    <Attribute type="I17" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I18" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="81" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I152" type="I6">
+                    <NodeLayout X="52" Y="135"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I153" type="I7">
+                    <Attribute type="I9">
+                        <Value>
+                            <string>p1+p2</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="289" Y="135"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I157" type="I11">
+                    <NodeLayout X="290" Y="38"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I159" source="I152" target="I148" type="I27">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-23" textOffsetY="-6"/>
+                    <additionalLayout aktlength="55" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I160" source="I153" target="I152" type="I24">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="47" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I161" source="I152" target="I157" type="I25">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-16" textOffsetY="-34"/>
+                    <additionalLayout aktlength="47" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism comment="Formula: true" name="OrderTopping">
+                <Mapping image="I148" orig="I135"/>
+                <Mapping image="I152" orig="I134"/>
+                <Mapping image="I153" orig="I139"/>
+                <Mapping image="I157" orig="I143"/>
+                <Mapping image="I160" orig="I145"/>
+                <Mapping image="I161" orig="I146"/>
+            </Morphism>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I162" formula="true" name="OrderBeverage">
+            <Parameter name="p1" type="float"/>
+            <Parameter name="p2" type="float"/>
+            <Parameter name="n" type="String"/>
+            <Graph ID="I164" kind="LHS" name="LeftOf_OrderBeverage">
+                <Node ID="I165" type="I7">
+                    <Attribute type="I9" variable="true">
+                        <Value>
+                            <string>p1</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="122" Y="49"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I169" type="I19">
+                    <Attribute type="I21" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I22" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="120" Y="133"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Graph ID="I173" kind="RHS" name="RightOf_OrderBeverage">
+                <Node ID="I174" type="I7">
+                    <Attribute type="I9">
+                        <Value>
+                            <string>p1+p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="72" Y="52"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I177" type="I6">
+                    <NodeLayout X="251" Y="94"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I178" type="I19">
+                    <Attribute type="I21" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I22" variable="true">
+                        <Value>
+                            <string>p2</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="69" Y="129"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I182" source="I177" target="I178" type="I28">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-17" textOffsetY="8"/>
+                    <additionalLayout aktlength="58" force="10" preflength="200"/>
+                </Edge>
+                <Edge ID="I183" source="I174" target="I177" type="I24">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="-15" textOffsetY="-22"/>
+                    <additionalLayout aktlength="112" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism comment="Formula: true" name="OrderBeverage">
+                <Mapping image="I174" orig="I165"/>
+                <Mapping image="I178" orig="I169"/>
+            </Morphism>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I184" formula="true" name="CloseOrder">
+            <Graph ID="I186" kind="LHS" name="LeftOf_CloseOrder">
+                <Node ID="I187" type="I7">
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="207" Y="134"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I190" type="I2">
+                    <NodeLayout X="77" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I192" source="I190" target="I187" type="I23">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="84" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Graph ID="I193" kind="RHS" name="RightOf_CloseOrder">
+                <Node ID="I194" type="I7">
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>true</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="65" Y="133"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I197" type="I2">
+                    <NodeLayout X="216" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I199" source="I197" target="I194" type="I23">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="4" textOffsetY="-2"/>
+                    <additionalLayout aktlength="140" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Morphism comment="Formula: true" name="CloseOrder">
+                <Mapping image="I197" orig="I190"/>
+                <Mapping image="I194" orig="I187"/>
+                <Mapping image="I199" orig="I192"/>
+            </Morphism>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I200" formula="true" name="AddPizzaKind">
+            <Parameter PTYPE="input" name="n" type="String"/>
+            <Parameter PTYPE="input" name="p" type="float"/>
+            <Graph ID="I202" kind="LHS" name="LeftOf_AddPizzaKind"/>
+            <Graph ID="I203" kind="RHS" name="RightOf_AddPizzaKind">
+                <Node ID="I204" type="I11">
+                    <Attribute type="I13" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I14" variable="true">
+                        <Value>
+                            <string>p</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="160" Y="48"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Morphism comment="Formula: true" name="AddPizzaKind"/>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I208" kind="NAC" name="samePizza">
+                        <Node ID="I209" type="I11">
+                            <Attribute type="I13" variable="true">
+                                <Value>
+                                    <string>n</string>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="84" Y="77"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                    </Graph>
+                    <Morphism name="samePizza"/>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I212" formula="true" name="AddToppingKind">
+            <Parameter PTYPE="input" name="n" type="String"/>
+            <Parameter PTYPE="input" name="p" type="float"/>
+            <Graph ID="I214" kind="LHS" name="LeftOf_AddToppingKind"/>
+            <Graph ID="I215" kind="RHS" name="RightOf_AddToppingKind">
+                <Node ID="I216" type="I15">
+                    <Attribute type="I17" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I18" variable="true">
+                        <Value>
+                            <string>p</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="110" Y="74"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Morphism comment="Formula: true" name="AddToppingKind"/>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I220" kind="NAC" name="sameTopping">
+                        <Node ID="I221" type="I15">
+                            <Attribute type="I17" variable="true">
+                                <Value>
+                                    <string>n</string>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="66" Y="63"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                    </Graph>
+                    <Morphism name="sameTopping"/>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I224" formula="true" name="AddBeverageKind">
+            <Parameter PTYPE="input" name="n" type="String"/>
+            <Parameter PTYPE="input" name="p" type="float"/>
+            <Graph ID="I226" kind="LHS" name="LeftOf_AddBeverageKind"/>
+            <Graph ID="I227" kind="RHS" name="RightOf_AddBeverageKind">
+                <Node ID="I228" type="I19">
+                    <Attribute type="I21" variable="true">
+                        <Value>
+                            <string>n</string>
+                        </Value>
+                    </Attribute>
+                    <Attribute type="I22" variable="true">
+                        <Value>
+                            <string>p</string>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="60" Y="126"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Morphism comment="Formula: true" name="AddBeverageKind"/>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I232" kind="NAC" name="sameBeverage">
+                        <Node ID="I233" type="I19">
+                            <Attribute type="I21" variable="true">
+                                <Value>
+                                    <string>n</string>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="74" Y="84"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                    </Graph>
+                    <Morphism name="sameBeverage"/>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Rule ID="I236" formula="true" name="DeleteOrder">
+            <Graph ID="I238" kind="LHS" name="LeftOf_DeleteOrder">
+                <Node ID="I239" type="I2">
+                    <NodeLayout X="63" Y="50"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Node ID="I241" type="I7">
+                    <Attribute constant="true" type="I9">
+                        <Value>
+                            <float>0.0</float>
+                        </Value>
+                    </Attribute>
+                    <Attribute constant="true" type="I10">
+                        <Value>
+                            <boolean>false</boolean>
+                        </Value>
+                    </Attribute>
+                    <NodeLayout X="137" Y="130"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+                <Edge ID="I245" source="I239" target="I241" type="I23">
+                    <EdgeLayout bendX="0" bendY="0" textOffsetX="0" textOffsetY="-22"/>
+                    <additionalLayout aktlength="200" force="10" preflength="200"/>
+                </Edge>
+            </Graph>
+            <Graph ID="I246" kind="RHS" name="RightOf_DeleteOrder">
+                <Node ID="I247" type="I2">
+                    <NodeLayout X="48" Y="47"/>
+                    <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+                </Node>
+            </Graph>
+            <Morphism comment="Formula: true" name="DeleteOrder">
+                <Mapping image="I247" orig="I239"/>
+            </Morphism>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I249" kind="NAC" name="openOrder">
+                        <Node ID="I250" type="I2">
+                            <NodeLayout X="92" Y="45"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Node ID="I252" type="I7">
+                            <Attribute constant="true" type="I10">
+                                <Value>
+                                    <boolean>false</boolean>
+                                </Value>
+                            </Attribute>
+                            <NodeLayout X="52" Y="130"/>
+                            <additionalLayout age="0" force="10"
+                                frozen="true" zone="50"/>
+                        </Node>
+                        <Edge ID="I255" source="I250" target="I252" type="I23">
+                            <EdgeLayout bendX="0" bendY="0"
+                                textOffsetX="-36" textOffsetY="-18"/>
+                            <additionalLayout aktlength="200" force="10" preflength="200"/>
+                        </Edge>
+                    </Graph>
+                    <Morphism name="openOrder">
+                        <Mapping image="I250" orig="I239"/>
+                    </Morphism>
+                </NAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <RuleSequences>
+            <Sequence name="RuleSeq-AddKinds" trafoByARS="true">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="AddPizzaKind"/>
+                    <Item iterations="1" rule="AddToppingKind"/>
+                    <Item iterations="1" rule="AddBeverageKind"/>
+                </Subsequence>
+            </Sequence>
+            <Sequence name="RuleSeq-OrderBeverage-Close">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                    <Item iterations="1" rule="CloseOrder"/>
+                </Subsequence>
+                <ObjectFlow enabled="true" index="1:2"
+                    input="CreateOrder" output="CreateCustomer">
+                    <Mapping image="I91" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:4"
+                    input="CloseOrder" output="OrderBeverage">
+                    <Mapping image="I187" orig="I174"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:3"
+                    input="OrderBeverage" output="Host">
+                    <Mapping image="I169" orig="I47"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:4"
+                    input="CloseOrder" output="CreateOrder">
+                    <Mapping image="I190" orig="I94"/>
+                    <Mapping image="I187" orig="I96"/>
+                    <Mapping image="I192" orig="I100"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:3"
+                    input="OrderBeverage" output="CreateOrder">
+                    <Mapping image="I165" orig="I96"/>
+                </ObjectFlow>
+            </Sequence>
+            <Sequence name="RuleSeq-OrderMenu-Close">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderPizza"/>
+                    <Item iterations="1" rule="OrderTopping"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                    <Item iterations="1" rule="CloseOrder"/>
+                </Subsequence>
+                <ObjectFlow enabled="true" index="0:3"
+                    input="OrderPizza" output="Host">
+                    <Mapping image="I115" orig="I51"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="1:6"
+                    input="CloseOrder" output="CreateCustomer">
+                    <Mapping image="I190" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="1:2"
+                    input="CreateOrder" output="CreateCustomer">
+                    <Mapping image="I91" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:6"
+                    input="CloseOrder" output="CreateOrder">
+                    <Mapping image="I190" orig="I94"/>
+                    <Mapping image="I187" orig="I96"/>
+                    <Mapping image="I192" orig="I100"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:5"
+                    input="OrderBeverage" output="CreateOrder">
+                    <Mapping image="I165" orig="I96"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:4"
+                    input="OrderTopping" output="CreateOrder">
+                    <Mapping image="I139" orig="I96"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:3"
+                    input="OrderPizza" output="CreateOrder">
+                    <Mapping image="I111" orig="I96"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:6"
+                    input="CloseOrder" output="OrderPizza">
+                    <Mapping image="I187" orig="I124"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:5"
+                    input="OrderBeverage" output="OrderPizza">
+                    <Mapping image="I165" orig="I124"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:4"
+                    input="OrderTopping" output="OrderPizza">
+                    <Mapping image="I145" orig="I129"/>
+                    <Mapping image="I143" orig="I120"/>
+                    <Mapping image="I134" orig="I128"/>
+                    <Mapping image="I146" orig="I130"/>
+                    <Mapping image="I139" orig="I124"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="4:6"
+                    input="CloseOrder" output="OrderTopping">
+                    <Mapping image="I187" orig="I153"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="4:5"
+                    input="OrderBeverage" output="OrderTopping">
+                    <Mapping image="I165" orig="I153"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:5"
+                    input="OrderBeverage" output="Host">
+                    <Mapping image="I169" orig="I47"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:4"
+                    input="OrderTopping" output="Host">
+                    <Mapping image="I135" orig="I55"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="5:6"
+                    input="CloseOrder" output="OrderBeverage">
+                    <Mapping image="I187" orig="I174"/>
+                </ObjectFlow>
+            </Sequence>
+            <Sequence name="RuleSeq-OrderBeverage">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                </Subsequence>
+                <ObjectFlow enabled="true" index="1:2"
+                    input="CreateOrder" output="CreateCustomer">
+                    <Mapping image="I91" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:3"
+                    input="OrderBeverage" output="CreateOrder">
+                    <Mapping image="I165" orig="I96"/>
+                </ObjectFlow>
+            </Sequence>
+            <Sequence name="RuleSeq-OrderMenu">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderPizza"/>
+                    <Item iterations="1" rule="OrderTopping"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                </Subsequence>
+                <ObjectFlow enabled="true" index="1:2"
+                    input="CreateOrder" output="CreateCustomer">
+                    <Mapping image="I91" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:5"
+                    input="OrderBeverage" output="Host">
+                    <Mapping image="I169" orig="I47"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:4"
+                    input="OrderTopping" output="OrderPizza">
+                    <Mapping image="I145" orig="I129"/>
+                    <Mapping image="I143" orig="I120"/>
+                    <Mapping image="I134" orig="I128"/>
+                    <Mapping image="I146" orig="I130"/>
+                    <Mapping image="I139" orig="I124"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:4"
+                    input="OrderTopping" output="Host">
+                    <Mapping image="I135" orig="I55"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:3"
+                    input="OrderPizza" output="Host">
+                    <Mapping image="I115" orig="I51"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:3"
+                    input="OrderPizza" output="CreateOrder">
+                    <Mapping image="I111" orig="I96"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="4:5"
+                    input="OrderBeverage" output="OrderTopping">
+                    <Mapping image="I165" orig="I153"/>
+                </ObjectFlow>
+            </Sequence>
+            <Sequence name="RuleSeq1">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderPizza"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                    <Item iterations="1" rule="CloseOrder"/>
+                </Subsequence>
+                <ObjectFlow enabled="true" index="1:2"
+                    input="CreateOrder" output="CreateCustomer">
+                    <Mapping image="I91" orig="I80"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="3:4"
+                    input="OrderBeverage" output="OrderPizza">
+                    <Mapping image="I165" orig="I124"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:4"
+                    input="OrderBeverage" output="Host">
+                    <Mapping image="I169" orig="I47"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="0:3"
+                    input="OrderPizza" output="Host">
+                    <Mapping image="I115" orig="I51"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:5"
+                    input="CloseOrder" output="CreateOrder">
+                    <Mapping image="I190" orig="I94"/>
+                    <Mapping image="I187" orig="I96"/>
+                    <Mapping image="I192" orig="I100"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="2:3"
+                    input="OrderPizza" output="CreateOrder">
+                    <Mapping image="I111" orig="I96"/>
+                </ObjectFlow>
+                <ObjectFlow enabled="true" index="4:5"
+                    input="CloseOrder" output="OrderBeverage">
+                    <Mapping image="I187" orig="I174"/>
+                </ObjectFlow>
+            </Sequence>
+            <Sequence name="RuleSeq2">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="CreateOrder"/>
+                    <Item iterations="1" rule="OrderPizza"/>
+                    <Item iterations="1" rule="CloseOrder"/>
+                </Subsequence>
+            </Sequence>
+            <Sequence name="RuleSeq3">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="OrderPizza"/>
+                    <Item iterations="1" rule="CloseOrder"/>
+                </Subsequence>
+            </Sequence>
+            <Sequence name="RuleSequence8">
+                <Graph id="I46"/>
+                <Subsequence iterations="1">
+                    <Item iterations="1" rule="CreateCustomer"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                    <Item iterations="1" rule="OrderBeverage"/>
+                </Subsequence>
+            </Sequence>
+        </RuleSequences>
+    </GraphTransformationSystem>
+</Document>
