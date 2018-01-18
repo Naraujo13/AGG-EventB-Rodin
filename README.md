@@ -5,9 +5,11 @@ infinite states. It's important to make clear that auomatic provers exist, and o
 to make their proofs they expand all the states of this grammar. Consequently it is impossible to use this automatic 
 provers with grammar with infinite states or even with grammars that have a lot of states. This approach allows the use 
 of semiautomatic provers with both of them, making the proofs without the need to expand all the states of the grammar. 
-The formal base of this research is (CAVALHEIRO, 2010) PHD thesis and further developed in (CAVALHEIRO, 2017), the first
-available in the following link and the second as a paper.pdf in the repository:
-www.lume.ufrgs.br/handle/10183/25516
+The formal base of this research is (CAVALHEIRO, 2010) PHD thesis and further developed in (CAVALHEIRO, 2017), available
+in the following links:
+
+(1) www.lume.ufrgs.br/handle/10183/25516;
+(2)www.sciencedirect.com/science/article/pii/S0304397517303419a;
 
 This project consists of three phases:
       1. Parser 
@@ -28,7 +30,7 @@ Phase 2 - Translator: This phase translates the structure called grammar to anot
 defined in the package Event-B. This structure can represent any structure that satisfies the same conditions stated in 
 the previous steps. The use of generic structures as input and output allows this phase, the main one, to be independent 
 of the other two, allowing the change of parser and tester. This phase is currently during late stages of development. 
-The translator was defined as the implementation of the translation proposed in (CAVALHEIRO, 2010) as said above.
+The translator was defined as the implementation of the translation defined in (CAVALHEIRO, 2017) as said above.
 
 Phase 3 - Files Creator: This phase uses the generic Event-B structure created in phase 2 to create the files to be used 
 in the semi-automatic prover. In this research the chosen tester was Rodin. The files are generated in a txt format, with
@@ -47,7 +49,7 @@ http://dgp.cnpq.br/dgp/espelhogrupo/9814311152255117#
 
 # Usage:
 
-Download the release version, that comes with a JAR artifact and a tests folder. 
+Download the release version (https://github.com/Naraujo13/Graph-Grammar-Translator/releases), that comes with a JAR artifact and a tests folder. 
 Then execute the JAR passing the path to the file as argument like below:
 
 java -jar translator.jar fileRelativePath/fileName.ggx
